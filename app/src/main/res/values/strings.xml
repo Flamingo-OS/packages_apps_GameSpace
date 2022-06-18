@@ -15,4 +15,7 @@
 -->
 <resources>
     <string name="app_name">GameSpace</string>
+    <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
+    <string name="gaming_mode_active">Gaming mode is active</string>
+    <string name="stop">Stop</string>
 </resources>

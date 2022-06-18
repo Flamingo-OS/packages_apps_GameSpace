@@ -1,0 +1,146 @@
+/*
+ * Copyright (C) 2022 FlamingoOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.flamingo.gamespace.services
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.os.IBinder
+
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import androidx.savedstate.SavedStateRegistry
+import androidx.savedstate.SavedStateRegistryController
+import androidx.savedstate.SavedStateRegistryOwner
+
+import com.android.systemui.statusbar.phone.IGameSpaceService
+import com.flamingo.gamespace.R
+import com.flamingo.gamespace.ui.GameSpaceActivity
+import com.flamingo.gamespace.ui.ingame.GameModeUI
+
+import kotlinx.coroutines.launch
+
+class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
+
+    private lateinit var savedStateRegistryController: SavedStateRegistryController
+    private var gameModeUI: GameModeUI? = null
+
+    private val serviceBinder = object : IGameSpaceService.Stub() {
+        override fun showGameUI() {
+            lifecycleScope.launch {
+                gameModeUI?.addToWindow()
+            }
+        }
+    }
+
+    private lateinit var activityIntent: PendingIntent
+    private lateinit var stopIntent: PendingIntent
+    private lateinit var notificationManager: NotificationManagerCompat
+
+    private lateinit var oldConfig: Configuration
+
+    override val savedStateRegistry: SavedStateRegistry
+        get() = savedStateRegistryController.savedStateRegistry
+
+    override fun onCreate() {
+        super.onCreate()
+        oldConfig = resources.configuration
+
+        savedStateRegistryController = SavedStateRegistryController.create(this)
+        savedStateRegistryController.performAttach()
+        savedStateRegistryController.performRestore(null)
+        gameModeUI = GameModeUI(this, lifecycle, this)
+
+        activityIntent = PendingIntent.getActivity(
+            this,
+            ACTIVITY_REQUEST_CODE,
+            Intent(this, GameSpaceActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
+            null /* options */
+        )
+        stopIntent = PendingIntent.getBroadcast(
+            this,
+            STOP_REQUEST_CODE,
+            Intent(ACTION_STOP_GAME_MODE)
+                .addFlags(Intent.FLAG_RECEIVER_FOREGROUND)
+                .setPackage(SYSTEMUI_PACKAGE),
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+        notificationManager = NotificationManagerCompat.from(this)
+        createNotificationChannel()
+        showNotification()
+    }
+
+    private fun createNotificationChannel() {
+        notificationManager.createNotificationChannel(
+            NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                getString(R.string.gamespace_notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+        )
+    }
+
+    private fun showNotification() {
+        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentText(getString(R.string.gaming_mode_active))
+            .setContentIntent(activityIntent)
+            .setOngoing(true)
+            .addAction(
+                R.drawable.baseline_videogame_asset_off_24,
+                getString(R.string.stop),
+                stopIntent
+            )
+        notificationManager.notify(GAME_MODE_ACTIVE_NOTIFICATION_ID, builder.build())
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
+        return serviceBinder
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        val localeChanged = (newConfig.diff(oldConfig) and ActivityInfo.CONFIG_LOCALE) != 0
+        if (localeChanged) {
+            createNotificationChannel()
+        }
+    }
+
+    override fun onDestroy() {
+        gameModeUI?.removeFromWindow()
+        notificationManager.cancel(GAME_MODE_ACTIVE_NOTIFICATION_ID)
+        super.onDestroy()
+    }
+
+    companion object {
+        private val NOTIFICATION_CHANNEL_ID = "${GameSpaceServiceImpl::class.qualifiedName}_NotificationChannel"
+
+        private const val GAME_MODE_ACTIVE_NOTIFICATION_ID = 1
+
+        private const val ACTIVITY_REQUEST_CODE = 1
+        private const val STOP_REQUEST_CODE = 2
+
+        private const val SYSTEMUI_PACKAGE = "com.android.systemui"
+        private const val ACTION_STOP_GAME_MODE = "com.flamingo.gamespace.action.STOP_GAME_MODE"
+    }
+}

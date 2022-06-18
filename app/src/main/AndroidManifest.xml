@@ -14,7 +14,18 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:sharedUserId="android.uid.system">
+
+    <permission android:name="com.flamingo.gamespace.MANAGE_GAMESPACE"
+        android:protectionLevel="signature|privileged" />
+
+    <protected-broadcast android:name="com.flamingo.gamespace.action.STOP_GAME_MODE" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW"
+        tools:ignore="ProtectedPermissions" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -30,5 +41,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service android:name=".services.GameSpaceServiceImpl"
+            android:exported="true"
+            android:permission="com.flamingo.gamespace.MANAGE_GAMESPACE" />
     </application>
 </manifest>
