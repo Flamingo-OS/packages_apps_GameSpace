@@ -34,20 +34,35 @@ import androidx.savedstate.SavedStateRegistryOwner
 
 import com.android.systemui.statusbar.phone.IGameSpaceService
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.ui.GameSpaceActivity
-import com.flamingo.gamespace.ui.ingame.GameModeUI
+import com.flamingo.gamespace.ui.ingame.GameModeOverlayManager
+
+import dagger.hilt.android.AndroidEntryPoint
+
+import javax.inject.Inject
 
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
     private lateinit var savedStateRegistryController: SavedStateRegistryController
-    private var gameModeUI: GameModeUI? = null
+    private var gameModeOverlayManager: GameModeOverlayManager? = null
 
     private val serviceBinder = object : IGameSpaceService.Stub() {
-        override fun showGameUI() {
+        override fun showGameUI(packageName: String) {
             lifecycleScope.launch {
-                gameModeUI?.addToWindow()
+                gameModeOverlayManager?.apply {
+                    setPackage(packageName)
+                    addToWindow()
+                }
+            }
+        }
+
+        override fun onGamePackageChanged(packageName: String) {
+            lifecycleScope.launch {
+                gameModeOverlayManager?.setPackage(packageName)
             }
         }
     }
@@ -57,6 +72,9 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     private lateinit var notificationManager: NotificationManagerCompat
 
     private lateinit var oldConfig: Configuration
+
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
@@ -68,14 +86,14 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         savedStateRegistryController = SavedStateRegistryController.create(this)
         savedStateRegistryController.performAttach()
         savedStateRegistryController.performRestore(null)
-        gameModeUI = GameModeUI(this, lifecycle, this)
+        gameModeOverlayManager = GameModeOverlayManager(this, this, this, settingsRepository)
 
         activityIntent = PendingIntent.getActivity(
             this,
             ACTIVITY_REQUEST_CODE,
             Intent(this, GameSpaceActivity::class.java),
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT,
-            null /* options */
+            null
         )
         stopIntent = PendingIntent.getBroadcast(
             this,
@@ -127,7 +145,7 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     }
 
     override fun onDestroy() {
-        gameModeUI?.removeFromWindow()
+        gameModeOverlayManager?.removeFromWindow()
         notificationManager.cancel(GAME_MODE_ACTIVE_NOTIFICATION_ID)
         super.onDestroy()
     }

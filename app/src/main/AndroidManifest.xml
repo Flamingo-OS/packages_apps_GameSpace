@@ -18,23 +18,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="android.uid.system">
 
-    <permission android:name="com.flamingo.gamespace.MANAGE_GAMESPACE"
+    <permission
+        android:name="com.flamingo.gamespace.MANAGE_GAMESPACE"
         android:protectionLevel="signature|privileged" />
 
     <protected-broadcast android:name="com.flamingo.gamespace.action.STOP_GAME_MODE" />
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-    <uses-permission android:name="android.permission.INTERNAL_SYSTEM_WINDOW"
+    <uses-permission
+        android:name="android.permission.INTERNAL_SYSTEM_WINDOW"
         tools:ignore="ProtectedPermissions" />
 
     <application
+        android:name=".GameSpaceApplication"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.Material3.DayNight.NoActionBar">
 
-        <activity android:name=".ui.GameSpaceActivity"
+        <activity
+            android:name=".ui.GameSpaceActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,7 +46,8 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".services.GameSpaceServiceImpl"
+        <service
+            android:name=".services.GameSpaceServiceImpl"
             android:exported="true"
             android:permission="com.flamingo.gamespace.MANAGE_GAMESPACE" />
     </application>

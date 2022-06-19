@@ -65,14 +65,16 @@ import androidx.compose.ui.zIndex
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.ingame.states.GameToolsHandleState
-import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsHandleState
 
 private const val DialogLabel = "ToolsDialog"
 
 @Composable
 fun GameToolsHandle(
-    modifier: Modifier = Modifier,
-    state: GameToolsHandleState = rememberGameToolsHandleState()
+    state: GameToolsHandleState,
+    position: Offset,
+    onHandleDragged: (Offset) -> Unit,
+    onDragStop: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
         var handleBounds by remember { mutableStateOf(Rect.Zero) }
@@ -93,8 +95,8 @@ fun GameToolsHandle(
                         // Allow intercepting touches outside dialog to close the dialog
                         ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_CONTENT
                     } else
-                        // Only allow drag on handle to prevent underlying window
-                        // from getting touches
+                    // Only allow drag on handle to prevent underlying window
+                    // from getting touches
                         ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_REGION
                 )
             })
@@ -108,42 +110,50 @@ fun GameToolsHandle(
                 )
             }
         }
-        var handleOffset by remember(state.orientation) { mutableStateOf(Offset.Zero) }
         ToolsDialog(
             showDialog = showToolsDialog,
             handleBounds = handleBounds,
             onDismissRequest = {
                 showToolsDialog = false
             },
-            modifier = Modifier.fillMaxSize().zIndex(1f)
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1f)
         )
         val windowBounds by rememberUpdatedState(newValue = state.windowBounds)
+        val updatedPosition by rememberUpdatedState(newValue = position)
         Image(
             painter = painterResource(id = R.drawable.baseline_gamepad_24),
             contentDescription = null,
             colorFilter = ColorFilter.tint(color = Color.White),
             modifier = Modifier
                 .offset {
-                    handleOffset.round()
+                    updatedPosition.round()
                 }
                 .onGloballyPositioned {
                     handleBounds = it.boundsInWindow()
                 }
                 .padding(8.dp)
                 .pointerInput(state.orientation) {
-                    detectDragGestures { change, dragAmount ->
-                        handleOffset = Offset(
-                            x = (handleOffset.x + dragAmount.x).coerceIn(
-                                windowBounds.left,
-                                windowBounds.width - handleBounds.width
-                            ),
-                            y = (handleOffset.y + dragAmount.y).coerceIn(
-                                windowBounds.top,
-                                windowBounds.height - handleBounds.height,
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            onHandleDragged(
+                                Offset(
+                                    x = (updatedPosition.x + dragAmount.x).coerceIn(
+                                        windowBounds.left,
+                                        windowBounds.width - handleBounds.width
+                                    ),
+                                    y = (updatedPosition.y + dragAmount.y).coerceIn(
+                                        windowBounds.top,
+                                        windowBounds.height - handleBounds.height,
+                                    )
+                                )
                             )
-                        )
-                        change.consume()
-                    }
+                            change.consume()
+                        },
+                        onDragCancel = onDragStop,
+                        onDragEnd = onDragStop
+                    )
                 }
                 .pointerInput(state.orientation) {
                     detectTapGestures {
@@ -201,22 +211,24 @@ fun ToolsDialog(
     expandedState.targetState = showDialog
     if (expandedState.currentState || expandedState.targetState) {
         Box(
-            modifier = modifier.pointerInput(Unit) {
-                detectTapGestures(onPress = {
-                    onDismissRequest()
-                })
-            }.layout { measurable, constraints ->
-                val placeable = measurable.measure(constraints)
-                layout(placeable.width, placeable.height) {
-                    placeable.placeRelative(
-                        calculatePositionCallback(
-                            handleBounds,
-                            IntSize(placeable.width, placeable.height)
-                        ),
-                        1f
-                    )
+            modifier = modifier
+                .pointerInput(Unit) {
+                    detectTapGestures(onPress = {
+                        onDismissRequest()
+                    })
                 }
-            }
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints)
+                    layout(placeable.width, placeable.height) {
+                        placeable.placeRelative(
+                            calculatePositionCallback(
+                                handleBounds,
+                                IntSize(placeable.width, placeable.height)
+                            ),
+                            1f
+                        )
+                    }
+                }
         ) {
             val transformOrigin by remember {
                 derivedStateOf {

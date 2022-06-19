@@ -16,78 +16,56 @@
 
 package com.flamingo.gamespace.ui.ingame
 
-import android.content.Context
-import android.graphics.PixelFormat
-import android.os.Binder
-import android.view.WindowManager
-
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
-import androidx.core.content.getSystemService
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewTreeLifecycleOwner
-import androidx.savedstate.SavedStateRegistryOwner
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import androidx.compose.ui.geometry.Offset
 
+import com.flamingo.gamespace.data.settings.SettingsRepository
+import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsHandleState
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
 
-class GameModeUI(
-    context: Context,
-    lifecycle: Lifecycle,
-    savedStateRegistryOwner: SavedStateRegistryOwner
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun GameModeUI(
+    settingsRepository: SettingsRepository,
+    packageName: String
 ) {
-
-    private val wm = context.getSystemService<WindowManager>()!!
-
-    private val rootComposeView: ComposeView
-    private val rootViewLP = WindowManager.LayoutParams(
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.MATCH_PARENT,
-        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-        WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED or
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-                WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-        PixelFormat.TRANSLUCENT
-    )
-
-    init {
-        val windowContext = context.createWindowContext(
-            context.display!!,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            null
-        )
-        rootComposeView = ComposeView(windowContext)
-        rootViewLP.token = Binder("GameSpace Overlay Token")
-        rootViewLP.setTrustedOverlay()
-        ViewTreeLifecycleOwner.set(rootComposeView) { lifecycle }
-        rootComposeView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
-        rootComposeView.fitsSystemWindows = true
-    }
-
-    fun addToWindow() {
-        if (!rootComposeView.isAttachedToWindow) {
-            rootComposeView.setContent {
-                GameSpaceTheme {
-                    Box(
-                        modifier = Modifier
-                            .systemBarsPadding()
-                            .fillMaxSize()
-                    ) {
-                        GameToolsHandle(modifier = Modifier.fillMaxSize())
-                    }
+    GameSpaceTheme {
+        Box(
+            modifier = Modifier
+                .systemBarsPadding()
+                .fillMaxSize()
+        ) {
+            val gameToolsHandleState =
+                rememberGameToolsHandleState(settingsRepository = settingsRepository)
+            var handlePosition by remember { mutableStateOf(Offset.Zero) }
+            LaunchedEffect(packageName) {
+                gameToolsHandleState.getGameToolsHandlePosition(packageName).collectLatest {
+                    handlePosition = it
                 }
             }
-            wm.addView(rootComposeView, rootViewLP)
-        }
-    }
-
-    fun removeFromWindow() {
-        if (rootComposeView.isAttachedToWindow) {
-            wm.removeView(rootComposeView)
+            val updatedPackageName by rememberUpdatedState(newValue = packageName)
+            GameToolsHandle(
+                position = handlePosition,
+                onHandleDragged = {
+                    handlePosition = it
+                },
+                onDragStop = {
+                    gameToolsHandleState.setGameToolsHandleOffset(updatedPackageName, handlePosition)
+                },
+                state = gameToolsHandleState,
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }

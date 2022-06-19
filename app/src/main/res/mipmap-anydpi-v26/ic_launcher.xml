@@ -3,6 +3,6 @@
     <background android:drawable="@android:color/system_accent1_600" />
     <foreground>
         <inset android:drawable="@drawable/ic_launcher_foreground"
-            android:inset="24dp" />
+            android:inset="72dp" />
     </foreground>
 </adaptive-icon>
