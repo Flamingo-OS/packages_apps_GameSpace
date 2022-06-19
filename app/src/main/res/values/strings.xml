@@ -13,9 +13,17 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 -->
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GameSpace</string>
+
+    <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>
     <string name="stop">Stop</string>
+
+    <!-- Game Tools Dialog -->
+    <string name="battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%%</string>
+    <string name="charging_battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1</string>
+    <string name="battery_unknown">Battery: unknown</string>
+
 </resources>

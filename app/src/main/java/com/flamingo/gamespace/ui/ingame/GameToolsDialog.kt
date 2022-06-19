@@ -18,7 +18,12 @@ package com.flamingo.gamespace.ui.ingame
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -39,13 +44,29 @@ fun GameToolsDialog(
     state: GameToolsDialogState = rememberGameToolsDialogState()
 ) {
     Surface(modifier = modifier, shape = RoundedCornerShape(32.dp)) {
-        Column {
+        Column(
+            modifier = Modifier.padding(16.dp).width(IntrinsicSize.Min),
+            verticalArrangement = Arrangement.SpaceEvenly,
+            horizontalAlignment = Alignment.Start
+        ) {
             Row(
+                modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = stringResource(id = R.string.app_name), style = MaterialTheme.typography.headlineLarge)
-                Text(text = state.time, style = MaterialTheme.typography.headlineLarge)
+                Text(
+                    text = stringResource(id = R.string.app_name),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                Text(text = state.time, style = MaterialTheme.typography.headlineSmall)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
+                Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
             }
         }
     }

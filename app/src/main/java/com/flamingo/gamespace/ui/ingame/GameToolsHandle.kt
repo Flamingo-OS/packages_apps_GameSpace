@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -57,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
+import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 
 import com.flamingo.gamespace.R
@@ -280,6 +282,14 @@ fun DialogContent(
                 this.transformOrigin = transformOrigin
             }
     ) {
-        GameToolsDialog()
+        GameToolsDialog(
+            modifier = Modifier.width(
+                if (maxWidth < maxHeight) {
+                    0.7 * maxWidth
+                } else {
+                    0.4 * maxWidth
+                }
+            )
+        )
     }
 }

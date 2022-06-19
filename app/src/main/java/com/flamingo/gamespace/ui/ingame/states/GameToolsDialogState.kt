@@ -20,6 +20,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.BatteryManager
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,6 +29,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+
+import com.flamingo.gamespace.R
 
 import java.text.DateFormat
 import java.util.Locale
@@ -39,18 +42,39 @@ class GameToolsDialogState(
     private val locale: Locale
         get() = context.resources.configuration.locales[0]
 
-    private val timeReceiver = object : BroadcastReceiver() {
+    private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action != Intent.ACTION_TIME_TICK) return
-            time = getFormattedTime()
+            when (intent?.action) {
+                Intent.ACTION_TIME_TICK -> {
+                    time = getFormattedTime()
+                }
+                Intent.ACTION_BATTERY_CHANGED -> {
+                    updateBatteryStatus(intent)
+                }
+            }
         }
     }
 
     var time by mutableStateOf(getFormattedTime())
         private set
 
+    var batteryText by mutableStateOf(context.getString(R.string.battery_unknown))
+        private set
+
+    var date by mutableStateOf(getFormattedDate())
+        private set
+
     init {
-        context.registerReceiver(timeReceiver, IntentFilter(Intent.ACTION_TIME_TICK))
+        val batteryStatusIntent = context.registerReceiver(
+            broadcastReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_TIME_TICK)
+                addAction(Intent.ACTION_BATTERY_CHANGED)
+            }
+        )
+        if (batteryStatusIntent != null) {
+            updateBatteryStatus(batteryStatusIntent)
+        }
     }
 
     private fun getFormattedTime(): String {
@@ -60,8 +84,27 @@ class GameToolsDialogState(
         ).format(System.currentTimeMillis())
     }
 
+    private fun updateBatteryStatus(intent: Intent) {
+        val pluggedIn = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
+        val level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
+        val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0)
+        val percent = (level.toFloat() / scale * 100).toInt()
+        batteryText = if (pluggedIn) {
+            context.getString(R.string.charging_battery_text, percent)
+        } else {
+            context.getString(R.string.battery_text, percent)
+        }
+    }
+
+    private fun getFormattedDate(): String {
+        return DateFormat.getDateInstance(
+            DateFormat.LONG,
+            locale
+        ).format(System.currentTimeMillis())
+    }
+
     fun onDispose() {
-        context.unregisterReceiver(timeReceiver)
+        context.unregisterReceiver(broadcastReceiver)
     }
 }
 
