@@ -29,13 +29,9 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -217,33 +213,33 @@ fun ToolsDialog(
                         onDismissRequest()
                     })
                 }
-                .layout { measurable, constraints ->
-                    val placeable = measurable.measure(constraints)
-                    layout(placeable.width, placeable.height) {
-                        placeable.placeRelative(
-                            calculatePositionCallback(
-                                handleBounds,
-                                IntSize(placeable.width, placeable.height)
-                            ),
-                            1f
-                        )
-                    }
-                }
         ) {
-            val transformOrigin by remember {
-                derivedStateOf {
-                    when (dialogPosition) {
-                        DialogPosition.TOP_LEFT -> TransformOrigin(1f, 1f)
-                        DialogPosition.TOP_RIGHT -> TransformOrigin(0f, 1f)
-                        DialogPosition.BOTTOM_RIGHT -> TransformOrigin(0f, 0f)
-                        DialogPosition.BOTTOM_LEFT -> TransformOrigin(1f, 0f)
+            Box(modifier = Modifier.layout { measurable, constraints ->
+                val placeable = measurable.measure(constraints)
+                layout(placeable.width, placeable.height) {
+                    placeable.placeRelative(
+                        calculatePositionCallback(
+                            handleBounds,
+                            IntSize(placeable.width, placeable.height)
+                        )
+                    )
+                }
+            }) {
+                val transformOrigin by remember {
+                    derivedStateOf {
+                        when (dialogPosition) {
+                            DialogPosition.TOP_LEFT -> TransformOrigin(1f, 1f)
+                            DialogPosition.TOP_RIGHT -> TransformOrigin(0f, 1f)
+                            DialogPosition.BOTTOM_RIGHT -> TransformOrigin(0f, 0f)
+                            DialogPosition.BOTTOM_LEFT -> TransformOrigin(1f, 0f)
+                        }
                     }
                 }
+                DialogContent(
+                    expandedState = expandedState,
+                    transformOrigin = transformOrigin
+                )
             }
-            DialogContent(
-                expandedState = expandedState,
-                transformOrigin = transformOrigin
-            )
         }
     }
 }
@@ -284,10 +280,6 @@ fun DialogContent(
                 this.transformOrigin = transformOrigin
             }
     ) {
-        Surface(shape = RoundedCornerShape(32.dp)) {
-            Column {
-                Text(text = "Game Tools Dialog Placeholder Text")
-            }
-        }
+        GameToolsDialog()
     }
 }
