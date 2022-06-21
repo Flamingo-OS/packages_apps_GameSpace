@@ -20,22 +20,22 @@ import android.os.Bundle
 
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 
+import com.flamingo.gamespace.ui.screens.MainScreen
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 class GameSpaceActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             GameSpaceTheme {
-                val systemUiController = rememberSystemUiController()
-                systemUiController.setSystemBarsColor(
-                    Color.Transparent,
-                    isNavigationBarContrastEnforced = false,
-                    darkIcons = !isSystemInDarkTheme()
+                MainScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    onBackPressed = {
+                        finish()
+                    }
                 )
             }
         }

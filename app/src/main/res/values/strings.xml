@@ -16,6 +16,17 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">GameSpace</string>
 
+    <!-- Main screen -->
+    <string name="back_button_content_desc">Back button</string>
+    <string name="main_screen_intro_text">Extra features for immersive gaming experience</string>
+    <string name="enable_gamespace">Enable gamespace</string>
+    <string name="dynamic_mode">Dynamic mode</string>
+    <string name="dynamic_mode_summary">Whether to automatically detect and add new games on launch</string>
+    <string name="disable_headsup">Disable headsup</string>
+    <string name="disable_headsup_summary">Whether to disable heads-up notifications and bubbles while gaming</string>
+    <string name="disable_fullscreen_intent">Disable fullscreen intent</string>
+    <string name="disable_fullscreen_intent_summary">Whether to disable launching fullscreen intents (like call screen) while gaming</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>
