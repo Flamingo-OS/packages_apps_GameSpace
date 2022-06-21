@@ -65,6 +65,7 @@ import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.ingame.states.GameToolsHandleState
 
 private const val DialogLabel = "ToolsDialog"
+const val AnimationDuration = 300
 
 @Composable
 fun GameToolsHandle(
@@ -259,7 +260,7 @@ fun DialogContent(
     val scale by transition.animateFloat(
         transitionSpec = {
             tween(
-                durationMillis = 300,
+                durationMillis = AnimationDuration,
                 easing = LinearOutSlowInEasing
             )
         },
@@ -269,7 +270,7 @@ fun DialogContent(
     }
 
     val alpha by transition.animateFloat(
-        transitionSpec = { tween(150) },
+        transitionSpec = { tween(AnimationDuration / 2) },
         label = DialogLabel
     ) {
         if (it) 1f else 0f

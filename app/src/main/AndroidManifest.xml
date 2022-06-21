@@ -18,10 +18,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:sharedUserId="android.uid.system">
 
-    <permission
-        android:name="com.flamingo.gamespace.MANAGE_GAMESPACE"
-        android:protectionLevel="signature|privileged" />
-
     <protected-broadcast android:name="com.flamingo.gamespace.action.STOP_GAME_MODE" />
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
@@ -49,6 +45,6 @@
         <service
             android:name=".services.GameSpaceServiceImpl"
             android:exported="true"
-            android:permission="com.flamingo.gamespace.MANAGE_GAMESPACE" />
+            android:permission="com.flamingo.permission.MANAGE_GAMESPACE" />
     </application>
 </manifest>

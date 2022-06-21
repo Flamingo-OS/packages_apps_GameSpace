@@ -22,6 +22,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.os.Bundle
 import android.os.IBinder
 
 import androidx.core.app.NotificationCompat
@@ -33,6 +34,7 @@ import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
 import com.android.systemui.statusbar.phone.IGameSpaceService
+import com.android.systemui.statusbar.phone.IGameSpaceServiceCallback
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.ui.GameSpaceActivity
@@ -64,6 +66,12 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
             lifecycleScope.launch {
                 gameModeOverlayManager?.setPackage(packageName)
             }
+        }
+
+        override fun setCallback(callback: IGameSpaceServiceCallback) {
+        }
+
+        override fun onStateChanged(state: Bundle) {
         }
     }
 

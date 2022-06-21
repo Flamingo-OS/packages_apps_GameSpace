@@ -23,30 +23,40 @@ import android.view.WindowManager
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 
 import com.android.internal.util.ScreenshotHelper
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+
 class ScreenshotTileState(
-    context: Context
+    context: Context,
+    private val coroutineScope: CoroutineScope
 ) {
     private val screenshotHelper = ScreenshotHelper(context)
 
-    fun takeScreenshot() {
-        screenshotHelper.takeScreenshot(
-            WindowManager.TAKE_SCREENSHOT_FULLSCREEN,
-            true /* hasStatus */,
-            true /* hasNav */,
-            WindowManager.ScreenshotSource.SCREENSHOT_GLOBAL_ACTIONS,
-            Handler(Looper.getMainLooper()),
-            null /* completionConsumer */
-        )
+    fun takeScreenshot(delay: Long) {
+        coroutineScope.launch {
+            delay(delay)
+            screenshotHelper.takeScreenshot(
+                WindowManager.TAKE_SCREENSHOT_FULLSCREEN,
+                true /* hasStatus */,
+                true /* hasNav */,
+                WindowManager.ScreenshotSource.SCREENSHOT_GLOBAL_ACTIONS,
+                Handler(Looper.getMainLooper()),
+                null /* completionConsumer */
+            )
+        }
     }
 }
 
 @Composable
 fun rememberScreenshotTileState(
-    context: Context = LocalContext.current
-) = remember(context) {
-    ScreenshotTileState(context = context)
+    context: Context = LocalContext.current,
+    coroutineScope: CoroutineScope = rememberCoroutineScope()
+) = remember(context, coroutineScope) {
+    ScreenshotTileState(context = context, coroutineScope = coroutineScope)
 }

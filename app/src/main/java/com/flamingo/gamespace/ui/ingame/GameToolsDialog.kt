@@ -155,7 +155,7 @@ fun ScreenshotTile(
         toggleable = false,
         onClick = {
             onDismissDialogRequest()
-            state.takeScreenshot()
+            state.takeScreenshot(AnimationDuration.toLong())
         }
     )
 }
