@@ -239,7 +239,8 @@ fun ToolsDialog(
                 }
                 DialogContent(
                     expandedState = expandedState,
-                    transformOrigin = transformOrigin
+                    transformOrigin = transformOrigin,
+                    onDismissRequest = onDismissRequest
                 )
             }
         }
@@ -250,6 +251,7 @@ fun ToolsDialog(
 fun DialogContent(
     expandedState: MutableTransitionState<Boolean>,
     transformOrigin: TransformOrigin,
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val transition = updateTransition(expandedState, DialogLabel)
@@ -289,7 +291,8 @@ fun DialogContent(
                 } else {
                     0.4 * maxWidth
                 }
-            )
+            ),
+            onDismissRequest = onDismissRequest
         )
     }
 }

@@ -20,32 +20,45 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
+import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsDialogState
+import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
+
+private val CornerSize = 32.dp
 
 @Composable
 fun GameToolsDialog(
+    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     state: GameToolsDialogState = rememberGameToolsDialogState()
 ) {
-    Surface(modifier = modifier, shape = RoundedCornerShape(32.dp)) {
+    Surface(modifier = modifier, shape = RoundedCornerShape(CornerSize)) {
         Column(
-            modifier = Modifier.padding(16.dp).width(IntrinsicSize.Min),
+            modifier = Modifier
+                .padding(16.dp)
+                .width(IntrinsicSize.Min),
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.Start
         ) {
@@ -68,6 +81,74 @@ fun GameToolsDialog(
                 Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
                 Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.width(IntrinsicSize.Min),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    ScreenshotTile(
+                        modifier = Modifier.width(IntrinsicSize.Min),
+                        onDismissDialogRequest = onDismissRequest
+                    )
+                }
+            }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun Tile(
+    painter: Painter,
+    contentDescription: String?,
+    title: String,
+    enabled: Boolean,
+    toggleable: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.aspectRatio(1f),
+        shape = RoundedCornerShape(CornerSize),
+        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceTint,
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Icon(painter = painter, contentDescription = contentDescription)
+            Text(text = title)
+            if (toggleable) {
+                Text(text = stringResource(id = if (enabled) R.string.enabled else R.string.disabled))
+            }
+        }
+    }
+}
+
+@Composable
+fun ScreenshotTile(
+    onDismissDialogRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    state: ScreenshotTileState = rememberScreenshotTileState()
+) {
+    Tile(
+        modifier = modifier,
+        painter = painterResource(id = R.drawable.ic_qs_screenshot),
+        contentDescription = stringResource(id = R.string.screenshot_tile_content_desc),
+        title = stringResource(id = R.string.screenshot),
+        enabled = false,
+        toggleable = false,
+        onClick = {
+            onDismissDialogRequest()
+            state.takeScreenshot()
+        }
+    )
 }
