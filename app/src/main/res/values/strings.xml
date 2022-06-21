@@ -25,11 +25,13 @@
     <string name="battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%%</string>
     <string name="charging_battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1\uFE0E</string>
     <string name="battery_unknown">Battery: unknown</string>
-    <string name="enabled">Enabled</string>
-    <string name="disabled">Disabled</string>
 
     <!-- Screenshot tile -->
     <string name="screenshot">Screenshot</string>
     <string name="screenshot_tile_content_desc">Screenshot tile</string>
+
+    <!-- Lock gesture tile -->
+    <string name="lock_gestures">Lock gestures</string>
+    <string name="lock_gestures_content_desc">Lock gestures tile</string>
 
 </resources>

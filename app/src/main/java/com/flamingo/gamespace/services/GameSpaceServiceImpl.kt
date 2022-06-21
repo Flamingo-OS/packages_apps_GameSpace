@@ -24,6 +24,8 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.IBinder
+import android.os.RemoteException
+import android.util.Log
 
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -69,9 +71,15 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         }
 
         override fun setCallback(callback: IGameSpaceServiceCallback) {
+            lifecycleScope.launch {
+                gameModeOverlayManager?.setGameSpaceServiceCallback(GameSpaceServiceCallback(callback))
+            }
         }
 
         override fun onStateChanged(state: Bundle) {
+            lifecycleScope.launch {
+                gameModeOverlayManager?.setGameSpaceServiceConfig(state)
+            }
         }
     }
 
@@ -158,7 +166,21 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         super.onDestroy()
     }
 
+    class GameSpaceServiceCallback(
+        private val iGameSpaceServiceCallback: IGameSpaceServiceCallback
+    ) {
+       fun setGesturalNavigationLocked(isLocked: Boolean) {
+           try {
+               iGameSpaceServiceCallback.setGesturalNavigationLocked(isLocked)
+           } catch (e: RemoteException) {
+               Log.e(TAG, "Failed to change gestural navigation lock status", e)
+           }
+       }
+    }
+
     companion object {
+        private const val TAG = "GameSpaceServiceImpl"
+
         private val NOTIFICATION_CHANNEL_ID = "${GameSpaceServiceImpl::class.qualifiedName}_NotificationChannel"
 
         private const val GAME_MODE_ACTIVE_NOTIFICATION_ID = 1

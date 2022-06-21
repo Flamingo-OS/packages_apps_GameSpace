@@ -38,21 +38,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
+import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
-import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsDialogState
+import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
 
 private val CornerSize = 16.dp
 
 @Composable
 fun GameToolsDialog(
+    state: GameToolsDialogState,
     onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier,
-    state: GameToolsDialogState = rememberGameToolsDialogState()
+    modifier: Modifier = Modifier
 ) {
     Surface(modifier = modifier, shape = RoundedCornerShape(CornerSize)) {
         Column(
@@ -83,12 +88,16 @@ fun GameToolsDialog(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Column(
-                modifier = Modifier.width(IntrinsicSize.Min),
+                modifier = Modifier
+                    .width(IntrinsicSize.Min)
+                    .height(IntrinsicSize.Min),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Row(
-                    modifier = Modifier.width(IntrinsicSize.Min),
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .height(IntrinsicSize.Min),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -96,19 +105,30 @@ fun GameToolsDialog(
                         modifier = Modifier.width(IntrinsicSize.Min),
                         onDismissDialogRequest = onDismissRequest
                     )
+                    val lockGestureTileState = rememberLockGestureTileState(
+                        config = state.config,
+                        onToggleState = {
+                            state.setGesturalNavigationLocked(it)
+                        },
+                    )
+                    if (lockGestureTileState.shouldShowTile) {
+                        LockGestureTile(
+                            modifier = Modifier.width(IntrinsicSize.Min),
+                            state = lockGestureTileState
+                        )
+                    }
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class)
 @Composable
 fun Tile(
     icon: @Composable () -> Unit,
     title: String,
     enabled: Boolean,
-    toggleable: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -119,18 +139,19 @@ fun Tile(
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.padding(8.dp),
+            modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.Center
         ) {
             icon()
-            Text(text = title, style = MaterialTheme.typography.bodyMedium)
-            if (toggleable) {
-                Text(
-                    text = stringResource(id = if (enabled) R.string.enabled else R.string.disabled),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontSize = TextUnit(14f, TextUnitType.Sp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -152,10 +173,31 @@ fun ScreenshotTile(
         },
         title = stringResource(id = R.string.screenshot),
         enabled = false,
-        toggleable = false,
         onClick = {
             onDismissDialogRequest()
             state.takeScreenshot(AnimationDuration.toLong())
+        }
+    )
+}
+
+@Composable
+fun LockGestureTile(
+    state: LockGestureTileState,
+    modifier: Modifier = Modifier,
+) {
+    Tile(
+        modifier = modifier,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_lock_gesture),
+                contentDescription = stringResource(id = R.string.lock_gestures_content_desc),
+                modifier = Modifier.offset(x = (-4).dp)
+            )
+        },
+        title = stringResource(id = R.string.lock_gestures),
+        enabled = state.isLocked,
+        onClick = {
+            state.toggleGestureLock()
         }
     )
 }

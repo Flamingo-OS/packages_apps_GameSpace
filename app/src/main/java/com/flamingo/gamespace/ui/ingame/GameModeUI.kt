@@ -16,6 +16,7 @@
 
 package com.flamingo.gamespace.ui.ingame
 
+import android.os.Bundle
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 
 import com.flamingo.gamespace.data.settings.SettingsRepository
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsHandleState
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
 
@@ -38,7 +40,9 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun GameModeUI(
     settingsRepository: SettingsRepository,
-    packageName: String
+    packageName: String,
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?
 ) {
     GameSpaceTheme {
         Box(
@@ -64,7 +68,9 @@ fun GameModeUI(
                     gameToolsHandleState.setGameToolsHandleOffset(updatedPackageName, handlePosition)
                 },
                 state = gameToolsHandleState,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                config = config,
+                serviceCallback = serviceCallback
             )
         }
     }

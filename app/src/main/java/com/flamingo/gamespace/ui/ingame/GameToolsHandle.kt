@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.graphics.Region
+import android.os.Bundle
 import android.view.ViewTreeObserver
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -62,7 +63,9 @@ import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.GameToolsHandleState
+import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsDialogState
 
 private const val DialogLabel = "ToolsDialog"
 const val AnimationDuration = 300
@@ -73,7 +76,9 @@ fun GameToolsHandle(
     position: Offset,
     onHandleDragged: (Offset) -> Unit,
     onDragStop: () -> Unit,
-    modifier: Modifier = Modifier
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?,
+    modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
         var handleBounds by remember { mutableStateOf(Rect.Zero) }
@@ -117,7 +122,9 @@ fun GameToolsHandle(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(1f)
+                .zIndex(1f),
+            config = config,
+            serviceCallback = serviceCallback
         )
         val windowBounds by rememberUpdatedState(newValue = state.windowBounds)
         val updatedPosition by rememberUpdatedState(newValue = position)
@@ -175,6 +182,8 @@ fun ToolsDialog(
     showDialog: Boolean,
     handleBounds: Rect,
     onDismissRequest: () -> Unit,
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?,
     modifier: Modifier = Modifier
 ) {
     var dialogPosition by remember { mutableStateOf(DialogPosition.TOP_RIGHT) }
@@ -241,7 +250,9 @@ fun ToolsDialog(
                 DialogContent(
                     expandedState = expandedState,
                     transformOrigin = transformOrigin,
-                    onDismissRequest = onDismissRequest
+                    onDismissRequest = onDismissRequest,
+                    config = config,
+                    serviceCallback = serviceCallback
                 )
             }
         }
@@ -253,6 +264,8 @@ fun DialogContent(
     expandedState: MutableTransitionState<Boolean>,
     transformOrigin: TransformOrigin,
     onDismissRequest: () -> Unit,
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?,
     modifier: Modifier = Modifier
 ) {
     val transition = updateTransition(expandedState, DialogLabel)
@@ -285,6 +298,8 @@ fun DialogContent(
                 this.transformOrigin = transformOrigin
             }
     ) {
+        val dialogState =
+            rememberGameToolsDialogState(config = config, serviceCallback = serviceCallback)
         GameToolsDialog(
             modifier = Modifier.width(
                 if (maxWidth < maxHeight) {
@@ -293,7 +308,8 @@ fun DialogContent(
                     0.4 * maxWidth
                 }
             ),
-            onDismissRequest = onDismissRequest
+            onDismissRequest = onDismissRequest,
+            state = dialogState
         )
     }
 }

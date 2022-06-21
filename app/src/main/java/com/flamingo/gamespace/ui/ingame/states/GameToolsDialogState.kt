@@ -21,6 +21,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.Bundle
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -31,12 +32,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import java.text.DateFormat
 import java.util.Locale
 
 class GameToolsDialogState(
-    private val context: Context
+    private val context: Context,
+    private val serviceCallback: GameSpaceServiceCallback?,
+    val config: Bundle
 ) {
 
     private val locale: Locale
@@ -103,6 +107,10 @@ class GameToolsDialogState(
         ).format(System.currentTimeMillis())
     }
 
+    fun setGesturalNavigationLocked(isLocked: Boolean) {
+        serviceCallback?.setGesturalNavigationLocked(isLocked)
+    }
+
     fun onDispose() {
         context.unregisterReceiver(broadcastReceiver)
     }
@@ -110,10 +118,12 @@ class GameToolsDialogState(
 
 @Composable
 fun rememberGameToolsDialogState(
-    context: Context = LocalContext.current
+    context: Context = LocalContext.current,
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?,
 ): GameToolsDialogState {
-    val state = remember(context) {
-        GameToolsDialogState(context)
+    val state = remember(context, config) {
+        GameToolsDialogState(context = context, config = config, serviceCallback = serviceCallback)
     }
     DisposableEffect(context) {
         onDispose {

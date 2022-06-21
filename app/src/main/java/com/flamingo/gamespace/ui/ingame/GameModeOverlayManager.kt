@@ -19,6 +19,7 @@ package com.flamingo.gamespace.ui.ingame
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Binder
+import android.os.Bundle
 import android.view.WindowManager
 
 import androidx.compose.runtime.getValue
@@ -32,6 +33,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 import com.flamingo.gamespace.data.settings.SettingsRepository
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 class GameModeOverlayManager(
     context: Context,
@@ -58,6 +60,8 @@ class GameModeOverlayManager(
     )
 
     private var gamePackageName by mutableStateOf<String?>(null)
+    private var serviceCallback by mutableStateOf<GameSpaceServiceCallback?>(null)
+    private var serviceConfig by mutableStateOf(Bundle())
 
     init {
         val windowContext = context.createWindowContext(
@@ -77,13 +81,23 @@ class GameModeOverlayManager(
         gamePackageName = packageName
     }
 
+    fun setGameSpaceServiceCallback(gameSpaceServiceCallback: GameSpaceServiceCallback) {
+        serviceCallback = gameSpaceServiceCallback
+    }
+
+    fun setGameSpaceServiceConfig(config: Bundle) {
+        serviceConfig = config
+    }
+
     fun addToWindow() {
         if (!rootComposeView.isAttachedToWindow) {
             rootComposeView.setContent {
                 gamePackageName?.let {
                     GameModeUI(
                         packageName = it,
-                        settingsRepository = settingsRepository
+                        settingsRepository = settingsRepository,
+                        config = serviceConfig,
+                        serviceCallback = serviceCallback,
                     )
                 }
             }
