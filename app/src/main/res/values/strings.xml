@@ -23,7 +23,7 @@
 
     <!-- Game Tools Dialog -->
     <string name="battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%%</string>
-    <string name="charging_battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1</string>
+    <string name="charging_battery_text">Battery: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1\uFE0E</string>
     <string name="battery_unknown">Battery: unknown</string>
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
