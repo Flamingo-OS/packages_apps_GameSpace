@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,7 +36,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -105,8 +105,7 @@ fun GameToolsDialog(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Tile(
-    painter: Painter,
-    contentDescription: String?,
+    icon: @Composable () -> Unit,
     title: String,
     enabled: Boolean,
     toggleable: Boolean,
@@ -124,7 +123,7 @@ fun Tile(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Icon(painter = painter, contentDescription = contentDescription)
+            icon()
             Text(text = title, style = MaterialTheme.typography.bodyMedium)
             if (toggleable) {
                 Text(
@@ -144,8 +143,13 @@ fun ScreenshotTile(
 ) {
     Tile(
         modifier = modifier,
-        painter = painterResource(id = R.drawable.ic_qs_screenshot),
-        contentDescription = stringResource(id = R.string.screenshot_tile_content_desc),
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_qs_screenshot),
+                contentDescription = stringResource(id = R.string.screenshot_tile_content_desc),
+                modifier = Modifier.offset(x = (-4).dp)
+            )
+        },
         title = stringResource(id = R.string.screenshot),
         enabled = false,
         toggleable = false,
