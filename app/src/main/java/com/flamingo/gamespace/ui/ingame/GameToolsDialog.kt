@@ -46,7 +46,7 @@ import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
 
-private val CornerSize = 32.dp
+private val CornerSize = 16.dp
 
 @Composable
 fun GameToolsDialog(
@@ -116,18 +116,21 @@ fun Tile(
     Surface(
         modifier = modifier.aspectRatio(1f),
         shape = RoundedCornerShape(CornerSize),
-        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceTint,
+        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
         onClick = onClick
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             Icon(painter = painter, contentDescription = contentDescription)
-            Text(text = title)
+            Text(text = title, style = MaterialTheme.typography.bodyMedium)
             if (toggleable) {
-                Text(text = stringResource(id = if (enabled) R.string.enabled else R.string.disabled))
+                Text(
+                    text = stringResource(id = if (enabled) R.string.enabled else R.string.disabled),
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }
