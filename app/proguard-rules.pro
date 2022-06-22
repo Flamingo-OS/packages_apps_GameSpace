@@ -19,3 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn dalvik.system.BlockGuard$VmPolicy
+-dontwarn dalvik.system.CloseGuard
+-dontwarn libcore.util.NativeAllocationRegistry
+-dontwarn sun.misc.Cleaner
+
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite* {
+    <fields>;
+}

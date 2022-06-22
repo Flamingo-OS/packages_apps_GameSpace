@@ -20,14 +20,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.ui.preferences.Preference
 import com.flamingo.gamespace.ui.preferences.PrimarySwitchPreference
 import com.flamingo.gamespace.ui.preferences.SwitchPreference
 import com.flamingo.gamespace.ui.states.MainScreenState
@@ -39,16 +38,11 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun MainScreen(
     onBackPressed: () -> Unit,
+    onSelectAppsScreenOpenRequest: () -> Unit,
     modifier: Modifier = Modifier,
     state: MainScreenState = rememberMainScreenState(),
     systemUiController: SystemUiController = rememberSystemUiController()
 ) {
-    LaunchedEffect(Unit) {
-        systemUiController.setNavigationBarColor(
-            Color.Transparent,
-            navigationBarContrastEnforced = false
-        )
-    }
     CollapsingToolbarScreen(
         modifier = modifier,
         title = stringResource(id = R.string.app_name),
@@ -61,11 +55,18 @@ fun MainScreen(
             Text(
                 text = stringResource(id = R.string.main_screen_intro_text),
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Light
+                fontWeight = FontWeight.Light,
+                modifier = Modifier.padding(horizontal = 24.dp)
             )
         }
         item {
             PrimarySwitchPreference(
+                modifier = Modifier.padding(
+                    top = 24.dp,
+                    bottom = 12.dp,
+                    start = 24.dp,
+                    end = 24.dp
+                ),
                 title = stringResource(id = R.string.enable_gamespace),
                 checked = state.gameSpaceEnabled,
                 onCheckedChange = {
@@ -74,6 +75,13 @@ fun MainScreen(
             )
         }
         if (state.gameSpaceEnabled) {
+            item {
+                Preference(
+                    title = stringResource(id = R.string.select_apps),
+                    summary = stringResource(id = R.string.select_apps_summary),
+                    onClick = onSelectAppsScreenOpenRequest
+                )
+            }
             item {
                 SwitchPreference(
                     title = stringResource(id = R.string.dynamic_mode),

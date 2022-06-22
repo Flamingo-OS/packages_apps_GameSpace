@@ -22,11 +22,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -52,6 +56,7 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,7 +108,9 @@ fun CollapsingToolbarScreen(
         onStatusBarColorUpdateRequest(toolbarColor)
     }
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .statusBarsPadding()
+            .fillMaxSize(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
     ) {
@@ -135,10 +142,24 @@ fun CollapsingToolbarScreen(
                 )
             }
         }
-        Surface(modifier = Modifier.weight(1f).fillMaxWidth()) {
+        val configuration = LocalConfiguration.current
+        val isPortrait =
+            remember(configuration.orientation) { configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+        Surface(
+            modifier = Modifier
+                .weight(1f)
+                .then(
+                    if (isPortrait) {
+                        Modifier
+                    } else {
+                        Modifier.navigationBarsPadding()
+                    }
+                )
+                .fillMaxWidth()
+        ) {
             val bigTitleAlpha by remember(toolbarHeightPx) {
                 derivedStateOf {
-                    offset.coerceIn(0f, toolbarHeightPx / 2) / (toolbarHeightPx / 2)
+                    offset.coerceIn(0f, toolbarHeightPx) / toolbarHeightPx
                 }
             }
             Text(
@@ -164,20 +185,21 @@ fun CollapsingToolbarScreen(
                         available: Offset,
                         source: NestedScrollSource
                     ): Offset {
-                        offset += consumed.y
+                        offset = (offset + consumed.y).coerceAtMost(bigTitlePaddingPx)
                         return super.onPostScroll(consumed, available, source)
                     }
                 }
             }
+            val density = LocalDensity.current
+            val navigationBarPadding = with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
             LazyColumn(
                 modifier = Modifier.nestedScroll(nestedScrollConnection),
                 contentPadding = PaddingValues(
                     top = BigTitlePadding + 64.dp,
-                    start = 24.dp,
-                    end = 24.dp
+                    bottom = if (isPortrait) navigationBarPadding else 0.dp
                 ),
                 horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(24.dp),
+                verticalArrangement = Arrangement.Top,
                 content = content
             )
         }
