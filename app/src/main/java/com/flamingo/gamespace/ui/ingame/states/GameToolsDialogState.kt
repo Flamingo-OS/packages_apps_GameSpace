@@ -40,7 +40,7 @@ import java.util.Locale
 
 class GameToolsDialogState(
     private val context: Context,
-    private val serviceCallback: GameSpaceServiceCallback?,
+    val serviceCallback: GameSpaceServiceCallback?,
     val config: Bundle,
     val settingsRepository: SettingsRepository
 ) {
@@ -107,18 +107,6 @@ class GameToolsDialogState(
             DateFormat.LONG,
             locale
         ).format(System.currentTimeMillis())
-    }
-
-    fun setGesturalNavigationLocked(isLocked: Boolean) {
-        serviceCallback?.setGesturalNavigationLocked(isLocked)
-    }
-
-    fun setRingerMode(mode: Int) {
-        serviceCallback?.setRingerMode(mode)
-    }
-
-    fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
-        serviceCallback?.setAdaptiveBrightnessDisabled(disabled)
     }
 
     fun onDispose() {

@@ -126,9 +126,7 @@ fun GameToolsDialog(
                         modifier = Modifier.width(IntrinsicSize.Min),
                         state = rememberLockGestureTileState(
                             config = state.config,
-                            onToggleState = {
-                                state.setGesturalNavigationLocked(it)
-                            },
+                            serviceCallback = state.serviceCallback,
                         )
                     )
                     NotificationOverlayTile(
@@ -139,17 +137,13 @@ fun GameToolsDialog(
                         modifier = Modifier.width(IntrinsicSize.Min),
                         state = rememberRingerModeTileState(
                             config = state.config,
-                            onRingerModeChangeRequest = {
-                                state.setRingerMode(it)
-                            }
+                            serviceCallback = state.serviceCallback,
                         )
                     )
                     AdaptiveBrightnessTile(
                         modifier = Modifier.width(IntrinsicSize.Min),
                         state = rememberAdaptiveBrightnessTileState(
-                            onToggleState = {
-                                state.setAdaptiveBrightnessDisabled(!it)
-                            }
+                            serviceCallback = state.serviceCallback,
                         )
                     )
                 }

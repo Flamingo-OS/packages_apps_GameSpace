@@ -26,9 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,14 +88,15 @@ class AdaptiveBrightnessTileState(
 fun rememberAdaptiveBrightnessTileState(
     contentResolver: ContentResolver = LocalContext.current.contentResolver,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    onToggleState: (Boolean) -> Unit
+    serviceCallback: GameSpaceServiceCallback?
 ): AdaptiveBrightnessTileState {
-    val toggleStateCallback by rememberUpdatedState(newValue = onToggleState)
     val state = remember(contentResolver, coroutineScope) {
         AdaptiveBrightnessTileState(
             contentResolver = contentResolver,
             coroutineScope = coroutineScope,
-            onToggleState = toggleStateCallback
+            onToggleState = {
+                serviceCallback?.setAdaptiveBrightnessDisabled(!it)
+            }
         )
     }
     DisposableEffect(state) {

@@ -27,12 +27,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 import com.android.internal.R
 import com.android.systemui.statusbar.phone.CONFIG_BACK_GESTURE_LOCKED
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -100,16 +100,15 @@ fun rememberLockGestureTileState(
     config: Bundle,
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    onToggleState: (Boolean) -> Unit
+    serviceCallback: GameSpaceServiceCallback?
 ): LockGestureTileState {
-    val toggleStateCallback by rememberUpdatedState(newValue = onToggleState)
-    val state = remember(config, context, coroutineScope) {
+    val state = remember(config, context, coroutineScope, serviceCallback) {
         LockGestureTileState(
             config = config,
             context = context,
             coroutineScope = coroutineScope,
             onToggleState = {
-                toggleStateCallback(it)
+                serviceCallback?.setGesturalNavigationLocked(it)
             },
         )
     }
