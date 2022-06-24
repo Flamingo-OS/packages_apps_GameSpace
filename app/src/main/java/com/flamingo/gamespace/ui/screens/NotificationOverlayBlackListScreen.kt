@@ -48,9 +48,7 @@ fun NotificationOverlayBlackListScreen(
     CollapsingToolbarScreen(
         title = stringResource(id = R.string.blacklisted_apps),
         onBackButtonPressed = onBackButtonPressed,
-        onStatusBarColorUpdateRequest = {
-            systemUiController.setStatusBarColor(it)
-        },
+        systemUiController = systemUiController,
     ) {
         if (isEnterAnimationRunning) {
             item {

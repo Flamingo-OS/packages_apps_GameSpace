@@ -52,9 +52,7 @@ fun MainScreen(
         modifier = modifier,
         title = stringResource(id = R.string.app_name),
         onBackButtonPressed = onBackPressed,
-        onStatusBarColorUpdateRequest = {
-            systemUiController.setStatusBarColor(it)
-        },
+        systemUiController = systemUiController,
     ) {
         item {
             Text(

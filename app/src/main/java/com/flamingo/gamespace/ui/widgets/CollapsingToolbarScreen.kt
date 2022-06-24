@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.ui.widgets
 
 import android.content.res.Configuration
+import androidx.compose.animation.animateContentSize
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.icons.Icons
@@ -41,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -65,6 +68,8 @@ import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.preferences.Preference
+import com.google.accompanist.systemuicontroller.SystemUiController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import kotlin.math.roundToInt
 
@@ -78,8 +83,8 @@ private val BigTitlePadding = 56.dp
 fun CollapsingToolbarScreen(
     title: String,
     onBackButtonPressed: () -> Unit,
-    onStatusBarColorUpdateRequest: (Color) -> Unit,
     modifier: Modifier = Modifier,
+    systemUiController: SystemUiController = rememberSystemUiController(),
     content: LazyListScope.() -> Unit,
 ) {
     val toolbarHeightPx = with(LocalDensity.current) { ToolbarHeight.toPx() }
@@ -105,11 +110,26 @@ fun CollapsingToolbarScreen(
         }
     }
     SideEffect {
-        onStatusBarColorUpdateRequest(toolbarColor)
+        systemUiController.setStatusBarColor(toolbarColor)
+    }
+    val configuration = LocalConfiguration.current
+    val isPortrait =
+        remember(configuration.orientation) { configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
+    LaunchedEffect(isPortrait) {
+        systemUiController.setNavigationBarColor(
+            if (isPortrait) Color.Transparent else surfaceColor,
+            navigationBarContrastEnforced = !isPortrait
+        )
     }
     Column(
         modifier = modifier
-            .statusBarsPadding()
+            .then(
+                if (isPortrait) {
+                    Modifier.statusBarsPadding()
+                } else {
+                    Modifier.systemBarsPadding()
+                }
+            )
             .fillMaxSize(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Top
@@ -142,9 +162,6 @@ fun CollapsingToolbarScreen(
                 )
             }
         }
-        val configuration = LocalConfiguration.current
-        val isPortrait =
-            remember(configuration.orientation) { configuration.orientation == Configuration.ORIENTATION_PORTRAIT }
         Surface(
             modifier = Modifier
                 .weight(1f)
@@ -191,9 +208,12 @@ fun CollapsingToolbarScreen(
                 }
             }
             val density = LocalDensity.current
-            val navigationBarPadding = with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
+            val navigationBarPadding =
+                with(density) { WindowInsets.navigationBars.getBottom(this).toDp() }
             LazyColumn(
-                modifier = Modifier.nestedScroll(nestedScrollConnection),
+                modifier = Modifier
+                    .nestedScroll(nestedScrollConnection)
+                    .animateContentSize(),
                 contentPadding = PaddingValues(
                     top = BigTitlePadding + 64.dp,
                     bottom = if (isPortrait) navigationBarPadding else 0.dp
@@ -212,8 +232,7 @@ fun CollapsingToolbarScreen(
 fun PreviewCollapsingToolbarScreen() {
     CollapsingToolbarScreen(
         title = "Collapsing toolbar",
-        onBackButtonPressed = {},
-        onStatusBarColorUpdateRequest = {}
+        onBackButtonPressed = {}
     ) {
         items(50) { index ->
             Preference(

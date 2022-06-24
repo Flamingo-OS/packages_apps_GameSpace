@@ -61,9 +61,7 @@ fun AppSelectScreen(
     CollapsingToolbarScreen(
         title = stringResource(id = R.string.select_apps),
         onBackButtonPressed = onBackPressed,
-        onStatusBarColorUpdateRequest = {
-            systemUiController.setStatusBarColor(it)
-        },
+        systemUiController = systemUiController,
     ) {
         if (isEnterAnimationRunning) {
             item {

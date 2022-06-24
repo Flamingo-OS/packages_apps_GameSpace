@@ -58,9 +58,7 @@ fun NotificationOverlayScreen(
         onBackButtonPressed = {
             navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN)
         },
-        onStatusBarColorUpdateRequest = {
-            systemUiController.setStatusBarColor(it)
-        },
+        systemUiController = systemUiController,
     ) {
         item {
             Text(
