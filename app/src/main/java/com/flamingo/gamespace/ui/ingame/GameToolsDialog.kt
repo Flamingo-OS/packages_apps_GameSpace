@@ -56,11 +56,13 @@ import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
+import com.flamingo.gamespace.ui.ingame.states.AdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.RingerModeTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
+import com.flamingo.gamespace.ui.ingame.states.rememberAdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberRingerModeTileState
@@ -139,6 +141,14 @@ fun GameToolsDialog(
                             config = state.config,
                             onRingerModeChangeRequest = {
                                 state.setRingerMode(it)
+                            }
+                        )
+                    )
+                    AdaptiveBrightnessTile(
+                        modifier = Modifier.width(IntrinsicSize.Min),
+                        state = rememberAdaptiveBrightnessTileState(
+                            onToggleState = {
+                                state.setAdaptiveBrightnessDisabled(!it)
                             }
                         )
                     )
@@ -316,4 +326,25 @@ fun RingerModeTile(
             }
         )
     }
+}
+
+@Composable
+fun AdaptiveBrightnessTile(
+    state: AdaptiveBrightnessTileState,
+    modifier: Modifier = Modifier,
+) {
+    Tile(
+        modifier = modifier,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_brightness_auto_24),
+                contentDescription = stringResource(id = R.string.adaptive_brightness_content_desc)
+            )
+        },
+        title = stringResource(id = R.string.adaptive_brightness),
+        enabled = state.isEnabled,
+        onClick = {
+            state.toggleAdaptiveBrightness()
+        }
+    )
 }

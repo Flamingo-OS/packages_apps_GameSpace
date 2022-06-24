@@ -196,6 +196,11 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
                 )
             }
         }
+        lifecycleScope.launch {
+            settingsRepository.disableAdaptiveBrightness.collect {
+                gameSpaceServiceCallback.setAdaptiveBrightnessDisabled(it)
+            }
+        }
     }
 
     private fun registerNotificationListener() {
@@ -262,6 +267,18 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
                 iGameSpaceServiceCallback.setRingerMode(mode)
             } catch (e: RemoteException) {
                 Log.e(TAG, "Failed to set ringer mode", e)
+            }
+        }
+
+        fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
+            try {
+                iGameSpaceServiceCallback.setAdaptiveBrightnessDisabled(disabled)
+            } catch (e: RemoteException) {
+                Log.e(
+                    TAG,
+                    "Failed to ${if (disabled) "disable" else "enable"} adaptive brightness",
+                    e
+                )
             }
         }
     }

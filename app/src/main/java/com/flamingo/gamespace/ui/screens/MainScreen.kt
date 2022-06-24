@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS
 import com.flamingo.gamespace.data.settings.DEFAULT_RINGER_MODE
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.ui.Route
@@ -146,6 +147,16 @@ fun MainScreen(
                     value = ringerMode,
                     onEntrySelected = {
                         state.setRingerMode(it)
+                    }
+                )
+            }
+            item {
+                val disable by state.disableAdaptiveBrightness.collectAsState(initial = DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS)
+                SwitchPreference(
+                    title = stringResource(id = R.string.disable_adaptive_brightness),
+                    checked = disable,
+                    onCheckedChange = {
+                        state.setAdaptiveBrightnessDisabled(it)
                     }
                 )
             }

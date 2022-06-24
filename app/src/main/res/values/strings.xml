@@ -47,6 +47,9 @@
     <!-- Preferred ringer mode -->
     <string name="preferred_ringer_mode">Preferred ringer mode</string>
 
+    <!-- Disable adaptive brightness -->
+    <string name="disable_adaptive_brightness">Disable adaptive brightness</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>
@@ -75,5 +78,9 @@
     <string name="ringer_mode_tile_vibrate_content_desc">Ringer mode tile in vibrate mode</string>
     <string name="silent">Silent</string>
     <string name="ringer_mode_tile_silent_content_desc">Ringer mode tile in silent mode</string>
+
+    <!-- Adaptive brightness tile -->
+    <string name="adaptive_brightness">Adaptive brightness</string>
+    <string name="adaptive_brightness_content_desc">Adaptive brightness tile</string>
 
 </resources>

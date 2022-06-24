@@ -51,6 +51,9 @@ class SettingsRepository @Inject constructor(
     val ringerMode: Flow<RingerMode>
         get() = settingsDataStore.data.map { it.ringerMode }
 
+    val disableAdaptiveBrightness: Flow<Boolean>
+        get() = settingsDataStore.data.map { it.disableAdaptiveBrightness }
+
     fun getGameToolsHandlePortraitOffset(packageName: String): Flow<Settings.Offset?> =
         settingsDataStore.data.map { it.gameToolsHandlePortraitOffsetMap[packageName] }
 
@@ -117,6 +120,14 @@ class SettingsRepository @Inject constructor(
         settingsDataStore.updateData {
             it.toBuilder()
                 .setRingerMode(mode)
+                .build()
+        }
+    }
+
+    suspend fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setDisableAdaptiveBrightness(disabled)
                 .build()
         }
     }

@@ -86,6 +86,9 @@ class MainScreenState(
     val ringerMode: Flow<RingerMode>
         get() = settingsRepository.ringerMode
 
+    val disableAdaptiveBrightness: Flow<Boolean>
+        get() = settingsRepository.disableAdaptiveBrightness
+
     init {
         coroutineScope.launch {
             updateSettings()
@@ -168,6 +171,12 @@ class MainScreenState(
     fun setRingerMode(mode: RingerMode) {
         coroutineScope.launch {
             settingsRepository.setRingerMode(mode)
+        }
+    }
+
+    fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
+        coroutineScope.launch {
+            settingsRepository.setAdaptiveBrightnessDisabled(disabled)
         }
     }
 

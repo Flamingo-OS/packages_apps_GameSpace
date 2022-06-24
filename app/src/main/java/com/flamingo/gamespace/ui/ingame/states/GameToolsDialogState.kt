@@ -117,6 +117,10 @@ class GameToolsDialogState(
         serviceCallback?.setRingerMode(mode)
     }
 
+    fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
+        serviceCallback?.setAdaptiveBrightnessDisabled(disabled)
+    }
+
     fun onDispose() {
         context.unregisterReceiver(broadcastReceiver)
     }

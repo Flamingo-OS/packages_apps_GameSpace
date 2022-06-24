@@ -34,6 +34,7 @@ message Settings {
   string notification_overlay_blacklist = 7;
 
   RingerMode ringer_mode = 8;
+  bool disable_adaptive_brightness = 9;
 }
 
 enum RingerMode {
