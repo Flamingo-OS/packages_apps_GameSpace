@@ -36,7 +36,7 @@
     <!-- Notification overlay -->
     <string name="notification_overlay">Notification overlay</string>
     <string name="notification_overlay_intro_text">Text style notifications shown as an overlay</string>
-    <string name="enable_notification_overlay">Enabled notification overlay</string>
+    <string name="enable_notification_overlay">Enable notification overlay</string>
     <string name="size_in_portrait">Size in portrait</string>
     <string name="size_in_landscape">Size in landscape</string>
     <string name="visible_duration">Visible duration</string>
