@@ -33,9 +33,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class)
 @Composable
 fun Preference(
     title: String,
@@ -76,22 +79,21 @@ fun Preference(
                     text = title,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleMedium,
+                    fontSize = TextUnit(19f, TextUnitType.Sp),
                     fontWeight = FontWeight.Normal,
                     maxLines = 2,
                 )
                 if (summary != null) {
                     Text(
-                        modifier = Modifier.padding(top = 6.dp),
                         text = summary,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .75f),
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 4,
                     )
                 }
                 if (bottomWidget != null) {
                     Box(
-                        modifier = Modifier.padding(top = 6.dp),
                         contentAlignment = Alignment.Center,
                         content = bottomWidget
                     )
@@ -99,7 +101,7 @@ fun Preference(
             }
             if (endWidget != null) {
                 Box(
-                    modifier = Modifier.padding(start = 6.dp),
+                    modifier = Modifier.padding(start = 8.dp),
                     contentAlignment = Alignment.Center,
                     content = endWidget
                 )

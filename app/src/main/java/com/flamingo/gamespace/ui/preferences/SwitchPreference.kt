@@ -26,9 +26,11 @@ fun SwitchPreference(
     modifier: Modifier = Modifier,
     summary: String? = null,
     clickable: Boolean = true,
-    onClick: () -> Unit = {},
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit = {},
+    onClick: () -> Unit = {
+        onCheckedChange(!checked)
+    },
 ) {
     Preference(
         title = title,

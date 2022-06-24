@@ -31,17 +31,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.ExperimentalUnitApi
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalUnitApi::class)
 @Composable
 fun PrimarySwitchPreference(
     title: String,
     modifier: Modifier = Modifier,
     clickable: Boolean = true,
-    onClick: () -> Unit = {},
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit = {},
+    onClick: () -> Unit = {
+        onCheckedChange(!checked)
+    },
 ) {
     Surface(
         color = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
@@ -63,7 +70,9 @@ fun PrimarySwitchPreference(
                 Text(
                     text = title,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleLarge,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = TextUnit(20f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Normal,
                     maxLines = 2,
                 )
             }
