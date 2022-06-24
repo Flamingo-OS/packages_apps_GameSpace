@@ -34,15 +34,19 @@ import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DYNAMIC_MODE
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_ENABLED
+import com.flamingo.gamespace.data.settings.RingerMode
+import com.flamingo.gamespace.data.settings.SettingsRepository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainScreenState(
     private val contentResolver: ContentResolver,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val settingsRepository: SettingsRepository
 ) {
 
     private val settingsObserver = object : ContentObserver(null) {
@@ -78,6 +82,9 @@ class MainScreenState(
 
     var disableFullscreenIntent by mutableStateOf(DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT)
         private set
+
+    val ringerMode: Flow<RingerMode>
+        get() = settingsRepository.ringerMode
 
     init {
         coroutineScope.launch {
@@ -158,6 +165,12 @@ class MainScreenState(
         }
     }
 
+    fun setRingerMode(mode: RingerMode) {
+        coroutineScope.launch {
+            settingsRepository.setRingerMode(mode)
+        }
+    }
+
     internal fun unregisterSettingsObservers() {
         contentResolver.unregisterContentObserver(settingsObserver)
     }
@@ -166,10 +179,15 @@ class MainScreenState(
 @Composable
 fun rememberMainScreenState(
     contentResolver: ContentResolver = LocalContext.current.contentResolver,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    settingsRepository: SettingsRepository
 ): MainScreenState {
-    val state = remember(contentResolver, coroutineScope) {
-        MainScreenState(contentResolver = contentResolver, coroutineScope = coroutineScope)
+    val state = remember(contentResolver, coroutineScope, settingsRepository) {
+        MainScreenState(
+            contentResolver = contentResolver,
+            coroutineScope = coroutineScope,
+            settingsRepository = settingsRepository
+        )
     }
     DisposableEffect(state) {
         state.registerSettingsObservers()

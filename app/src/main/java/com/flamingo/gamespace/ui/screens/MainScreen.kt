@@ -20,6 +20,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -27,13 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.DEFAULT_RINGER_MODE
+import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.ui.Route
 import com.flamingo.gamespace.ui.preferences.DividerSwitchPreference
+import com.flamingo.gamespace.ui.preferences.Entry
+import com.flamingo.gamespace.ui.preferences.ListPreference
 import com.flamingo.gamespace.ui.preferences.Preference
 import com.flamingo.gamespace.ui.preferences.PrimarySwitchPreference
 import com.flamingo.gamespace.ui.preferences.SwitchPreference
 import com.flamingo.gamespace.ui.states.MainScreenState
-import com.flamingo.gamespace.ui.states.rememberMainScreenState
 import com.flamingo.gamespace.ui.widgets.CollapsingToolbarScreen
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -44,8 +49,8 @@ fun MainScreen(
     navHostController: NavHostController,
     notificationOverlayEnabled: Boolean,
     onNotificationOverlayStateChanged: (Boolean) -> Unit,
+    state: MainScreenState,
     modifier: Modifier = Modifier,
-    state: MainScreenState = rememberMainScreenState(),
     systemUiController: SystemUiController = rememberSystemUiController()
 ) {
     CollapsingToolbarScreen(
@@ -128,6 +133,21 @@ fun MainScreen(
                         onCheckedChange = onNotificationOverlayStateChanged
                     )
                 }
+            }
+            item {
+                val ringerMode by state.ringerMode.collectAsState(initial = DEFAULT_RINGER_MODE)
+                ListPreference(
+                    title = stringResource(id = R.string.preferred_ringer_mode),
+                    entries = listOf(
+                        Entry(stringResource(id = R.string.ring), RingerMode.NORMAL),
+                        Entry(stringResource(id = R.string.vibrate), RingerMode.VIBRATE),
+                        Entry(stringResource(id = R.string.silent), RingerMode.SILENT)
+                    ),
+                    value = ringerMode,
+                    onEntrySelected = {
+                        state.setRingerMode(it)
+                    }
+                )
             }
         }
     }

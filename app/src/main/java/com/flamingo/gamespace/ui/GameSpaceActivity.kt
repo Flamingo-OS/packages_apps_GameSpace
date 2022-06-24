@@ -47,6 +47,7 @@ import com.flamingo.gamespace.ui.screens.MainScreen
 import com.flamingo.gamespace.ui.screens.NotificationOverlayBlackListScreen
 import com.flamingo.gamespace.ui.screens.NotificationOverlayScreen
 import com.flamingo.gamespace.ui.states.NotificationOverlayScreenState
+import com.flamingo.gamespace.ui.states.rememberMainScreenState
 import com.flamingo.gamespace.ui.states.rememberNotificationOverlayBlackListScreenState
 import com.flamingo.gamespace.ui.states.rememberNotificationOverlayScreenState
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
@@ -100,6 +101,7 @@ class GameSpaceActivity : ComponentActivity() {
                     mainGraph(
                         navHostController = navHostController,
                         systemUiController = systemUiController,
+                        settingsRepository = settingsRepository,
                         notificationOverlayEnabled = latestNotificationOverlayEnabled,
                         onNotificationOverlayStateChanged = notificationOverlayStateChangeCallback,
                         onFinishActivityRequest = {
@@ -152,6 +154,7 @@ fun NavGraphBuilder.childComposable(
 fun NavGraphBuilder.mainGraph(
     navHostController: NavHostController,
     systemUiController: SystemUiController,
+    settingsRepository: SettingsRepository,
     notificationOverlayEnabled: Boolean,
     onNotificationOverlayStateChanged: (Boolean) -> Unit,
     onFinishActivityRequest: () -> Unit,
@@ -184,6 +187,7 @@ fun NavGraphBuilder.mainGraph(
             onBackPressed = onFinishActivityRequest,
             navHostController = navHostController,
             systemUiController = systemUiController,
+            state = rememberMainScreenState(settingsRepository = settingsRepository),
             notificationOverlayEnabled = notificationOverlayEnabled,
             onNotificationOverlayStateChanged = onNotificationOverlayStateChanged
         )

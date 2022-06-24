@@ -23,6 +23,7 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
@@ -40,6 +41,7 @@ import androidx.savedstate.SavedStateRegistryOwner
 import com.android.systemui.statusbar.phone.IGameSpaceService
 import com.android.systemui.statusbar.phone.IGameSpaceServiceCallback
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.ui.GameSpaceActivity
 import com.flamingo.gamespace.ui.ingame.GameModeOverlayManager
@@ -58,6 +60,8 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     private lateinit var savedStateRegistryController: SavedStateRegistryController
     private lateinit var gameModeOverlayManager: GameModeOverlayManager
 
+    private lateinit var gameSpaceServiceCallback: GameSpaceServiceCallback
+
     private val serviceBinder = object : IGameSpaceService.Stub() {
         override fun showGameUI(packageName: String) {
             lifecycleScope.launch {
@@ -74,11 +78,9 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
         override fun setCallback(callback: IGameSpaceServiceCallback) {
             lifecycleScope.launch {
-                gameModeOverlayManager.setGameSpaceServiceCallback(
-                    GameSpaceServiceCallback(
-                        callback
-                    )
-                )
+                gameSpaceServiceCallback = GameSpaceServiceCallback(callback)
+                observeSystemStateSettings()
+                gameModeOverlayManager.setGameSpaceServiceCallback(gameSpaceServiceCallback)
             }
         }
 
@@ -177,6 +179,21 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         lifecycleScope.launch {
             settingsRepository.notificationOverlayBlackList.collect {
                 notificationListener.setBlackList(it)
+            }
+        }
+    }
+
+    private fun observeSystemStateSettings() {
+        lifecycleScope.launch {
+            settingsRepository.ringerMode.collect {
+                gameSpaceServiceCallback.setRingerMode(
+                    when (it) {
+                        RingerMode.NORMAL -> AudioManager.RINGER_MODE_NORMAL
+                        RingerMode.VIBRATE -> AudioManager.RINGER_MODE_VIBRATE
+                        RingerMode.SILENT -> AudioManager.RINGER_MODE_SILENT
+                        else -> AudioManager.RINGER_MODE_SILENT
+                    }
+                )
             }
         }
     }

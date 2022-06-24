@@ -48,6 +48,9 @@ class SettingsRepository @Inject constructor(
     val notificationOverlayDuration: Flow<Long>
         get() = settingsDataStore.data.map { it.notificationOverlayDuration }
 
+    val ringerMode: Flow<RingerMode>
+        get() = settingsDataStore.data.map { it.ringerMode }
+
     fun getGameToolsHandlePortraitOffset(packageName: String): Flow<Settings.Offset?> =
         settingsDataStore.data.map { it.gameToolsHandlePortraitOffsetMap[packageName] }
 
@@ -106,6 +109,14 @@ class SettingsRepository @Inject constructor(
         settingsDataStore.updateData {
             it.toBuilder()
                 .setNotificationOverlayDuration(duration * 1000L)
+                .build()
+        }
+    }
+
+    suspend fun setRingerMode(mode: RingerMode) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setRingerMode(mode)
                 .build()
         }
     }

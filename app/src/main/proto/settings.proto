@@ -32,4 +32,12 @@ message Settings {
   int32 notification_overlay_size_portrait = 5;
   int32 notification_overlay_size_landscape = 6;
   string notification_overlay_blacklist = 7;
+
+  RingerMode ringer_mode = 8;
+}
+
+enum RingerMode {
+  NORMAL = 0;
+  VIBRATE = 1;
+  SILENT = 2;
 }

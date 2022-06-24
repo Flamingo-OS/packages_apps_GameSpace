@@ -296,7 +296,7 @@ fun RingerModeTile(
                     AudioManager.RINGER_MODE_SILENT -> {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_volume_ringer_mute),
-                            contentDescription = stringResource(id = R.string.ringer_mode_tile_mute_content_desc),
+                            contentDescription = stringResource(id = R.string.ringer_mode_tile_silent_content_desc),
                         )
                     }
                     else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
@@ -306,7 +306,7 @@ fun RingerModeTile(
                 id = when (state.ringerMode) {
                     AudioManager.RINGER_MODE_NORMAL -> R.string.ring
                     AudioManager.RINGER_MODE_VIBRATE -> R.string.vibrate
-                    AudioManager.RINGER_MODE_SILENT -> R.string.mute
+                    AudioManager.RINGER_MODE_SILENT -> R.string.silent
                     else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
                 }
             ),

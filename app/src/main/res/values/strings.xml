@@ -44,6 +44,9 @@
     <string name="blacklisted_apps">Blacklisted apps</string>
     <string name="blacklisted_apps_summary">List of applications whose notifications should not be shown as an overlay on screen</string>
 
+    <!-- Preferred ringer mode -->
+    <string name="preferred_ringer_mode">Preferred ringer mode</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>
@@ -70,7 +73,7 @@
     <string name="ringer_mode_tile_normal_content_desc">Ringer mode tile in normal mode</string>
     <string name="vibrate">Vibrate</string>
     <string name="ringer_mode_tile_vibrate_content_desc">Ringer mode tile in vibrate mode</string>
-    <string name="mute">Mute</string>
-    <string name="ringer_mode_tile_mute_content_desc">Ringer mode tile in mute mode</string>
+    <string name="silent">Silent</string>
+    <string name="ringer_mode_tile_silent_content_desc">Ringer mode tile in silent mode</string>
 
 </resources>
