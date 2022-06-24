@@ -120,27 +120,21 @@ fun GameToolsDialog(
                         modifier = Modifier.width(IntrinsicSize.Min),
                         onDismissDialogRequest = onDismissRequest
                     )
-                    val lockGestureTileState = rememberLockGestureTileState(
-                        config = state.config,
-                        onToggleState = {
-                            state.setGesturalNavigationLocked(it)
-                        },
+                    LockGestureTile(
+                        modifier = Modifier.width(IntrinsicSize.Min),
+                        state = rememberLockGestureTileState(
+                            config = state.config,
+                            onToggleState = {
+                                state.setGesturalNavigationLocked(it)
+                            },
+                        )
                     )
-                    if (lockGestureTileState.shouldShowTile) {
-                        LockGestureTile(
-                            modifier = Modifier.width(IntrinsicSize.Min),
-                            state = lockGestureTileState
-                        )
-                    }
-                    val notificationOverlayTileState =
-                        rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
-                    if (notificationOverlayTileState.shouldShowTile) {
-                        NotificationOverlayTile(
-                            modifier = Modifier.width(IntrinsicSize.Min),
-                            state = notificationOverlayTileState
-                        )
-                    }
+                    NotificationOverlayTile(
+                        modifier = Modifier.width(IntrinsicSize.Min),
+                        state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                    )
                     RingerModeTile(
+                        modifier = Modifier.width(IntrinsicSize.Min),
                         state = rememberRingerModeTileState(
                             config = state.config,
                             onRingerModeChangeRequest = {
@@ -234,21 +228,23 @@ fun LockGestureTile(
     state: LockGestureTileState,
     modifier: Modifier = Modifier,
 ) {
-    Tile(
-        modifier = modifier,
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_lock_gesture),
-                contentDescription = stringResource(id = R.string.lock_gestures_content_desc),
-                modifier = Modifier.offset(x = (-4).dp)
-            )
-        },
-        title = stringResource(id = R.string.lock_gestures),
-        enabled = state.isLocked,
-        onClick = {
-            state.toggleGestureLock()
-        }
-    )
+    if (state.shouldShowTile) {
+        Tile(
+            modifier = modifier,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_lock_gesture),
+                    contentDescription = stringResource(id = R.string.lock_gestures_content_desc),
+                    modifier = Modifier.offset(x = (-4).dp)
+                )
+            },
+            title = stringResource(id = R.string.lock_gestures),
+            enabled = state.isLocked,
+            onClick = {
+                state.toggleGestureLock()
+            }
+        )
+    }
 }
 
 @Composable
@@ -256,21 +252,23 @@ fun NotificationOverlayTile(
     state: NotificationOverlayTileState,
     modifier: Modifier = Modifier,
 ) {
-    val isEnabled by state.isEnabled.collectAsState(initial = DEFAULT_NOTIFICATION_OVERLAY_ENABLED)
-    Tile(
-        modifier = modifier,
-        icon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_notification_overlay),
-                contentDescription = stringResource(id = R.string.notification_overlay_content_desc)
-            )
-        },
-        title = stringResource(id = R.string.notification_overlay),
-        enabled = isEnabled,
-        onClick = {
-            state.setNotificationOverlayEnabled(!isEnabled)
-        }
-    )
+    if (state.shouldShowTile) {
+        val isEnabled by state.isEnabled.collectAsState(initial = DEFAULT_NOTIFICATION_OVERLAY_ENABLED)
+        Tile(
+            modifier = modifier,
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_notification_overlay),
+                    contentDescription = stringResource(id = R.string.notification_overlay_content_desc)
+                )
+            },
+            title = stringResource(id = R.string.notification_overlay),
+            enabled = isEnabled,
+            onClick = {
+                state.setNotificationOverlayEnabled(!isEnabled)
+            }
+        )
+    }
 }
 
 @Composable
