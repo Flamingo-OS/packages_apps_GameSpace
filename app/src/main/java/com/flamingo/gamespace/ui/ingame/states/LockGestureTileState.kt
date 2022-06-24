@@ -59,11 +59,6 @@ class LockGestureTileState(
 
     init {
         updateShowTileState()
-        context.contentResolver.registerContentObserver(
-            Settings.Secure.getUriFor(Settings.Secure.NAVIGATION_MODE),
-            false,
-            settingsObserver
-        )
     }
 
     private fun updateShowTileState() {
@@ -83,7 +78,15 @@ class LockGestureTileState(
         onToggleState(!isLocked)
     }
 
-    fun onDispose() {
+    internal fun registerSettingsObserver() {
+        context.contentResolver.registerContentObserver(
+            Settings.Secure.getUriFor(Settings.Secure.NAVIGATION_MODE),
+            false,
+            settingsObserver
+        )
+    }
+
+    internal fun unregisterSettingsObserver() {
         context.contentResolver.unregisterContentObserver(settingsObserver)
     }
 
@@ -111,8 +114,9 @@ fun rememberLockGestureTileState(
         )
     }
     DisposableEffect(state) {
+        state.registerSettingsObserver()
         onDispose {
-            state.onDispose()
+            state.unregisterSettingsObserver()
         }
     }
     return state
