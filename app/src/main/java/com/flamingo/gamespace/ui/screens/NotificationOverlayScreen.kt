@@ -52,6 +52,9 @@ fun NotificationOverlayScreen(
     modifier: Modifier = Modifier,
     systemUiController: SystemUiController = rememberSystemUiController(),
 ) {
+    val enabled by state.notificationOverlayEnabled.collectAsState(
+        DEFAULT_NOTIFICATION_OVERLAY_ENABLED
+    )
     CollapsingToolbarScreen(
         modifier = modifier,
         title = stringResource(id = R.string.notification_overlay),
@@ -69,9 +72,6 @@ fun NotificationOverlayScreen(
             )
         }
         item {
-            val enabled by state.notificationOverlayEnabled.collectAsState(
-                DEFAULT_NOTIFICATION_OVERLAY_ENABLED
-            )
             PrimarySwitchPreference(
                 modifier = Modifier.padding(
                     top = 24.dp,
@@ -86,72 +86,74 @@ fun NotificationOverlayScreen(
                 }
             )
         }
-        item {
-            val savedPortraitSize by state.notificationOverlaySizePortrait.collectAsState(
-                DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
-            )
-            var portraitSize by remember(savedPortraitSize) { mutableStateOf(savedPortraitSize) }
-            DiscreteSeekBarPreference(
-                title = stringResource(id = R.string.size_in_portrait),
-                min = 30,
-                max = 90,
-                value = portraitSize,
-                showProgressText = true,
-                onProgressChanged = {
-                    portraitSize = it
-                },
-                onProgressChangeFinished = {
-                    state.setPortraitNotificationOverlaySize(portraitSize)
-                }
-            )
-        }
-        item {
-            val savedLandscapeSize by state.notificationOverlaySizeLandscape.collectAsState(
-                DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE
-            )
-            var landscapeSize by remember(savedLandscapeSize) { mutableStateOf(savedLandscapeSize) }
-            DiscreteSeekBarPreference(
-                title = stringResource(id = R.string.size_in_landscape),
-                min = 60,
-                max = 120,
-                value = landscapeSize,
-                showProgressText = true,
-                onProgressChanged = {
-                    landscapeSize = it
-                },
-                onProgressChangeFinished = {
-                    state.setLandscapeNotificationOverlaySize(landscapeSize)
-                }
-            )
-        }
-        item {
-            val savedDuration by state.notificationOverlayDuration.collectAsState(
-                DEFAULT_NOTIFICATION_OVERLAY_DURATION
-            )
-            var duration by remember(savedDuration) { mutableStateOf(savedDuration.toInt() / 1000) }
-            DiscreteSeekBarPreference(
-                title = stringResource(id = R.string.visible_duration),
-                summary = stringResource(id = R.string.visible_duration_summary),
-                min = 1,
-                max = 10,
-                value = duration,
-                showProgressText = true,
-                onProgressChanged = {
-                    duration = it
-                },
-                onProgressChangeFinished = {
-                    state.setNotificationOverlayDuration(duration)
-                }
-            )
-        }
-        item {
-            Preference(
-                title = stringResource(id = R.string.blacklisted_apps),
-                summary = stringResource(id = R.string.blacklisted_apps_summary),
-                onClick = {
-                    navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_BLACKLIST_SCREEN)
-                }
-            )
+        if (enabled) {
+            item {
+                val savedPortraitSize by state.notificationOverlaySizePortrait.collectAsState(
+                    DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
+                )
+                var portraitSize by remember(savedPortraitSize) { mutableStateOf(savedPortraitSize) }
+                DiscreteSeekBarPreference(
+                    title = stringResource(id = R.string.size_in_portrait),
+                    min = 30,
+                    max = 90,
+                    value = portraitSize,
+                    showProgressText = true,
+                    onProgressChanged = {
+                        portraitSize = it
+                    },
+                    onProgressChangeFinished = {
+                        state.setPortraitNotificationOverlaySize(portraitSize)
+                    }
+                )
+            }
+            item {
+                val savedLandscapeSize by state.notificationOverlaySizeLandscape.collectAsState(
+                    DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE
+                )
+                var landscapeSize by remember(savedLandscapeSize) { mutableStateOf(savedLandscapeSize) }
+                DiscreteSeekBarPreference(
+                    title = stringResource(id = R.string.size_in_landscape),
+                    min = 60,
+                    max = 120,
+                    value = landscapeSize,
+                    showProgressText = true,
+                    onProgressChanged = {
+                        landscapeSize = it
+                    },
+                    onProgressChangeFinished = {
+                        state.setLandscapeNotificationOverlaySize(landscapeSize)
+                    }
+                )
+            }
+            item {
+                val savedDuration by state.notificationOverlayDuration.collectAsState(
+                    DEFAULT_NOTIFICATION_OVERLAY_DURATION
+                )
+                var duration by remember(savedDuration) { mutableStateOf(savedDuration.toInt() / 1000) }
+                DiscreteSeekBarPreference(
+                    title = stringResource(id = R.string.visible_duration),
+                    summary = stringResource(id = R.string.visible_duration_summary),
+                    min = 1,
+                    max = 10,
+                    value = duration,
+                    showProgressText = true,
+                    onProgressChanged = {
+                        duration = it
+                    },
+                    onProgressChangeFinished = {
+                        state.setNotificationOverlayDuration(duration)
+                    }
+                )
+            }
+            item {
+                Preference(
+                    title = stringResource(id = R.string.blacklisted_apps),
+                    summary = stringResource(id = R.string.blacklisted_apps_summary),
+                    onClick = {
+                        navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_BLACKLIST_SCREEN)
+                    }
+                )
+            }
         }
     }
 }

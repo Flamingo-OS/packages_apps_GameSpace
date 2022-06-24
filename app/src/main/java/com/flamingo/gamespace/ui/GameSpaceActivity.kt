@@ -31,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
@@ -87,6 +88,10 @@ class GameSpaceActivity : ComponentActivity() {
                 val notificationOverlayEnabled by notificationOverlayScreenState.notificationOverlayEnabled.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_ENABLED
                 )
+                val latestNotificationOverlayEnabled by rememberUpdatedState(notificationOverlayEnabled)
+                val notificationOverlayStateChangeCallback by rememberUpdatedState(newValue = { enabled: Boolean ->
+                    notificationOverlayScreenState.setNotificationOverlayEnabled(enabled)
+                })
                 AnimatedNavHost(
                     navController = navHostController,
                     startDestination = Route.Main.MAIN_SCREEN,
@@ -95,10 +100,8 @@ class GameSpaceActivity : ComponentActivity() {
                     mainGraph(
                         navHostController = navHostController,
                         systemUiController = systemUiController,
-                        notificationOverlayEnabled = notificationOverlayEnabled,
-                        onNotificationOverlayStateChanged = {
-                            notificationOverlayScreenState.setNotificationOverlayEnabled(it)
-                        },
+                        notificationOverlayEnabled = latestNotificationOverlayEnabled,
+                        onNotificationOverlayStateChanged = notificationOverlayStateChangeCallback,
                         onFinishActivityRequest = {
                             finish()
                         }
