@@ -16,6 +16,8 @@
 
 package com.flamingo.gamespace.ui.ingame
 
+import android.media.AudioManager
+
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -57,9 +59,11 @@ import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
+import com.flamingo.gamespace.ui.ingame.states.RingerModeTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayTileState
+import com.flamingo.gamespace.ui.ingame.states.rememberRingerModeTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
 
 private val CornerSize = 16.dp
@@ -136,6 +140,14 @@ fun GameToolsDialog(
                             state = notificationOverlayTileState
                         )
                     }
+                    RingerModeTile(
+                        state = rememberRingerModeTileState(
+                            config = state.config,
+                            onRingerModeChangeRequest = {
+                                state.setRingerMode(it)
+                            }
+                        )
+                    )
                 }
             }
         }
@@ -259,4 +271,51 @@ fun NotificationOverlayTile(
             state.setNotificationOverlayEnabled(!isEnabled)
         }
     )
+}
+
+@Composable
+fun RingerModeTile(
+    state: RingerModeTileState,
+    modifier: Modifier = Modifier,
+) {
+    if (state.shouldShowTile) {
+        Tile(
+            modifier = modifier,
+            icon = {
+                when (state.ringerMode) {
+                    AudioManager.RINGER_MODE_NORMAL -> {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_volume_ringer),
+                            contentDescription = stringResource(id = R.string.ringer_mode_tile_normal_content_desc),
+                        )
+                    }
+                    AudioManager.RINGER_MODE_VIBRATE -> {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_volume_ringer_vibrate),
+                            contentDescription = stringResource(id = R.string.ringer_mode_tile_vibrate_content_desc),
+                        )
+                    }
+                    AudioManager.RINGER_MODE_SILENT -> {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_volume_ringer_mute),
+                            contentDescription = stringResource(id = R.string.ringer_mode_tile_mute_content_desc),
+                        )
+                    }
+                    else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
+                }
+            },
+            title = stringResource(
+                id = when (state.ringerMode) {
+                    AudioManager.RINGER_MODE_NORMAL -> R.string.ring
+                    AudioManager.RINGER_MODE_VIBRATE -> R.string.vibrate
+                    AudioManager.RINGER_MODE_SILENT -> R.string.mute
+                    else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
+                }
+            ),
+            enabled = false,
+            onClick = {
+                state.cycleToNextMode()
+            }
+        )
+    }
 }

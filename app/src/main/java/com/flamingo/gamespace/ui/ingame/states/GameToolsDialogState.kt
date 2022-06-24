@@ -113,6 +113,10 @@ class GameToolsDialogState(
         serviceCallback?.setGesturalNavigationLocked(isLocked)
     }
 
+    fun setRingerMode(mode: Int) {
+        serviceCallback?.setRingerMode(mode)
+    }
+
     fun onDispose() {
         context.unregisterReceiver(broadcastReceiver)
     }

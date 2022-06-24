@@ -65,4 +65,12 @@
     <!-- Notification overlay tile -->
     <string name="notification_overlay_content_desc">Notification overlay tile</string>
 
+    <!-- Ringer mode tile -->
+    <string name="ring">Ring</string>
+    <string name="ringer_mode_tile_normal_content_desc">Ringer mode tile in normal mode</string>
+    <string name="vibrate">Vibrate</string>
+    <string name="ringer_mode_tile_vibrate_content_desc">Ringer mode tile in vibrate mode</string>
+    <string name="mute">Mute</string>
+    <string name="ringer_mode_tile_mute_content_desc">Ringer mode tile in mute mode</string>
+
 </resources>

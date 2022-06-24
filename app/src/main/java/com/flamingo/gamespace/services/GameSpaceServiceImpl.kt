@@ -239,6 +239,14 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
                 Log.e(TAG, "Failed to change gestural navigation lock status", e)
             }
         }
+
+        fun setRingerMode(mode: Int) {
+            try {
+                iGameSpaceServiceCallback.setRingerMode(mode)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to set ringer mode", e)
+            }
+        }
     }
 
     companion object {
