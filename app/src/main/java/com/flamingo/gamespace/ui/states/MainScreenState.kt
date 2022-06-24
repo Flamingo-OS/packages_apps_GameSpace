@@ -17,7 +17,6 @@
 package com.flamingo.gamespace.ui.states
 
 import android.content.ContentResolver
-import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
 import android.provider.Settings
@@ -42,7 +41,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainScreenState(
-    private val context: Context,
+    private val contentResolver: ContentResolver,
     private val coroutineScope: CoroutineScope
 ) {
 
@@ -84,13 +83,6 @@ class MainScreenState(
         coroutineScope.launch {
             updateSettings()
         }
-        registerSettingsObservers(
-            context.contentResolver,
-            Settings.System.GAMESPACE_ENABLED,
-            Settings.System.GAMESPACE_DYNAMIC_MODE,
-            Settings.System.GAMESPACE_DISABLE_HEADSUP,
-            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT
-        )
     }
 
     private suspend fun updateSettings() {
@@ -108,7 +100,16 @@ class MainScreenState(
         )
     }
 
-    private fun registerSettingsObservers(contentResolver: ContentResolver, vararg keys: String) {
+    internal fun registerSettingsObservers() {
+        registerSettingsObservers(
+            Settings.System.GAMESPACE_ENABLED,
+            Settings.System.GAMESPACE_DYNAMIC_MODE,
+            Settings.System.GAMESPACE_DISABLE_HEADSUP,
+            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT
+        )
+    }
+
+    private fun registerSettingsObservers(vararg keys: String) {
         keys.forEach {
             contentResolver.registerContentObserver(
                 Settings.System.getUriFor(it),
@@ -120,7 +121,7 @@ class MainScreenState(
 
     private suspend fun getBoolSetting(key: String, def: Boolean) =
         withContext(Dispatchers.IO) {
-            Settings.System.getInt(context.contentResolver, key, if (def) 1 else 0) == 1
+            Settings.System.getInt(contentResolver, key, if (def) 1 else 0) == 1
         }
 
     fun setGameSpaceEnabledSetting(enabled: Boolean) {
@@ -153,26 +154,27 @@ class MainScreenState(
 
     private fun updateSetting(key: String, value: Int) {
         coroutineScope.launch(Dispatchers.IO) {
-            Settings.System.putInt(context.contentResolver, key, value)
+            Settings.System.putInt(contentResolver, key, value)
         }
     }
 
-    internal fun dispose() {
-        context.contentResolver.unregisterContentObserver(settingsObserver)
+    internal fun unregisterSettingsObservers() {
+        contentResolver.unregisterContentObserver(settingsObserver)
     }
 }
 
 @Composable
 fun rememberMainScreenState(
-    context: Context = LocalContext.current,
+    contentResolver: ContentResolver = LocalContext.current.contentResolver,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): MainScreenState {
-    val state = remember(context, coroutineScope) {
-        MainScreenState(context = context, coroutineScope = coroutineScope)
+    val state = remember(contentResolver, coroutineScope) {
+        MainScreenState(contentResolver = contentResolver, coroutineScope = coroutineScope)
     }
     DisposableEffect(state) {
+        state.registerSettingsObservers()
         onDispose {
-            state.dispose()
+            state.unregisterSettingsObservers()
         }
     }
     return state
