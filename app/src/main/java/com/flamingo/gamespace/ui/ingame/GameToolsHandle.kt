@@ -18,7 +18,8 @@ package com.flamingo.gamespace.ui.ingame
 
 import android.graphics.Region
 import android.os.Bundle
-import android.view.ViewTreeObserver
+import android.view.ViewTreeObserver.InternalInsetsInfo
+import android.view.ViewTreeObserver.OnComputeInternalInsetsListener
 
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
@@ -30,10 +31,10 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -92,18 +93,19 @@ fun GameToolsHandle(
         var showToolsDialog by remember { mutableStateOf(false) }
         val view = LocalView.current
         val internalInsetsComputer =
-            rememberUpdatedState(ViewTreeObserver.OnComputeInternalInsetsListener { info: ViewTreeObserver.InternalInsetsInfo ->
+            rememberUpdatedState(OnComputeInternalInsetsListener { info: InternalInsetsInfo ->
                 info.contentInsets.setEmpty()
                 info.visibleInsets.setEmpty()
                 info.touchableRegion.set(handleTouchableRegion)
                 info.setTouchableInsets(
                     if (showToolsDialog) {
                         // Allow intercepting touches outside dialog to close the dialog
-                        ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_CONTENT
-                    } else
-                    // Only allow drag on handle to prevent underlying window
-                    // from getting touches
-                        ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_REGION
+                        InternalInsetsInfo.TOUCHABLE_INSETS_CONTENT
+                    } else {
+                        // Only allow drag on handle to prevent underlying window
+                        // from getting touches
+                        InternalInsetsInfo.TOUCHABLE_INSETS_REGION
+                    }
                 )
             })
         DisposableEffect(view) {
@@ -310,8 +312,8 @@ fun DialogContent(
             settingsRepository = settingsRepository
         )
         GameToolsDialog(
-            modifier = Modifier.width(
-                if (maxWidth < maxHeight) {
+            modifier = Modifier.defaultMinSize(
+                minWidth = if (maxWidth < maxHeight) {
                     0.7 * maxWidth
                 } else {
                     0.4 * maxWidth
