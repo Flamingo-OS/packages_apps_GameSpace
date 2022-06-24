@@ -131,7 +131,17 @@ fun GameToolsHandle(
             serviceCallback = serviceCallback,
             settingsRepository = settingsRepository
         )
-        val windowBounds by rememberUpdatedState(newValue = state.windowBounds)
+        val windowSize = state.windowSize
+        val xOffsetRange by remember(windowSize) {
+            derivedStateOf {
+                0f..(windowSize.width - handleBounds.width)
+            }
+        }
+        val yOffsetRange by remember(windowSize) {
+            derivedStateOf {
+                0f..(windowSize.height - handleBounds.height)
+            }
+        }
         val updatedPosition by rememberUpdatedState(newValue = position)
         Image(
             painter = painterResource(id = R.drawable.baseline_gamepad_24),
@@ -148,17 +158,12 @@ fun GameToolsHandle(
                 .pointerInput(state.orientation) {
                     detectDragGestures(
                         onDrag = { change, dragAmount ->
+                            val offset = Offset(
+                                x = (updatedPosition.x + dragAmount.x).coerceIn(xOffsetRange),
+                                y = (updatedPosition.y + dragAmount.y).coerceIn(yOffsetRange)
+                            )
                             onHandleDragged(
-                                Offset(
-                                    x = (updatedPosition.x + dragAmount.x).coerceIn(
-                                        windowBounds.left,
-                                        windowBounds.width - handleBounds.width
-                                    ),
-                                    y = (updatedPosition.y + dragAmount.y).coerceIn(
-                                        windowBounds.top,
-                                        windowBounds.height - handleBounds.height,
-                                    )
-                                )
+                                offset
                             )
                             change.consume()
                         },

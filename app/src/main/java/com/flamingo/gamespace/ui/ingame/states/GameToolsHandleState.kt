@@ -16,19 +16,19 @@
 
 package com.flamingo.gamespace.ui.ingame.states
 
+import android.content.Context
 import android.content.res.Configuration
+import android.view.WindowInsets
+import android.view.WindowManager
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntSize
+import androidx.core.content.getSystemService
 
 import com.flamingo.gamespace.data.settings.Settings
 import com.flamingo.gamespace.data.settings.SettingsRepository
@@ -40,26 +40,27 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class GameToolsHandleState(
-    density: Density,
-    private val configuration: Configuration,
+    context: Context,
+    val orientation: Int,
     private val settingsRepository: SettingsRepository,
     private val coroutineScope: CoroutineScope
 ) {
 
-    val orientation: Int
-        get() = configuration.orientation
-
-    var windowBounds by mutableStateOf(Rect.Zero)
-        private set
+    val windowSize: IntSize
 
     init {
-        val screenHeight = configuration.screenHeightDp * density.density
-        val screenWidth = configuration.screenWidthDp * density.density
-        windowBounds = Rect(0f, 0f, screenWidth, screenHeight)
+        val wm = context.getSystemService<WindowManager>()!!
+        val bounds = wm.currentWindowMetrics.bounds
+        val systemBarsInsets =
+            wm.currentWindowMetrics.windowInsets.getInsets(WindowInsets.Type.systemBars())
+        windowSize = IntSize(
+            bounds.width() - (systemBarsInsets.left + systemBarsInsets.right),
+            bounds.height() - (systemBarsInsets.top + systemBarsInsets.bottom)
+        )
     }
 
     fun getGameToolsHandlePosition(packageName: String): Flow<Offset> =
-        when(orientation) {
+        when (orientation) {
             Configuration.ORIENTATION_PORTRAIT -> {
                 settingsRepository.getGameToolsHandlePortraitOffset(packageName)
                     .map {
@@ -89,7 +90,7 @@ class GameToolsHandleState(
 
     fun setGameToolsHandleOffset(packageName: String, offset: Offset) {
         coroutineScope.launch {
-            when(orientation) {
+            when (orientation) {
                 Configuration.ORIENTATION_PORTRAIT -> {
                     settingsRepository.setGameToolsHandlePortraitOffset(
                         packageName,
@@ -118,14 +119,14 @@ class GameToolsHandleState(
 
 @Composable
 fun rememberGameToolsHandleState(
-    density: Density = LocalDensity.current,
-    configuration: Configuration = LocalConfiguration.current,
+    context: Context = LocalContext.current,
+    orientation: Int = LocalConfiguration.current.orientation,
     settingsRepository: SettingsRepository,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
-) = remember(density, configuration.orientation, settingsRepository) {
+) = remember(context, orientation, settingsRepository) {
     GameToolsHandleState(
-        density = density,
-        configuration = configuration,
+        context = context,
+        orientation = orientation,
         settingsRepository = settingsRepository,
         coroutineScope = coroutineScope
     )
