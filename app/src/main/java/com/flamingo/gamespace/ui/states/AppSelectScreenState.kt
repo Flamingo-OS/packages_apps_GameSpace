@@ -28,7 +28,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.graphics.drawable.toBitmap
@@ -63,11 +62,6 @@ class AppSelectScreenState(
     init {
         coroutineScope.launch {
             loadAllAppsList()
-            context.contentResolver.registerContentObserver(
-                Settings.System.getUriFor(Settings.System.GAMESPACE_PACKAGE_LIST),
-                false,
-                settingsObserver
-            )
         }
     }
 
@@ -101,7 +95,7 @@ class AppSelectScreenState(
             Settings.System.getString(
                 context.contentResolver,
                 Settings.System.GAMESPACE_PACKAGE_LIST
-            ).split(DELIMITER).sorted()
+            )?.split(DELIMITER)?.sorted() ?: emptyList()
         }
 
     private suspend fun updateList() {
@@ -149,7 +143,15 @@ class AppSelectScreenState(
         }
     }
 
-    internal fun dispose() {
+    internal fun registerSettingsObserver() {
+        context.contentResolver.registerContentObserver(
+            Settings.System.getUriFor(Settings.System.GAMESPACE_PACKAGE_LIST),
+            false,
+            settingsObserver
+        )
+    }
+
+    internal fun unregisterSettingsObserver() {
         context.contentResolver.unregisterContentObserver(settingsObserver)
     }
 
@@ -157,14 +159,6 @@ class AppSelectScreenState(
         private const val DELIMITER = ";"
     }
 }
-
-data class AppInfo(
-    val icon: ImageBitmap,
-    val label: String,
-    val packageName: String,
-    val isGame: Boolean,
-    val selected: Boolean
-)
 
 @Composable
 fun rememberAppSelectScreenState(
@@ -175,7 +169,10 @@ fun rememberAppSelectScreenState(
         AppSelectScreenState(context = context, coroutineScope = coroutineScope)
     }
     DisposableEffect(state) {
-        onDispose { state.dispose() }
+        state.registerSettingsObserver()
+        onDispose {
+            state.unregisterSettingsObserver()
+        }
     }
     return state
 }
