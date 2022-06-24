@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import java.text.DateFormat
@@ -40,7 +41,8 @@ import java.util.Locale
 class GameToolsDialogState(
     private val context: Context,
     private val serviceCallback: GameSpaceServiceCallback?,
-    val config: Bundle
+    val config: Bundle,
+    val settingsRepository: SettingsRepository
 ) {
 
     private val locale: Locale
@@ -120,10 +122,16 @@ class GameToolsDialogState(
 fun rememberGameToolsDialogState(
     context: Context = LocalContext.current,
     config: Bundle,
+    settingsRepository: SettingsRepository,
     serviceCallback: GameSpaceServiceCallback?,
 ): GameToolsDialogState {
     val state = remember(context, config) {
-        GameToolsDialogState(context = context, config = config, serviceCallback = serviceCallback)
+        GameToolsDialogState(
+            context = context,
+            config = config,
+            serviceCallback = serviceCallback,
+            settingsRepository = settingsRepository
+        )
     }
     DisposableEffect(context) {
         onDispose {

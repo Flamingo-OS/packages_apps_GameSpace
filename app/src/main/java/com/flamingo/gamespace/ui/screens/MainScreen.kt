@@ -24,8 +24,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.ui.Route
+import com.flamingo.gamespace.ui.preferences.DividerSwitchPreference
 import com.flamingo.gamespace.ui.preferences.Preference
 import com.flamingo.gamespace.ui.preferences.PrimarySwitchPreference
 import com.flamingo.gamespace.ui.preferences.SwitchPreference
@@ -38,7 +41,9 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 @Composable
 fun MainScreen(
     onBackPressed: () -> Unit,
-    onSelectAppsScreenOpenRequest: () -> Unit,
+    navHostController: NavHostController,
+    notificationOverlayEnabled: Boolean,
+    onNotificationOverlayStateChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     state: MainScreenState = rememberMainScreenState(),
     systemUiController: SystemUiController = rememberSystemUiController()
@@ -79,7 +84,9 @@ fun MainScreen(
                 Preference(
                     title = stringResource(id = R.string.select_apps),
                     summary = stringResource(id = R.string.select_apps_summary),
-                    onClick = onSelectAppsScreenOpenRequest
+                    onClick = {
+                        navHostController.navigate(Route.Main.SELECT_APPS_SCREEN)
+                    }
                 )
             }
             item {
@@ -111,6 +118,18 @@ fun MainScreen(
                         state.setFullScreenIntentDisabledSetting(it)
                     }
                 )
+            }
+            if (state.disableHeadsUp) {
+                item {
+                    DividerSwitchPreference(
+                        title = stringResource(id = R.string.notification_overlay),
+                        onClick = {
+                            navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN)
+                        },
+                        checked = notificationOverlayEnabled,
+                        onCheckedChange = onNotificationOverlayStateChanged
+                    )
+                }
             }
         }
     }

@@ -70,7 +70,8 @@ fun GameModeUI(
                 state = gameToolsHandleState,
                 modifier = Modifier.fillMaxSize(),
                 config = config,
-                serviceCallback = serviceCallback
+                serviceCallback = serviceCallback,
+                settingsRepository = settingsRepository
             )
         }
     }

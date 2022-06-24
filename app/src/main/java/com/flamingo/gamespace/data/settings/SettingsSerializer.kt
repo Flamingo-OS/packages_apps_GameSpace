@@ -30,7 +30,12 @@ import java.io.OutputStream
 
 object SettingsSerializer : Serializer<Settings> {
 
-    override val defaultValue: Settings = Settings.getDefaultInstance()
+    override val defaultValue: Settings = Settings.newBuilder()
+        .setEnableNotificationOverlay(DEFAULT_NOTIFICATION_OVERLAY_ENABLED)
+        .setNotificationOverlayDuration(DEFAULT_NOTIFICATION_OVERLAY_DURATION)
+        .setNotificationOverlaySizePortrait(DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT)
+        .setNotificationOverlaySizeLandscape(DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE)
+        .build()
 
     override suspend fun readFrom(input: InputStream): Settings {
         try {
@@ -45,6 +50,11 @@ object SettingsSerializer : Serializer<Settings> {
         output: OutputStream
     ) = t.writeTo(output)
 }
+
+const val DEFAULT_NOTIFICATION_OVERLAY_ENABLED = true
+const val DEFAULT_NOTIFICATION_OVERLAY_DURATION = 2000L
+const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT = 60
+const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE = 90
 
 val Context.settingsDataStore: DataStore<Settings> by dataStore(
     fileName = "gamespace_settings",

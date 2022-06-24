@@ -22,9 +22,11 @@ import android.os.Binder
 import android.os.Bundle
 import android.view.WindowManager
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.content.getSystemService
 import androidx.lifecycle.LifecycleOwner
@@ -34,12 +36,15 @@ import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
+import com.flamingo.gamespace.services.NotificationListener
+import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayState
 
 class GameModeOverlayManager(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     savedStateRegistryOwner: SavedStateRegistryOwner,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val notificationListener: NotificationListener
 ) {
 
     private val wm = context.getSystemService<WindowManager>()!!
@@ -100,6 +105,11 @@ class GameModeOverlayManager(
                         serviceCallback = serviceCallback,
                     )
                 }
+                val state = rememberNotificationOverlayState(
+                    notificationListener = notificationListener,
+                    settingsRepository = settingsRepository
+                )
+                NotificationOverlay(state = state, modifier = Modifier.fillMaxSize())
             }
             wm.addView(rootComposeView, rootViewLP)
         }

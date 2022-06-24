@@ -26,4 +26,10 @@ message Settings {
   }
   map<string, Offset> game_tools_handle_portrait_offset = 1;
   map<string, Offset> game_tools_handle_landscape_offset = 2;
+
+  bool enable_notification_overlay = 3;
+  int64 notification_overlay_duration = 4;
+  int32 notification_overlay_size_portrait = 5;
+  int32 notification_overlay_size_landscape = 6;
+  string notification_overlay_blacklist = 7;
 }

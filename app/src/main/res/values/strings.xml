@@ -33,6 +33,17 @@
     <string name="app_icon_content_desc">Application icon of <xliff:g id="label" example="Email">%1$s</xliff:g></string>
     <string name="game_chip_label">GAME</string>
 
+    <!-- Notification overlay -->
+    <string name="notification_overlay">Notification overlay</string>
+    <string name="notification_overlay_intro_text">Text style notifications shown as an overlay</string>
+    <string name="enable_notification_overlay">Enabled notification overlay</string>
+    <string name="size_in_portrait">Size in portrait</string>
+    <string name="size_in_landscape">Size in landscape</string>
+    <string name="visible_duration">Visible duration</string>
+    <string name="visible_duration_summary">Time in seconds for which notification text should be kept visible on screen</string>
+    <string name="blacklisted_apps">Blacklisted apps</string>
+    <string name="blacklisted_apps_summary">List of applications whose notifications should not be shown as an overlay on screen</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>
@@ -50,5 +61,8 @@
     <!-- Lock gesture tile -->
     <string name="lock_gestures">Lock gestures</string>
     <string name="lock_gestures_content_desc">Lock gestures tile</string>
+
+    <!-- Notification overlay tile -->
+    <string name="notification_overlay_content_desc">Notification overlay tile</string>
 
 </resources>

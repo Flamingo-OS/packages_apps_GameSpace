@@ -19,12 +19,14 @@ package com.flamingo.gamespace.services
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.IBinder
 import android.os.RemoteException
+import android.os.UserHandle
 import android.util.Log
 
 import androidx.core.app.NotificationCompat
@@ -46,39 +48,43 @@ import dagger.hilt.android.AndroidEntryPoint
 
 import javax.inject.Inject
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
     private lateinit var savedStateRegistryController: SavedStateRegistryController
-    private var gameModeOverlayManager: GameModeOverlayManager? = null
+    private lateinit var gameModeOverlayManager: GameModeOverlayManager
 
     private val serviceBinder = object : IGameSpaceService.Stub() {
         override fun showGameUI(packageName: String) {
             lifecycleScope.launch {
-                gameModeOverlayManager?.apply {
-                    setPackage(packageName)
-                    addToWindow()
-                }
+                gameModeOverlayManager.setPackage(packageName)
+                gameModeOverlayManager.addToWindow()
             }
         }
 
         override fun onGamePackageChanged(packageName: String) {
             lifecycleScope.launch {
-                gameModeOverlayManager?.setPackage(packageName)
+                gameModeOverlayManager.setPackage(packageName)
             }
         }
 
         override fun setCallback(callback: IGameSpaceServiceCallback) {
             lifecycleScope.launch {
-                gameModeOverlayManager?.setGameSpaceServiceCallback(GameSpaceServiceCallback(callback))
+                gameModeOverlayManager.setGameSpaceServiceCallback(
+                    GameSpaceServiceCallback(
+                        callback
+                    )
+                )
             }
         }
 
         override fun onStateChanged(state: Bundle) {
             lifecycleScope.launch {
-                gameModeOverlayManager?.setGameSpaceServiceConfig(state)
+                gameModeOverlayManager.setGameSpaceServiceConfig(state)
             }
         }
     }
@@ -92,6 +98,9 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     @Inject
     lateinit var settingsRepository: SettingsRepository
 
+    private val notificationListener = NotificationListener()
+    private var registeredNotificationListener = false
+
     override val savedStateRegistry: SavedStateRegistry
         get() = savedStateRegistryController.savedStateRegistry
 
@@ -102,7 +111,13 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         savedStateRegistryController = SavedStateRegistryController.create(this)
         savedStateRegistryController.performAttach()
         savedStateRegistryController.performRestore(null)
-        gameModeOverlayManager = GameModeOverlayManager(this, this, this, settingsRepository)
+        gameModeOverlayManager = GameModeOverlayManager(
+            this,
+            this,
+            this,
+            settingsRepository,
+            notificationListener
+        )
 
         activityIntent = PendingIntent.getActivity(
             this,
@@ -122,6 +137,7 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         notificationManager = NotificationManagerCompat.from(this)
         createNotificationChannel()
         showNotification()
+        observeSettings()
     }
 
     private fun createNotificationChannel() {
@@ -148,6 +164,42 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
         notificationManager.notify(GAME_MODE_ACTIVE_NOTIFICATION_ID, builder.build())
     }
 
+    private fun observeSettings() {
+        lifecycleScope.launch {
+            settingsRepository.enableNotificationOverlay.collect {
+                if (it) {
+                    registerNotificationListener()
+                } else {
+                    unregisterNotificationListener()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            settingsRepository.notificationOverlayBlackList.collect {
+                notificationListener.setBlackList(it)
+            }
+        }
+    }
+
+    private fun registerNotificationListener() {
+        if (registeredNotificationListener) return
+        val componentName = ComponentName(this, NotificationListener::class.java)
+        lifecycleScope.launch(Dispatchers.Default) {
+            try {
+                notificationListener.registerAsSystemService(
+                    this@GameSpaceServiceImpl,
+                    componentName,
+                    UserHandle.USER_CURRENT
+                )
+                withContext(Dispatchers.Main) {
+                    registeredNotificationListener = true
+                }
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to register notification listener", e)
+            }
+        }
+    }
+
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
         return serviceBinder
@@ -161,27 +213,39 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     }
 
     override fun onDestroy() {
-        gameModeOverlayManager?.removeFromWindow()
+        unregisterNotificationListener()
+        gameModeOverlayManager.removeFromWindow()
         notificationManager.cancel(GAME_MODE_ACTIVE_NOTIFICATION_ID)
         super.onDestroy()
+    }
+
+    private fun unregisterNotificationListener() {
+        if (!registeredNotificationListener) return
+        try {
+            notificationListener.unregisterAsSystemService()
+            registeredNotificationListener = false
+        } catch (e: RemoteException) {
+            Log.e(TAG, "Failed to unregister notification listener", e)
+        }
     }
 
     class GameSpaceServiceCallback(
         private val iGameSpaceServiceCallback: IGameSpaceServiceCallback
     ) {
-       fun setGesturalNavigationLocked(isLocked: Boolean) {
-           try {
-               iGameSpaceServiceCallback.setGesturalNavigationLocked(isLocked)
-           } catch (e: RemoteException) {
-               Log.e(TAG, "Failed to change gestural navigation lock status", e)
-           }
-       }
+        fun setGesturalNavigationLocked(isLocked: Boolean) {
+            try {
+                iGameSpaceServiceCallback.setGesturalNavigationLocked(isLocked)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to change gestural navigation lock status", e)
+            }
+        }
     }
 
     companion object {
         private const val TAG = "GameSpaceServiceImpl"
 
-        private val NOTIFICATION_CHANNEL_ID = "${GameSpaceServiceImpl::class.qualifiedName}_NotificationChannel"
+        private val NOTIFICATION_CHANNEL_ID =
+            "${GameSpaceServiceImpl::class.qualifiedName}_NotificationChannel"
 
         private const val GAME_MODE_ACTIVE_NOTIFICATION_ID = 1
 

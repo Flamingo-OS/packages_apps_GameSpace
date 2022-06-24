@@ -33,6 +33,21 @@ class SettingsRepository @Inject constructor(
 
     private val settingsDataStore = context.settingsDataStore
 
+    val enableNotificationOverlay: Flow<Boolean>
+        get() = settingsDataStore.data.map { it.enableNotificationOverlay }
+
+    val notificationOverlaySizePortrait: Flow<Int>
+        get() = settingsDataStore.data.map { it.notificationOverlaySizePortrait }
+
+    val notificationOverlaySizeLandscape: Flow<Int>
+        get() = settingsDataStore.data.map { it.notificationOverlaySizeLandscape }
+
+    val notificationOverlayBlackList: Flow<List<String>>
+        get() = settingsDataStore.data.map { it.notificationOverlayBlacklist.split(DELIMITER) }
+
+    val notificationOverlayDuration: Flow<Long>
+        get() = settingsDataStore.data.map { it.notificationOverlayDuration }
+
     fun getGameToolsHandlePortraitOffset(packageName: String): Flow<Settings.Offset?> =
         settingsDataStore.data.map { it.gameToolsHandlePortraitOffsetMap[packageName] }
 
@@ -53,5 +68,49 @@ class SettingsRepository @Inject constructor(
                 .putGameToolsHandleLandscapeOffset(packageName, offset)
                 .build()
         }
+    }
+
+    suspend fun setNotificationOverlayEnabled(enabled: Boolean) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setEnableNotificationOverlay(enabled)
+                .build()
+        }
+    }
+
+    suspend fun setPortraitNotificationOverlaySize(size: Int) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setNotificationOverlaySizePortrait(size)
+                .build()
+        }
+    }
+
+    suspend fun setLandscapeNotificationOverlaySize(size: Int) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setNotificationOverlaySizeLandscape(size)
+                .build()
+        }
+    }
+
+    suspend fun setNotificationOverlayBlacklist(list: List<String>) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setNotificationOverlayBlacklist(list.joinToString(DELIMITER))
+                .build()
+        }
+    }
+
+    suspend fun setNotificationOverlayDuration(duration: Int) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setNotificationOverlayDuration(duration * 1000L)
+                .build()
+        }
+    }
+
+    companion object {
+        private const val DELIMITER = ";"
     }
 }

@@ -16,6 +16,8 @@
 
 package com.flamingo.gamespace.ui.ingame
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,21 +37,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
+import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
+import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
+import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
 
 private val CornerSize = 16.dp
@@ -117,6 +128,14 @@ fun GameToolsDialog(
                             state = lockGestureTileState
                         )
                     }
+                    val notificationOverlayTileState =
+                        rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                    if (notificationOverlayTileState.shouldShowTile) {
+                        NotificationOverlayTile(
+                            modifier = Modifier.width(IntrinsicSize.Min),
+                            state = notificationOverlayTileState
+                        )
+                    }
                 }
             }
         }
@@ -145,12 +164,30 @@ fun Tile(
         ) {
             icon()
             Spacer(modifier = Modifier.height(16.dp))
+            var shouldScrollText by remember { mutableStateOf(false) }
+            val scrollState = rememberScrollState()
+            LaunchedEffect(shouldScrollText) {
+                while (shouldScrollText) {
+                    scrollState.animateScrollTo(scrollState.maxValue, animationSpec = tween(1500))
+                    scrollState.scrollTo(0)
+                }
+            }
             Text(
+                modifier = Modifier.then(
+                    if (shouldScrollText)
+                        Modifier.horizontalScroll(scrollState)
+                    else
+                        Modifier
+                ),
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontSize = TextUnit(14f, TextUnitType.Sp),
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                onTextLayout = {
+                    if (it.hasVisualOverflow) {
+                        shouldScrollText = true
+                    }
+                }
             )
         }
     }
@@ -198,6 +235,28 @@ fun LockGestureTile(
         enabled = state.isLocked,
         onClick = {
             state.toggleGestureLock()
+        }
+    )
+}
+
+@Composable
+fun NotificationOverlayTile(
+    state: NotificationOverlayTileState,
+    modifier: Modifier = Modifier,
+) {
+    val isEnabled by state.isEnabled.collectAsState(initial = DEFAULT_NOTIFICATION_OVERLAY_ENABLED)
+    Tile(
+        modifier = modifier,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_notification_overlay),
+                contentDescription = stringResource(id = R.string.notification_overlay_content_desc)
+            )
+        },
+        title = stringResource(id = R.string.notification_overlay),
+        enabled = isEnabled,
+        onClick = {
+            state.setNotificationOverlayEnabled(!isEnabled)
         }
     )
 }
