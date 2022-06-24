@@ -191,7 +191,7 @@ fun Tile(
             Text(
                 modifier = Modifier.then(
                     if (shouldScrollText)
-                        Modifier.horizontalScroll(scrollState)
+                        Modifier.horizontalScroll(scrollState, enabled = false)
                     else
                         Modifier
                 ),
