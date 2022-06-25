@@ -70,19 +70,6 @@ class GameToolsDialogState(
     var date by mutableStateOf(getFormattedDate())
         private set
 
-    init {
-        val batteryStatusIntent = context.registerReceiver(
-            broadcastReceiver,
-            IntentFilter().apply {
-                addAction(Intent.ACTION_TIME_TICK)
-                addAction(Intent.ACTION_BATTERY_CHANGED)
-            }
-        )
-        if (batteryStatusIntent != null) {
-            updateBatteryStatus(batteryStatusIntent)
-        }
-    }
-
     private fun getFormattedTime(): String {
         return DateFormat.getTimeInstance(
             DateFormat.SHORT,
@@ -109,7 +96,20 @@ class GameToolsDialogState(
         ).format(System.currentTimeMillis())
     }
 
-    fun onDispose() {
+    internal fun registerReceiver() {
+        val batteryStatusIntent = context.registerReceiver(
+            broadcastReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_TIME_TICK)
+                addAction(Intent.ACTION_BATTERY_CHANGED)
+            }
+        )
+        if (batteryStatusIntent != null) {
+            updateBatteryStatus(batteryStatusIntent)
+        }
+    }
+
+    internal fun unregisterReceiver() {
         context.unregisterReceiver(broadcastReceiver)
     }
 }
@@ -130,8 +130,9 @@ fun rememberGameToolsDialogState(
         )
     }
     DisposableEffect(context) {
+        state.registerReceiver()
         onDispose {
-            state.onDispose()
+            state.unregisterReceiver()
         }
     }
     return state
