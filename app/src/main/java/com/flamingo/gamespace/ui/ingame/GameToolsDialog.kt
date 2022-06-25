@@ -47,8 +47,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasurePolicy
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
@@ -81,7 +91,7 @@ fun GameToolsDialog(
             modifier = Modifier
                 .padding(16.dp)
                 .width(IntrinsicSize.Min),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
             Row(
@@ -104,52 +114,121 @@ fun GameToolsDialog(
                 Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Column(
-                modifier = Modifier
-                    .width(IntrinsicSize.Min)
-                    .height(IntrinsicSize.Min),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            HorizontalGrid(
+                columns = 3,
+                columnPadding = 8.dp,
+                rowPadding = 8.dp
             ) {
-                Row(
-                    modifier = Modifier
-                        .width(IntrinsicSize.Min)
-                        .height(IntrinsicSize.Min),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ScreenshotTile(
-                        modifier = Modifier.width(IntrinsicSize.Min),
-                        onDismissDialogRequest = onDismissRequest
+                ScreenshotTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    onDismissDialogRequest = onDismissRequest
+                )
+                LockGestureTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    state = rememberLockGestureTileState(
+                        config = state.config,
+                        serviceCallback = state.serviceCallback,
                     )
-                    LockGestureTile(
-                        modifier = Modifier.width(IntrinsicSize.Min),
-                        state = rememberLockGestureTileState(
-                            config = state.config,
-                            serviceCallback = state.serviceCallback,
-                        )
+                )
+                NotificationOverlayTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                )
+                RingerModeTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    state = rememberRingerModeTileState(
+                        config = state.config,
+                        serviceCallback = state.serviceCallback,
                     )
-                    NotificationOverlayTile(
-                        modifier = Modifier.width(IntrinsicSize.Min),
-                        state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                )
+                AdaptiveBrightnessTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    state = rememberAdaptiveBrightnessTileState(
+                        serviceCallback = state.serviceCallback,
                     )
-                    RingerModeTile(
-                        modifier = Modifier.width(IntrinsicSize.Min),
-                        state = rememberRingerModeTileState(
-                            config = state.config,
-                            serviceCallback = state.serviceCallback,
-                        )
-                    )
-                    AdaptiveBrightnessTile(
-                        modifier = Modifier.width(IntrinsicSize.Min),
-                        state = rememberAdaptiveBrightnessTileState(
-                            serviceCallback = state.serviceCallback,
-                        )
-                    )
-                }
+                )
             }
         }
     }
+}
+
+@Composable
+fun HorizontalGrid(
+    columns: Int,
+    modifier: Modifier = Modifier,
+    columnPadding: Dp = 0.dp,
+    rowPadding: Dp = 0.dp,
+    content: @Composable () -> Unit
+) {
+    val density = LocalDensity.current
+    val columnPaddingPx = with(density) { columnPadding.roundToPx() }
+    val rowPaddingPx = with(density) { rowPadding.roundToPx() }
+    val measurePolicy = remember(columns) {
+        object : MeasurePolicy {
+            override fun MeasureScope.measure(
+                measurables: List<Measurable>,
+                constraints: Constraints
+            ): MeasureResult {
+                val availableMaxWidth = constraints.maxWidth - ((columns - 1) * columnPaddingPx)
+                val cellMaxWidth = availableMaxWidth / columns
+                val cellMinWidth = availableMaxWidth / columns
+                val cellConstraints = Constraints(
+                    minWidth = cellMinWidth,
+                    minHeight = cellMinWidth,
+                    maxWidth = cellMaxWidth,
+                    maxHeight = cellMaxWidth
+                )
+                val placeables = measurables.map { it.measure(cellConstraints) }
+                val rows = placeables.chunked(columns)
+                val layoutMaxHeight = rows.map { row -> row.maxOf { it.height } }.sumOf { it }
+                return layout(constraints.maxWidth, layoutMaxHeight) {
+                    var xPos = 0
+                    var yPos = 0
+                    placeables.forEachIndexed { index, placeable ->
+                        placeable.placeRelative(xPos, yPos)
+                        if (((index + 1) % columns) == 0) {
+                            xPos = 0
+                            yPos += placeable.height + rowPaddingPx
+                        } else {
+                            xPos += placeable.width + columnPaddingPx
+                        }
+                    }
+                }
+            }
+
+            override fun IntrinsicMeasureScope.minIntrinsicWidth(
+                measurables: List<IntrinsicMeasurable>,
+                height: Int
+            ): Int {
+                return measurables.chunked(columns)
+                    .map { row -> row.sumOf { cell -> cell.minIntrinsicWidth(height) } }
+                    .maxOf { it }
+            }
+
+            override fun IntrinsicMeasureScope.minIntrinsicHeight(
+                measurables: List<IntrinsicMeasurable>,
+                width: Int
+            ): Int {
+                return measurables.chunked(columns)
+                    .map { row -> row.maxOf { cell -> cell.minIntrinsicHeight(width) } }
+                    .minOf { it }
+            }
+
+            override fun IntrinsicMeasureScope.maxIntrinsicHeight(
+                measurables: List<IntrinsicMeasurable>,
+                width: Int
+            ): Int {
+                return measurables.chunked(columns)
+                    .map { row -> row.maxOf { cell -> cell.maxIntrinsicHeight(width) } }
+                    .maxOf { it }
+            }
+        }
+    }
+    Layout(
+        content = content,
+        measurePolicy = measurePolicy,
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class)
