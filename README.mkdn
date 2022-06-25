@@ -1,0 +1,23 @@
+GameSpace
+==============
+
+A system application that enhances gaming with certain unique features and tools for users. Most of the features are from our old
+GamingMode[https://github.com/Flamingo-OS/packages_apps_GamingMode] application.
+
+Partner commits:
+  * https://github.com/Flamingo-OS/frameworks_base/commit/348dc95dbfc73e275e4ee184bd4598c77a67d086
+  * https://github.com/Flamingo-OS/vendor_flamingo/commit/5528b071ff48f5827b4c8ed30b499c5b032ed1b8
+  * https://github.com/Flamingo-OS/vendor_prebuilts/commit/02a9d558444d6a2e0918b36e2c48c995fda64976
+
+Note
+==============
+Building this application requires android framework.jar, clone from here https://github.com/Flamingo-OS/vendor_prebuilts/
+or if you have setup your system to build flamingo then build it with
+```bash
+m framework
+```
+Copy the file to app/libs/ directory in project.
+
+Credits
+==============
+  * Game tools dialog design is from https://github.com/chaldeaprjkt/packages_apps_GameSpace, thanks to @nullxception.
