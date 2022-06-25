@@ -1,0 +1,18 @@
+apply plugin: 'com.android.library'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+android {
+    compileSdkVersion 32
+    namespace 'com.android.systemui.shared'
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 32
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}

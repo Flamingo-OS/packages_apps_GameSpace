@@ -16,4 +16,3 @@ rootProject.name = "GameSpace"
 include ':app'
 
 include ':SystemUIShared'
-project(':SystemUIShared').projectDir = new File(settingsDir, '../../../frameworks/base/packages/SystemUI/shared')
