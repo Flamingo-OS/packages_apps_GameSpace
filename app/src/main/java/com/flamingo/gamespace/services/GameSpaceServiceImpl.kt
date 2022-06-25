@@ -154,7 +154,7 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
     private fun showNotification() {
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_game)
             .setContentText(getString(R.string.gaming_mode_active))
             .setContentIntent(activityIntent)
             .setOngoing(true)
