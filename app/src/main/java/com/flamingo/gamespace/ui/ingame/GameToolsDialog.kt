@@ -113,11 +113,11 @@ fun GameToolsDialog(
                 Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
                 Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
             }
-            Spacer(modifier = Modifier.height(8.dp))
             HorizontalGrid(
                 columns = 3,
                 columnPadding = 8.dp,
-                rowPadding = 8.dp
+                rowPadding = 8.dp,
+                modifier = Modifier.padding(vertical = 8.dp)
             ) {
                 ScreenshotTile(
                     modifier = Modifier.width(IntrinsicSize.Min),
@@ -147,6 +147,20 @@ fun GameToolsDialog(
                         serviceCallback = state.serviceCallback,
                     )
                 )
+            }
+            state.memoryInfo?.let {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_memory_24),
+                        contentDescription = stringResource(id = R.string.memory_info_content_desc),
+                        tint = if (state.isLowMemory) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(text = it)
+                }
             }
         }
     }

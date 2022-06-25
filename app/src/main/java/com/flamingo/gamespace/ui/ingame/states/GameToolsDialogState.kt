@@ -16,18 +16,24 @@
 
 package com.flamingo.gamespace.ui.ingame.states
 
+import android.app.ActivityManager
+import android.app.ActivityManager.MemoryInfo
+import android.app.IActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.Bundle
+import android.os.RemoteException
+import android.util.Log
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
@@ -38,11 +44,21 @@ import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCall
 import java.text.DateFormat
 import java.util.Locale
 
+import kotlin.coroutines.coroutineContext
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 class GameToolsDialogState(
     private val context: Context,
     val serviceCallback: GameSpaceServiceCallback?,
     val config: Bundle,
-    val settingsRepository: SettingsRepository
+    val settingsRepository: SettingsRepository,
+    coroutineScope: CoroutineScope
 ) {
 
     private val locale: Locale
@@ -70,6 +86,20 @@ class GameToolsDialogState(
     var date by mutableStateOf(getFormattedDate())
         private set
 
+    private val iActivityManager: IActivityManager = ActivityManager.getService()
+
+    var memoryInfo by mutableStateOf<String?>(null)
+        private set
+
+    var isLowMemory by mutableStateOf(false)
+        private set
+
+    init {
+        coroutineScope.launch(Dispatchers.Default) {
+            updateMemoryInfo()
+        }
+    }
+
     private fun getFormattedTime(): String {
         return DateFormat.getTimeInstance(
             DateFormat.SHORT,
@@ -96,6 +126,24 @@ class GameToolsDialogState(
         ).format(System.currentTimeMillis())
     }
 
+    private suspend fun updateMemoryInfo() {
+        do {
+            try {
+                val memInfo = MemoryInfo()
+                iActivityManager.getMemoryInfo(memInfo)
+                withContext(Dispatchers.Main) {
+                    val used = String.format("%.1f", (memInfo.totalMem - memInfo.availMem).toFloat() / GiB)
+                    val total = String.format("%.1f", memInfo.totalMem.toFloat() / GiB)
+                    memoryInfo = context.getString(R.string.memory_info, used, total)
+                    isLowMemory = memInfo.availMem <= memInfo.threshold
+                }
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to get memory info", e)
+            }
+            delay(5000)
+        } while (coroutineContext.isActive)
+    }
+
     internal fun registerReceiver() {
         val batteryStatusIntent = context.registerReceiver(
             broadcastReceiver,
@@ -112,21 +160,29 @@ class GameToolsDialogState(
     internal fun unregisterReceiver() {
         context.unregisterReceiver(broadcastReceiver)
     }
+
+    companion object {
+        private const val TAG = "GameToolsDialogState"
+
+        private const val GiB = 1024 * 1024 * 1024
+    }
 }
 
 @Composable
 fun rememberGameToolsDialogState(
     context: Context = LocalContext.current,
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     config: Bundle,
     settingsRepository: SettingsRepository,
     serviceCallback: GameSpaceServiceCallback?,
 ): GameToolsDialogState {
-    val state = remember(context, config) {
+    val state = remember(context, config, settingsRepository, serviceCallback, coroutineScope) {
         GameToolsDialogState(
             context = context,
             config = config,
             serviceCallback = serviceCallback,
-            settingsRepository = settingsRepository
+            settingsRepository = settingsRepository,
+            coroutineScope = coroutineScope
         )
     }
     DisposableEffect(context) {
