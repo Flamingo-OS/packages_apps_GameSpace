@@ -48,7 +48,7 @@ fun GameModeUI(
             val gameToolsHandleState =
                 rememberGameToolsHandleState(settingsRepository = settingsRepository)
             var handlePosition by remember { mutableStateOf(Offset.Zero) }
-            LaunchedEffect(packageName) {
+            LaunchedEffect(packageName, gameToolsHandleState.orientation) {
                 gameToolsHandleState.getGameToolsHandlePosition(packageName).collectLatest {
                     handlePosition = it
                 }
@@ -60,7 +60,10 @@ fun GameModeUI(
                     handlePosition = it
                 },
                 onDragStop = {
-                    gameToolsHandleState.setGameToolsHandleOffset(updatedPackageName, handlePosition)
+                    gameToolsHandleState.setGameToolsHandleOffset(
+                        updatedPackageName,
+                        handlePosition
+                    )
                 },
                 state = gameToolsHandleState,
                 modifier = Modifier.fillMaxSize(),

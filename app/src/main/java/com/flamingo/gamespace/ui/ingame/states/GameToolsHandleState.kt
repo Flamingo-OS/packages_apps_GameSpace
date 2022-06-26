@@ -61,57 +61,37 @@ class GameToolsHandleState(
 
     fun getGameToolsHandlePosition(packageName: String): Flow<Offset> =
         when (orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> {
-                settingsRepository.getGameToolsHandlePortraitOffset(packageName)
-                    .map {
-                        if (it == null) {
-                            Offset.Zero
-                        } else {
-                            Offset(x = it.x, y = it.y)
-                        }
-                    }
-                    .distinctUntilChanged()
+            Configuration.ORIENTATION_PORTRAIT -> settingsRepository.getGameToolsHandlePortraitOffset(
+                packageName
+            )
+            Configuration.ORIENTATION_LANDSCAPE -> settingsRepository.getGameToolsHandleLandscapeOffset(
+                packageName
+            )
+            else -> throw IllegalStateException("Unknown orientation $orientation")
+        }.map {
+            if (it == null) {
+                Offset.Zero
+            } else {
+                Offset(x = it.x, y = it.y)
             }
-            Configuration.ORIENTATION_LANDSCAPE -> {
-                settingsRepository.getGameToolsHandleLandscapeOffset(packageName)
-                    .map {
-                        if (it == null) {
-                            Offset.Zero
-                        } else {
-                            Offset(x = it.x, y = it.y)
-                        }
-                    }
-                    .distinctUntilChanged()
-            }
-            else -> {
-                throw IllegalStateException("Unknown orientation $orientation")
-            }
-        }
+        }.distinctUntilChanged()
 
     fun setGameToolsHandleOffset(packageName: String, offset: Offset) {
         coroutineScope.launch {
+            val settingOffset = Settings.Offset.newBuilder()
+                .setX(offset.x)
+                .setY(offset.y)
+                .build()
             when (orientation) {
-                Configuration.ORIENTATION_PORTRAIT -> {
-                    settingsRepository.setGameToolsHandlePortraitOffset(
-                        packageName,
-                        Settings.Offset.newBuilder()
-                            .setX(offset.x)
-                            .setY(offset.y)
-                            .build()
-                    )
-                }
-                Configuration.ORIENTATION_LANDSCAPE -> {
-                    settingsRepository.setGameToolsHandleLandscapeOffset(
-                        packageName,
-                        Settings.Offset.newBuilder()
-                            .setX(offset.x)
-                            .setY(offset.y)
-                            .build()
-                    )
-                }
-                else -> {
-                    throw IllegalStateException("Unknown orientation $orientation")
-                }
+                Configuration.ORIENTATION_PORTRAIT -> settingsRepository.setGameToolsHandlePortraitOffset(
+                    packageName,
+                    settingOffset
+                )
+                Configuration.ORIENTATION_LANDSCAPE -> settingsRepository.setGameToolsHandleLandscapeOffset(
+                    packageName,
+                    settingOffset
+                )
+                else -> throw IllegalStateException("Unknown orientation $orientation")
             }
         }
     }

@@ -158,12 +158,11 @@ fun GameToolsHandle(
                 .pointerInput(state.orientation) {
                     detectDragGestures(
                         onDrag = { change, dragAmount ->
-                            val offset = Offset(
-                                x = (updatedPosition.x + dragAmount.x).coerceIn(xOffsetRange),
-                                y = (updatedPosition.y + dragAmount.y).coerceIn(yOffsetRange)
-                            )
                             onHandleDragged(
-                                offset
+                                Offset(
+                                    x = (updatedPosition.x + dragAmount.x).coerceIn(xOffsetRange),
+                                    y = (updatedPosition.y + dragAmount.y).coerceIn(yOffsetRange)
+                                )
                             )
                             change.consume()
                         },
