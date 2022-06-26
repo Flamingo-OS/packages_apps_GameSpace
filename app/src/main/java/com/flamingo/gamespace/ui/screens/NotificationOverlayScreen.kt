@@ -59,7 +59,7 @@ fun NotificationOverlayScreen(
         modifier = modifier,
         title = stringResource(id = R.string.notification_overlay),
         onBackButtonPressed = {
-            navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN)
+            navHostController.popBackStack()
         },
         systemUiController = systemUiController,
     ) {

@@ -268,7 +268,7 @@ fun NavGraphBuilder.notificationOverlayGraph(
         ) {
             NotificationOverlayBlackListScreen(
                 onBackButtonPressed = {
-                    navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN)
+                    navHostController.popBackStack()
                 },
                 systemUiController = systemUiController,
                 isEnterAnimationRunning = transition.currentState == EnterExitState.PreEnter,
