@@ -1,0 +1,89 @@
+<!--
+    Copyright 2022 FlamingoOS Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="app_name">游戏空间</string>
+
+    <!-- Main screen -->
+    <string name="back_button_content_desc">返回按钮</string>
+    <string name="main_screen_intro_text">尽享游戏带来的快乐吧！</string>
+    <string name="enable_gamespace">游戏模式</string>
+    <string name="dynamic_mode">动态模式</string>
+    <string name="dynamic_mode_summary">打开后将自动检测游戏并将其添加至列表中</string>
+    <string name="disable_headsup">禁用浮动通知</string>
+    <string name="disable_headsup_summary">是否在游戏时禁用浮动通知和气泡</string>
+    <string name="disable_fullscreen_intent">禁止全屏</string>
+    <string name="disable_fullscreen_intent_summary">打开后将在游戏时禁止其他应用全屏显示（通话屏幕等）</string>
+
+    <!-- Select apps -->
+    <string name="select_apps">选择应用</string>
+    <string name="select_apps_summary">选定的应用在打开时将启用游戏模式</string>
+    <string name="app_icon_content_desc">应用图标 <xliff:g id="label" example="Email">%1$s</xliff:g></string>
+    <string name="game_chip_label">游戏</string>
+
+    <!-- Notification overlay -->
+    <string name="notification_overlay">透明通知</string>
+    <string name="notification_overlay_intro_text">在收到通知时显示透明叠加层</string>
+    <string name="enable_notification_overlay">透明通知</string>
+    <string name="size_in_portrait">横屏时尺寸</string>
+    <string name="size_in_landscape">竖屏时尺寸</string>
+    <string name="visible_duration">持续时间</string>
+    <string name="visible_duration_summary">通知文本在屏幕上可见的时间（秒）</string>
+    <string name="blacklisted_apps">黑名单应用</string>
+    <string name="blacklisted_apps_summary">在游戏时禁止选定的应用显示透明叠加层</string>
+
+    <!-- Preferred ringer mode -->
+    <string name="preferred_ringer_mode">响铃模式</string>
+
+    <!-- Disable adaptive brightness -->
+    <string name="disable_adaptive_brightness">禁用自动亮度</string>
+
+    <!-- Notification -->
+    <string name="gamespace_notification_channel_name">游戏空间</string>
+    <string name="gaming_mode_active">游戏模式已启用</string>
+    <string name="stop">停止</string>
+
+    <!-- Game Tools Dialog -->
+    <string name="battery_text">电量: <xliff:g id="percent" example="100">%1$d</xliff:g>%%</string>
+    <string name="charging_battery_text">电量: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1\uFE0E</string>
+    <string name="battery_unknown">电量: 未知</string>
+
+    <!-- Screenshot tile -->
+    <string name="screenshot">屏幕截图</string>
+    <string name="screenshot_tile_content_desc">截图磁贴</string>
+
+    <!-- Lock gesture tile -->
+    <string name="lock_gestures">锁定手势</string>
+    <string name="lock_gestures_content_desc">锁定手势磁贴</string>
+
+    <!-- Notification overlay tile -->
+    <string name="notification_overlay_content_desc">透明通知磁贴</string>
+
+    <!-- Ringer mode tile -->
+    <string name="ring">响铃</string>
+    <string name="ringer_mode_tile_normal_content_desc">响铃模式磁贴</string>
+    <string name="vibrate">震动</string>
+    <string name="ringer_mode_tile_vibrate_content_desc">震动模式磁贴</string>
+    <string name="silent">静音</string>
+    <string name="ringer_mode_tile_silent_content_desc">静音模式磁贴</string>
+
+    <!-- Adaptive brightness tile -->
+    <string name="adaptive_brightness">自动亮度</string>
+    <string name="adaptive_brightness_content_desc">自动亮度磁贴</string>
+
+    <!-- Memory info -->
+    <string name="memory_info_content_desc">内存信息</string>
+
+</resources>
