@@ -35,6 +35,8 @@ message Settings {
 
   RingerMode ringer_mode = 8;
   bool disable_adaptive_brightness = 9;
+
+  bool show_game_tools_handle = 10;
 }
 
 enum RingerMode {

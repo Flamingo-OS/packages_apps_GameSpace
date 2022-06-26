@@ -37,6 +37,7 @@ object SettingsSerializer : Serializer<Settings> {
         .setNotificationOverlaySizeLandscape(DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE)
         .setRingerMode(DEFAULT_RINGER_MODE)
         .setDisableAdaptiveBrightness(DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS)
+        .setShowGameToolsHandle(DEFAULT_SHOW_GAME_TOOLS_HANDLE)
         .build()
 
     override suspend fun readFrom(input: InputStream): Settings {
@@ -59,6 +60,7 @@ const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT = 60
 const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE = 90
 val DEFAULT_RINGER_MODE = RingerMode.SILENT
 const val DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS = true
+const val DEFAULT_SHOW_GAME_TOOLS_HANDLE = true
 
 val Context.settingsDataStore: DataStore<Settings> by dataStore(
     fileName = "gamespace_settings",

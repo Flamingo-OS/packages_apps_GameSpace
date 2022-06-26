@@ -54,6 +54,9 @@ class SettingsRepository @Inject constructor(
     val disableAdaptiveBrightness: Flow<Boolean>
         get() = settingsDataStore.data.map { it.disableAdaptiveBrightness }
 
+    val showGameToolsHandle: Flow<Boolean>
+        get() = settingsDataStore.data.map { it.showGameToolsHandle }
+
     fun getGameToolsHandlePortraitOffset(packageName: String): Flow<Settings.Offset?> =
         settingsDataStore.data.map { it.gameToolsHandlePortraitOffsetMap[packageName] }
 
@@ -128,6 +131,14 @@ class SettingsRepository @Inject constructor(
         settingsDataStore.updateData {
             it.toBuilder()
                 .setDisableAdaptiveBrightness(disabled)
+                .build()
+        }
+    }
+
+    suspend fun setShowGameToolsHandle(show: Boolean) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .setShowGameToolsHandle(show)
                 .build()
         }
     }

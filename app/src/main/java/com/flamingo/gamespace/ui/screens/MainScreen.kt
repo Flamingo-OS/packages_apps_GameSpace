@@ -31,6 +31,7 @@ import androidx.navigation.NavHostController
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS
 import com.flamingo.gamespace.data.settings.DEFAULT_RINGER_MODE
+import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.ui.Route
 import com.flamingo.gamespace.ui.preferences.DividerSwitchPreference
@@ -157,6 +158,17 @@ fun MainScreen(
                     checked = disable,
                     onCheckedChange = {
                         state.setAdaptiveBrightnessDisabled(it)
+                    }
+                )
+            }
+            item {
+                val show by state.showGameToolsHandle.collectAsState(initial = DEFAULT_SHOW_GAME_TOOLS_HANDLE)
+                SwitchPreference(
+                    title = stringResource(id = R.string.show_game_tools_handle),
+                    summary = stringResource(id = R.string.show_game_tools_handle_summary),
+                    checked = show,
+                    onCheckedChange = {
+                        state.setShowGameToolsHandle(it)
                     }
                 )
             }

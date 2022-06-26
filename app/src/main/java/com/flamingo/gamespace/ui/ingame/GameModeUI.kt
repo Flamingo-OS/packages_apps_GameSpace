@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +29,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
@@ -47,30 +49,33 @@ fun GameModeUI(
         Box(modifier = Modifier.fillMaxSize()) {
             val gameToolsHandleState =
                 rememberGameToolsHandleState(settingsRepository = settingsRepository)
-            var handlePosition by remember { mutableStateOf(Offset.Zero) }
-            LaunchedEffect(packageName, gameToolsHandleState.orientation) {
-                gameToolsHandleState.getGameToolsHandlePosition(packageName).collectLatest {
-                    handlePosition = it
+            val shouldShowHandle by gameToolsHandleState.showGameToolsHandle.collectAsState(initial = DEFAULT_SHOW_GAME_TOOLS_HANDLE)
+            if (shouldShowHandle) {
+                var handlePosition by remember { mutableStateOf(Offset.Zero) }
+                LaunchedEffect(packageName, gameToolsHandleState.orientation) {
+                    gameToolsHandleState.getGameToolsHandlePosition(packageName).collectLatest {
+                        handlePosition = it
+                    }
                 }
+                val updatedPackageName by rememberUpdatedState(newValue = packageName)
+                GameToolsHandle(
+                    position = handlePosition,
+                    onHandleDragged = {
+                        handlePosition = it
+                    },
+                    onDragStop = {
+                        gameToolsHandleState.setGameToolsHandleOffset(
+                            updatedPackageName,
+                            handlePosition
+                        )
+                    },
+                    state = gameToolsHandleState,
+                    modifier = Modifier.fillMaxSize(),
+                    config = config,
+                    serviceCallback = serviceCallback,
+                    settingsRepository = settingsRepository
+                )
             }
-            val updatedPackageName by rememberUpdatedState(newValue = packageName)
-            GameToolsHandle(
-                position = handlePosition,
-                onHandleDragged = {
-                    handlePosition = it
-                },
-                onDragStop = {
-                    gameToolsHandleState.setGameToolsHandleOffset(
-                        updatedPackageName,
-                        handlePosition
-                    )
-                },
-                state = gameToolsHandleState,
-                modifier = Modifier.fillMaxSize(),
-                config = config,
-                serviceCallback = serviceCallback,
-                settingsRepository = settingsRepository
-            )
         }
     }
 }

@@ -89,6 +89,9 @@ class MainScreenState(
     val disableAdaptiveBrightness: Flow<Boolean>
         get() = settingsRepository.disableAdaptiveBrightness
 
+    val showGameToolsHandle: Flow<Boolean>
+        get() = settingsRepository.showGameToolsHandle
+
     init {
         coroutineScope.launch {
             updateSettings()
@@ -177,6 +180,12 @@ class MainScreenState(
     fun setAdaptiveBrightnessDisabled(disabled: Boolean) {
         coroutineScope.launch {
             settingsRepository.setAdaptiveBrightnessDisabled(disabled)
+        }
+    }
+
+    fun setShowGameToolsHandle(show: Boolean) {
+        coroutineScope.launch {
+            settingsRepository.setShowGameToolsHandle(show)
         }
     }
 

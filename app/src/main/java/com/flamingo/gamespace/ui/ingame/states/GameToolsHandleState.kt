@@ -46,6 +46,9 @@ class GameToolsHandleState(
     private val coroutineScope: CoroutineScope
 ) {
 
+    val showGameToolsHandle: Flow<Boolean>
+        get() = settingsRepository.showGameToolsHandle
+
     val windowSize: IntSize
 
     init {
