@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
+import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.android.systemui.statusbar.phone.DEFAULT_GAMESPACE_DYNAMIC_MODE
@@ -66,6 +67,10 @@ class MainScreenState(
                         disableFullscreenIntent =
                             getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT)
                     }
+                    Settings.System.GAMESPACE_DISABLE_CALL_RINGING -> {
+                        disableCallRinging =
+                            getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
+                    }
                 }
             }
         }
@@ -81,6 +86,9 @@ class MainScreenState(
         private set
 
     var disableFullscreenIntent by mutableStateOf(DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT)
+        private set
+
+    var disableCallRinging by mutableStateOf(DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
         private set
 
     val ringerMode: Flow<RingerMode>
@@ -111,6 +119,10 @@ class MainScreenState(
             Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
             DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
         )
+        disableCallRinging = getBoolSetting(
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
+            DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+        )
     }
 
     internal fun registerSettingsObservers() {
@@ -118,7 +130,8 @@ class MainScreenState(
             Settings.System.GAMESPACE_ENABLED,
             Settings.System.GAMESPACE_DYNAMIC_MODE,
             Settings.System.GAMESPACE_DISABLE_HEADSUP,
-            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT
+            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING
         )
     }
 
@@ -161,6 +174,13 @@ class MainScreenState(
     fun setFullScreenIntentDisabledSetting(disabled: Boolean) {
         updateSetting(
             Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
+            if (disabled) 1 else 0
+        )
+    }
+
+    fun setCallRingingDisabled(disabled: Boolean) {
+        updateSetting(
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
             if (disabled) 1 else 0
         )
     }

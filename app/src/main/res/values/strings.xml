@@ -54,6 +54,9 @@
     <string name="show_game_tools_handle">Show game tools handle</string>
     <string name="show_game_tools_handle_summary">Whether to show a floating icon that shows extra tools in a dialog on tap</string>
 
+    <!-- Disable call ringing -->
+    <string name="disable_call_ringing">Disable call ringing</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>

@@ -172,6 +172,15 @@ fun MainScreen(
                     }
                 )
             }
+            item {
+                SwitchPreference(
+                    title = stringResource(id = R.string.disable_call_ringing),
+                    checked = state.disableCallRinging,
+                    onCheckedChange = {
+                        state.setCallRingingDisabled(it)
+                    }
+                )
+            }
         }
     }
 }
