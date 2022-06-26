@@ -34,14 +34,14 @@ import com.flamingo.gamespace.data.settings.DEFAULT_RINGER_MODE
 import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.ui.Route
-import com.flamingo.gamespace.ui.preferences.DividerSwitchPreference
-import com.flamingo.gamespace.ui.preferences.Entry
-import com.flamingo.gamespace.ui.preferences.ListPreference
-import com.flamingo.gamespace.ui.preferences.Preference
-import com.flamingo.gamespace.ui.preferences.PrimarySwitchPreference
-import com.flamingo.gamespace.ui.preferences.SwitchPreference
 import com.flamingo.gamespace.ui.states.MainScreenState
-import com.flamingo.gamespace.ui.widgets.CollapsingToolbarScreen
+import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
+import com.flamingo.support.compose.ui.preferences.DividerSwitchPreference
+import com.flamingo.support.compose.ui.preferences.Entry
+import com.flamingo.support.compose.ui.preferences.ListPreference
+import com.flamingo.support.compose.ui.preferences.Preference
+import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
+import com.flamingo.support.compose.ui.preferences.SwitchPreference
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -55,7 +55,7 @@ fun MainScreen(
     modifier: Modifier = Modifier,
     systemUiController: SystemUiController = rememberSystemUiController()
 ) {
-    CollapsingToolbarScreen(
+    CollapsingToolbarLayout(
         modifier = modifier,
         title = stringResource(id = R.string.app_name),
         onBackButtonPressed = onBackPressed,

@@ -47,7 +47,7 @@ import com.flamingo.gamespace.R
 import com.flamingo.gamespace.ui.states.AppInfo
 import com.flamingo.gamespace.ui.states.AppSelectScreenState
 import com.flamingo.gamespace.ui.states.rememberAppSelectScreenState
-import com.flamingo.gamespace.ui.widgets.CollapsingToolbarScreen
+import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -58,7 +58,7 @@ fun AppSelectScreen(
     state: AppSelectScreenState = rememberAppSelectScreenState(),
     systemUiController: SystemUiController = rememberSystemUiController()
 ) {
-    CollapsingToolbarScreen(
+    CollapsingToolbarLayout(
         title = stringResource(id = R.string.select_apps),
         onBackButtonPressed = onBackPressed,
         systemUiController = systemUiController,

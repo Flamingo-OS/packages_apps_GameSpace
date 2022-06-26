@@ -37,11 +37,11 @@ import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
 import com.flamingo.gamespace.ui.Route
-import com.flamingo.gamespace.ui.preferences.DiscreteSeekBarPreference
-import com.flamingo.gamespace.ui.preferences.Preference
-import com.flamingo.gamespace.ui.preferences.PrimarySwitchPreference
 import com.flamingo.gamespace.ui.states.NotificationOverlayScreenState
-import com.flamingo.gamespace.ui.widgets.CollapsingToolbarScreen
+import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
+import com.flamingo.support.compose.ui.preferences.DiscreteSeekBarPreference
+import com.flamingo.support.compose.ui.preferences.Preference
+import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -55,7 +55,7 @@ fun NotificationOverlayScreen(
     val enabled by state.notificationOverlayEnabled.collectAsState(
         DEFAULT_NOTIFICATION_OVERLAY_ENABLED
     )
-    CollapsingToolbarScreen(
+    CollapsingToolbarLayout(
         modifier = modifier,
         title = stringResource(id = R.string.notification_overlay),
         onBackButtonPressed = {

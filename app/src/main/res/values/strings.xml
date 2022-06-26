@@ -17,7 +17,6 @@
     <string name="app_name">GameSpace</string>
 
     <!-- Main screen -->
-    <string name="back_button_content_desc">Back button</string>
     <string name="main_screen_intro_text">Extra features for immersive gaming experience</string>
     <string name="enable_gamespace">Enable gamespace</string>
     <string name="dynamic_mode">Dynamic mode</string>

@@ -17,7 +17,6 @@
     <string name="app_name">遊戲空間</string>
 
     <!-- Main screen -->
-    <string name="back_button_content_desc">返回按鈕</string>
     <string name="main_screen_intro_text">盡享遊戲帶來的快樂吧！</string>
     <string name="enable_gamespace">遊戲模式</string>
     <string name="dynamic_mode">動態模式</string>

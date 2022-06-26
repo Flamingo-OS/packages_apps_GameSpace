@@ -31,10 +31,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
-import com.flamingo.gamespace.ui.preferences.Preference
 import com.flamingo.gamespace.ui.states.AppInfo
 import com.flamingo.gamespace.ui.states.NotificationOverlayBlackListScreenState
-import com.flamingo.gamespace.ui.widgets.CollapsingToolbarScreen
+import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
+import com.flamingo.support.compose.ui.preferences.Preference
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -45,7 +45,7 @@ fun NotificationOverlayBlackListScreen(
     state: NotificationOverlayBlackListScreenState,
     systemUiController: SystemUiController = rememberSystemUiController()
 ) {
-    CollapsingToolbarScreen(
+    CollapsingToolbarLayout(
         title = stringResource(id = R.string.blacklisted_apps),
         onBackButtonPressed = onBackButtonPressed,
         systemUiController = systemUiController,
