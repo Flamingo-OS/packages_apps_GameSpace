@@ -27,6 +27,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -43,6 +45,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -143,10 +146,7 @@ fun GameToolsHandle(
             }
         }
         val updatedPosition by rememberUpdatedState(newValue = position)
-        Image(
-            painter = painterResource(id = R.drawable.baseline_gamepad_24),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(color = Color.White),
+        Handle(
             modifier = Modifier
                 .offset {
                     updatedPosition.round()
@@ -175,6 +175,24 @@ fun GameToolsHandle(
                         showToolsDialog = true
                     }
                 }
+        )
+    }
+}
+
+@Composable
+fun Handle(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.background(
+            color = Color(0, 0, 0, 120),
+            shape = CircleShape
+        ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.baseline_gamepad_24),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(color = Color.White),
+            modifier = Modifier.padding(8.dp)
         )
     }
 }
