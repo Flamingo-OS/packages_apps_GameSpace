@@ -24,6 +24,9 @@ import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.expandHorizontally
 import androidx.compose.animation.shrinkHorizontally
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_DURATION
 import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayState
@@ -61,36 +66,40 @@ fun NotificationOverlay(
             state.removeNotification()
         }
     }
-    Box(modifier = modifier) {
-        AnimatedVisibility(
-            visibleState = showNotificationOverlay,
-            enter = expandHorizontally(),
-            exit = shrinkHorizontally(),
-            modifier = Modifier.align(Alignment.TopCenter)
-        ) {
-            AnimatedContent(
-                targetState = state.notification,
-                contentAlignment = Alignment.TopCenter
+    BoxWithConstraints(modifier = modifier.padding(top = 24.dp), contentAlignment = Alignment.TopCenter) {
+        Box(modifier = Modifier.width(maxWidth * 0.7f)) {
+            AnimatedVisibility(
+                visibleState = showNotificationOverlay,
+                enter = expandHorizontally(),
+                exit = shrinkHorizontally(),
+                modifier = Modifier.align(Alignment.TopCenter)
             ) {
-                val size by state.size.collectAsState(state.defaultSize)
-                val sizeInSp = with(LocalDensity.current) { size.toSp() }
-                Text(
-                    text = it ?: "",
-                    color = Color.White,
-                    fontSize = sizeInSp
-                )
-                val isFullyVisible by remember {
-                    derivedStateOf {
-                        this@AnimatedContent.transition.currentState == EnterExitState.Visible
+                AnimatedContent(
+                    targetState = state.notification,
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    val size by state.size.collectAsState(state.defaultSize)
+                    val sizeInSp = with(LocalDensity.current) { size.toSp() }
+                    Text(
+                        text = it ?: "",
+                        color = Color.White,
+                        fontSize = sizeInSp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    val isFullyVisible by remember {
+                        derivedStateOf {
+                            this@AnimatedContent.transition.currentState == EnterExitState.Visible
+                        }
                     }
-                }
-                val visibleDuration by state.visibleDuration.collectAsState(
-                    DEFAULT_NOTIFICATION_OVERLAY_DURATION
-                )
-                LaunchedEffect(isFullyVisible, visibleDuration) {
-                    if (isFullyVisible) {
-                        delay(visibleDuration)
-                        showNotificationOverlay.targetState = false
+                    val visibleDuration by state.visibleDuration.collectAsState(
+                        DEFAULT_NOTIFICATION_OVERLAY_DURATION
+                    )
+                    LaunchedEffect(isFullyVisible, visibleDuration) {
+                        if (isFullyVisible) {
+                            delay(visibleDuration)
+                            showNotificationOverlay.targetState = false
+                        }
                     }
                 }
             }
