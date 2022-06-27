@@ -24,7 +24,7 @@
     <string name="disable_headsup">禁用浮动通知</string>
     <string name="disable_headsup_summary">是否在游戏时禁用浮动通知和气泡</string>
     <string name="disable_fullscreen_intent">禁止全屏</string>
-    <string name="disable_fullscreen_intent_summary">打开后将在游戏时禁止其他应用全屏显示（通话屏幕等）</string>
+    <string name="disable_fullscreen_intent_summary">开启后将在游戏时禁止其他应用全屏显示（通话屏幕等）</string>
 
     <!-- Select apps -->
     <string name="select_apps">选择应用</string>
@@ -48,6 +48,13 @@
 
     <!-- Disable adaptive brightness -->
     <string name="disable_adaptive_brightness">禁用自动亮度</string>
+
+    <!-- Show game tools handle -->
+    <string name="show_game_tools_handle">游戏控制台</string>
+    <string name="show_game_tools_handle_summary">开启后将在游戏时显示一个浮动图标，点击时将显示更多游戏工具</string>
+
+    <!-- Disable call ringing -->
+    <string name="disable_call_ringing">禁用来电响铃</string>
 
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">游戏空间</string>
