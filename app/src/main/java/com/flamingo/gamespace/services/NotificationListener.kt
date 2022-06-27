@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.services
 
 import android.app.Notification
+import android.app.NotificationManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 
@@ -34,6 +35,15 @@ class NotificationListener : NotificationListenerService() {
             sbn.isContentSecure ||
             blackList.contains(sbn.packageName)
         ) return
+
+        val ranking = Ranking()
+        if (rankingMap.getRanking(
+                sbn.key,
+                ranking
+            ) && ranking.importance < NotificationManager.IMPORTANCE_DEFAULT
+        ) {
+            return
+        }
 
         val extras = sbn.notification.extras
         val title = extras.getString(Notification.EXTRA_TITLE)
