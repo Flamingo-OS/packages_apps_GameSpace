@@ -49,6 +49,13 @@
     <!-- Disable adaptive brightness -->
     <string name="disable_adaptive_brightness">禁用自動亮度</string>
 
+    <!-- Show game tools handle -->
+    <string name="show_game_tools_handle">遊戲控制檯</string>
+    <string name="show_game_tools_handle_summary">開啟後將在遊戲時顯示一個浮動圖示，點選時將顯示更多遊戲工具</string>
+
+    <!-- Disable call ringing -->
+    <string name="disable_call_ringing">禁用來電響鈴</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">遊戲空間</string>
     <string name="gaming_mode_active">遊戲模式已啟用</string>
