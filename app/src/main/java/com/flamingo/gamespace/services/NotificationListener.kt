@@ -46,12 +46,19 @@ class NotificationListener : NotificationListenerService() {
         }
 
         val extras = sbn.notification.extras
+        var notificationText = ""
         val title = extras.getString(Notification.EXTRA_TITLE)
             ?: extras.getString(Notification.EXTRA_TITLE_BIG)
-        var notificationText = "[$title]"
+        if (title != null) {
+            notificationText += "[$title]"
+        }
         val text = extras.getString(Notification.EXTRA_TEXT)
         if (text?.isNotBlank() == true) {
-            notificationText += ": $text"
+            notificationText += if (title != null) {
+                ": $text"
+            } else {
+                "$text"
+            }
         }
         onNotificationPosted?.invoke(sbn.id, notificationText)
     }
