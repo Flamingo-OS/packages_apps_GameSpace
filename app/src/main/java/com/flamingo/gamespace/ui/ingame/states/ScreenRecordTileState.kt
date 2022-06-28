@@ -28,10 +28,8 @@ import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCall
 
 class ScreenRecordTileState(
     private val onRecordingStateChangeRequest: (Boolean) -> Unit,
-    config: Bundle
+    val isRecording: Boolean
 ) {
-    val isRecording = config.getBoolean(CONFIG_SCREEN_RECORD)
-
     fun toggleRecordingState() {
         onRecordingStateChangeRequest(!isRecording)
     }
@@ -42,10 +40,11 @@ fun rememberScreenRecordTileState(
     config: Bundle,
     serviceCallback: GameSpaceServiceCallback?
 ): ScreenRecordTileState {
+    val isRecording = remember(config) { config.getBoolean(CONFIG_SCREEN_RECORD) }
     val callback by rememberUpdatedState(newValue = serviceCallback)
-    return remember(config) {
+    return remember(isRecording) {
         ScreenRecordTileState(
-            config = config,
+            isRecording = isRecording,
             onRecordingStateChangeRequest = {
                 if (it) {
                     callback?.startScreenRecording()

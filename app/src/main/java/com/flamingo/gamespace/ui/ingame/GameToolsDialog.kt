@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.media.AudioManager
+import android.os.Bundle
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
+import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.AdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
@@ -87,6 +89,8 @@ private val CornerSize = 16.dp
 @Composable
 fun GameToolsDialog(
     state: GameToolsDialogState,
+    config: Bundle,
+    serviceCallback: GameSpaceServiceCallback?,
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,8 +134,8 @@ fun GameToolsDialog(
                 LockGestureTile(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     state = rememberLockGestureTileState(
-                        config = state.config,
-                        serviceCallback = state.serviceCallback,
+                        config = config,
+                        serviceCallback = serviceCallback,
                     )
                 )
                 NotificationOverlayTile(
@@ -141,21 +145,21 @@ fun GameToolsDialog(
                 RingerModeTile(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     state = rememberRingerModeTileState(
-                        config = state.config,
-                        serviceCallback = state.serviceCallback,
+                        config = config,
+                        serviceCallback = serviceCallback,
                     )
                 )
                 AdaptiveBrightnessTile(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     state = rememberAdaptiveBrightnessTileState(
-                        serviceCallback = state.serviceCallback,
+                        serviceCallback = serviceCallback,
                     )
                 )
                 ScreenRecordTile(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     state = rememberScreenRecordTileState(
-                        config = state.config,
-                        serviceCallback = state.serviceCallback
+                        config = config,
+                        serviceCallback = serviceCallback
                     )
                 )
             }

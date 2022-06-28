@@ -118,11 +118,7 @@ fun GameToolsHandle(
                 .fillMaxSize()
                 .zIndex(1f),
         ) {
-            val dialogState = rememberGameToolsDialogState(
-                config = config,
-                serviceCallback = serviceCallback,
-                settingsRepository = settingsRepository
-            )
+            val dialogState = rememberGameToolsDialogState(settingsRepository = settingsRepository)
             GameToolsDialog(
                 modifier = Modifier.defaultMinSize(
                     minWidth = if (maxWidth < maxHeight) {
@@ -134,6 +130,8 @@ fun GameToolsHandle(
                 onDismissRequest = {
                     showToolsDialog = false
                 },
+                config = config,
+                serviceCallback = serviceCallback,
                 state = dialogState
             )
         }

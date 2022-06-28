@@ -40,16 +40,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class LockGestureTileState(
-    config: Bundle,
     private val context: Context,
     private val coroutineScope: CoroutineScope,
-    private val onToggleState: (Boolean) -> Unit
+    private val onToggleState: (Boolean) -> Unit,
+    val isLocked: Boolean
 ) {
 
     var shouldShowTile by mutableStateOf(false)
         private set
-
-    val isLocked = config.getBoolean(CONFIG_BACK_GESTURE_LOCKED, false)
 
     private val settingsObserver = object : ContentObserver(null) {
         override fun onChange(selfChange: Boolean) {
@@ -102,9 +100,10 @@ fun rememberLockGestureTileState(
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     serviceCallback: GameSpaceServiceCallback?
 ): LockGestureTileState {
-    val state = remember(config, context, coroutineScope, serviceCallback) {
+    val isLocked = remember(config) { config.getBoolean(CONFIG_BACK_GESTURE_LOCKED) }
+    val state = remember(isLocked, context, coroutineScope, serviceCallback) {
         LockGestureTileState(
-            config = config,
+            isLocked = isLocked,
             context = context,
             coroutineScope = coroutineScope,
             onToggleState = {

@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
-import android.os.Bundle
 import android.os.RemoteException
 import android.util.Log
 
@@ -39,7 +38,6 @@ import androidx.compose.ui.platform.LocalContext
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.SettingsRepository
-import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import java.text.DateFormat
 import java.util.Locale
@@ -55,8 +53,6 @@ import kotlinx.coroutines.withContext
 
 class GameToolsDialogState(
     private val context: Context,
-    val serviceCallback: GameSpaceServiceCallback?,
-    val config: Bundle,
     val settingsRepository: SettingsRepository,
     coroutineScope: CoroutineScope
 ) {
@@ -172,15 +168,11 @@ class GameToolsDialogState(
 fun rememberGameToolsDialogState(
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    config: Bundle,
-    settingsRepository: SettingsRepository,
-    serviceCallback: GameSpaceServiceCallback?,
+    settingsRepository: SettingsRepository
 ): GameToolsDialogState {
-    val state = remember(context, config, settingsRepository, serviceCallback, coroutineScope) {
+    val state = remember(context, settingsRepository, coroutineScope) {
         GameToolsDialogState(
             context = context,
-            config = config,
-            serviceCallback = serviceCallback,
             settingsRepository = settingsRepository,
             coroutineScope = coroutineScope
         )

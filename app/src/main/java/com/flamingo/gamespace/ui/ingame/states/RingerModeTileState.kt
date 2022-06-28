@@ -29,12 +29,10 @@ import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCall
 
 class RingerModeTileState(
     resources: Resources,
-    config: Bundle,
     private val onRingerModeChangeRequest: (Int) -> Unit,
+    val ringerMode: Int
 ) {
     val shouldShowTile = !resources.getBoolean(com.android.internal.R.bool.config_hasAlertSlider)
-
-    val ringerMode = config.getInt(CONFIG_RINGER_MODE, AudioManager.RINGER_MODE_NORMAL)
 
     fun cycleToNextMode() {
         val nextMode = when (ringerMode) {
@@ -52,10 +50,11 @@ fun rememberRingerModeTileState(
     config: Bundle,
     serviceCallback: GameSpaceServiceCallback?
 ): RingerModeTileState {
-    return remember(resources, config) {
+    val ringerMode = remember(config) { config.getInt(CONFIG_RINGER_MODE, AudioManager.RINGER_MODE_NORMAL) }
+    return remember(resources, ringerMode) {
         RingerModeTileState(
             resources = resources,
-            config = config,
+            ringerMode = ringerMode,
             onRingerModeChangeRequest = {
                 serviceCallback?.setRingerMode(it)
             }
