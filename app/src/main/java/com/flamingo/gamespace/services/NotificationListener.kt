@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.services
 
 import android.app.Notification
+import android.app.Notification.CallStyle
 import android.app.NotificationManager
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
@@ -30,11 +31,8 @@ class NotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification, rankingMap: RankingMap) {
         super.onNotificationPosted(sbn, rankingMap)
-        if (!sbn.isClearable ||
-            sbn.isOngoing ||
-            sbn.isContentSecure ||
-            blackList.contains(sbn.packageName)
-        ) return
+        if (sbn.isContentSecure || blackList.contains(sbn.packageName)) return
+        if (!isImportantNotification(sbn) && (!sbn.isClearable || sbn.isOngoing)) return
 
         val ranking = Ranking()
         if (rankingMap.getRanking(
@@ -62,6 +60,11 @@ class NotificationListener : NotificationListenerService() {
         }
         onNotificationPosted?.invoke(sbn.id, notificationText)
     }
+
+    private fun isImportantNotification(sbn: StatusBarNotification): Boolean =
+        sbn.notification.isStyle(CallStyle::class.java) ||
+                sbn.notification.category == Notification.CATEGORY_CALL ||
+                sbn.notification.category == Notification.CATEGORY_ALARM
 
     override fun onNotificationRemoved(sbn: StatusBarNotification, rankingMap: RankingMap) {
         super.onNotificationRemoved(sbn, rankingMap)
