@@ -165,7 +165,7 @@ fun GameToolsDialog(
             }
             state.memoryInfo?.let {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
