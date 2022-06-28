@@ -25,7 +25,7 @@ jobs:
 
       - name: Clone our prebuilts
         run: |
-          git clone https://github.com/Flamingo-OS/vendor_prebuilts
+          git clone https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/Flamingo-OS/vendor_prebuilts
           mkdir app/libs
           cp vendor_prebuilts/libs/framework.jar vendor_prebuilts/libs/support-compose.aar app/libs/
 
@@ -71,5 +71,5 @@ jobs:
           git pull
           git add .
           git diff-index --quiet HEAD || git commit -m "Update GameSpace APK for ${{ env.GIT_LINK }}"
-          git remote add origin https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/Flamingo-OS/vendor_prebuilts
+          git remote set-url origin https://.:${{ secrets.API_TOKEN_GITHUB }}@github.com/Flamingo-OS/vendor_prebuilts
           git push origin A12.1
