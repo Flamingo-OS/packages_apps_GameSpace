@@ -122,10 +122,10 @@ fun GameToolsHandle(
             GameToolsDialog(
                 modifier = Modifier.defaultMinSize(
                     minWidth = if (maxWidth < maxHeight) {
-                        0.7 * maxWidth
+                        0.75
                     } else {
-                        0.4 * maxWidth
-                    }
+                        0.35
+                    } * maxWidth
                 ),
                 onDismissRequest = {
                     showToolsDialog = false
