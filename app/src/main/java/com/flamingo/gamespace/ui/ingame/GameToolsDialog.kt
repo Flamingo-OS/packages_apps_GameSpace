@@ -17,6 +17,8 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.media.AudioManager
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalAnimationApi
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
@@ -245,7 +247,7 @@ fun HorizontalGrid(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun Tile(
     icon: @Composable () -> Unit,
@@ -254,44 +256,49 @@ fun Tile(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Surface(
-        modifier = modifier.aspectRatio(1f),
-        shape = RoundedCornerShape(CornerSize),
-        color = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
-        onClick = onClick
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center
+    AnimatedContent(targetState = enabled) { highlightTile ->
+        Surface(
+            modifier = modifier.aspectRatio(1f),
+            shape = RoundedCornerShape(CornerSize),
+            color = if (highlightTile) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
+            onClick = onClick
         ) {
-            icon()
-            Spacer(modifier = Modifier.height(16.dp))
-            var shouldScrollText by remember { mutableStateOf(false) }
-            val scrollState = rememberScrollState()
-            LaunchedEffect(shouldScrollText) {
-                while (shouldScrollText) {
-                    scrollState.animateScrollTo(scrollState.maxValue, animationSpec = tween(1500))
-                    scrollState.scrollTo(0)
-                }
-            }
-            Text(
-                modifier = Modifier.then(
-                    if (shouldScrollText)
-                        Modifier.horizontalScroll(scrollState, enabled = false)
-                    else
-                        Modifier
-                ),
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
-                fontSize = TextUnit(14f, TextUnitType.Sp),
-                maxLines = 1,
-                onTextLayout = {
-                    if (it.hasVisualOverflow) {
-                        shouldScrollText = true
+            Column(
+                modifier = Modifier.padding(12.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Center
+            ) {
+                icon()
+                Spacer(modifier = Modifier.height(16.dp))
+                var shouldScrollText by remember { mutableStateOf(false) }
+                val scrollState = rememberScrollState()
+                LaunchedEffect(shouldScrollText) {
+                    while (shouldScrollText) {
+                        scrollState.animateScrollTo(
+                            scrollState.maxValue,
+                            animationSpec = tween(1500)
+                        )
+                        scrollState.scrollTo(0)
                     }
                 }
-            )
+                Text(
+                    modifier = Modifier.then(
+                        if (shouldScrollText)
+                            Modifier.horizontalScroll(scrollState, enabled = false)
+                        else
+                            Modifier
+                    ),
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontSize = TextUnit(14f, TextUnitType.Sp),
+                    maxLines = 1,
+                    onTextLayout = {
+                        if (it.hasVisualOverflow) {
+                            shouldScrollText = true
+                        }
+                    }
+                )
+            }
         }
     }
 }
