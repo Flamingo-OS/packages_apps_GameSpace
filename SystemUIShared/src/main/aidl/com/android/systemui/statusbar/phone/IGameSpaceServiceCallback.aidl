@@ -16,8 +16,10 @@
 
 package com.android.systemui.statusbar.phone;
 
-interface IGameSpaceServiceCallback {
-    oneway void setGesturalNavigationLocked(in boolean isLocked);
-    oneway void setRingerMode(in int mode);
-    oneway void setAdaptiveBrightnessDisabled(in boolean disabled);
+oneway interface IGameSpaceServiceCallback {
+    void setGesturalNavigationLocked(in boolean isLocked);
+    void setRingerMode(in int mode);
+    void setAdaptiveBrightnessDisabled(in boolean disabled);
+    void startScreenRecording();
+    void stopScreenRecording();
 }

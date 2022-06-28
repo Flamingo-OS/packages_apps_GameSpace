@@ -89,6 +89,10 @@
     <string name="adaptive_brightness">Adaptive brightness</string>
     <string name="adaptive_brightness_content_desc">Adaptive brightness tile</string>
 
+    <!-- Screen record tile -->
+    <string name="screen_record">Screen record</string>
+    <string name="screen_record_content_desc">Screen record tile</string>
+
     <!-- Memory info -->
     <string name="memory_info" translatable="false"><xliff:g example="3.1/8.0" id="memory">%1$s/%2$s GiB</xliff:g></string>
     <string name="memory_info_content_desc">Memory info</string>

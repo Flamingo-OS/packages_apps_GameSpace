@@ -17,9 +17,9 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.media.AudioManager
+
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -73,11 +73,13 @@ import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
 import com.flamingo.gamespace.ui.ingame.states.LockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.RingerModeTileState
+import com.flamingo.gamespace.ui.ingame.states.ScreenRecordTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberAdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberRingerModeTileState
+import com.flamingo.gamespace.ui.ingame.states.rememberScreenRecordTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberScreenshotTileState
 
 private val CornerSize = 16.dp
@@ -147,6 +149,13 @@ fun GameToolsDialog(
                     modifier = Modifier.width(IntrinsicSize.Min),
                     state = rememberAdaptiveBrightnessTileState(
                         serviceCallback = state.serviceCallback,
+                    )
+                )
+                ScreenRecordTile(
+                    modifier = Modifier.width(IntrinsicSize.Min),
+                    state = rememberScreenRecordTileState(
+                        config = state.config,
+                        serviceCallback = state.serviceCallback
                     )
                 )
             }
@@ -440,5 +449,26 @@ fun AdaptiveBrightnessTile(
         onClick = {
             state.toggleAdaptiveBrightness()
         }
+    )
+}
+
+@Composable
+fun ScreenRecordTile(
+    state: ScreenRecordTileState,
+    modifier: Modifier = Modifier,
+) {
+    Tile(
+        modifier = modifier,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_screenrecord),
+                contentDescription = stringResource(id = R.string.screen_record_content_desc)
+            )
+        },
+        title = stringResource(id = R.string.screen_record),
+        enabled = state.isRecording,
+        onClick = {
+            state.toggleRecordingState()
+        },
     )
 }

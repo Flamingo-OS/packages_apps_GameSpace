@@ -281,6 +281,22 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
                 )
             }
         }
+
+        fun startScreenRecording() {
+            try {
+                iGameSpaceServiceCallback.startScreenRecording()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to start screen recording", e)
+            }
+        }
+
+        fun stopScreenRecording() {
+            try {
+                iGameSpaceServiceCallback.stopScreenRecording()
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to stop screen recording", e)
+            }
+        }
     }
 
     companion object {
