@@ -160,7 +160,8 @@ fun GameToolsDialog(
                     state = rememberScreenRecordTileState(
                         config = config,
                         serviceCallback = serviceCallback
-                    )
+                    ),
+                    onDismissDialogRequest = onDismissRequest
                 )
             }
             state.memoryInfo?.let {
@@ -459,6 +460,7 @@ fun AdaptiveBrightnessTile(
 @Composable
 fun ScreenRecordTile(
     state: ScreenRecordTileState,
+    onDismissDialogRequest: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Tile(
@@ -472,6 +474,9 @@ fun ScreenRecordTile(
         title = stringResource(id = R.string.screen_record),
         enabled = state.isRecording,
         onClick = {
+            if (!state.isRecording) {
+                onDismissDialogRequest()
+            }
             state.toggleRecordingState()
         },
     )
