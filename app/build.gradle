@@ -78,6 +78,6 @@ dependencies {
     implementation 'com.google.protobuf:protobuf-javalite:3.18.0'
     compileOnly files('libs/framework.jar')
     implementation files('libs/support-compose.aar')
-    implementation project(':SystemUIShared')
+    implementation project(':SystemUIGameLib')
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
 }

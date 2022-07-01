@@ -37,13 +37,13 @@ jobs:
           mkdir app/libs
           cp vendor_prebuilts/libs/framework.jar vendor_prebuilts/libs/support-compose.aar app/libs/
 
-      - name: Sparse checkout SystemUIShared
+      - name: Sparse checkout SystemUIGameLib
         run: |
           git clone --depth=1 --filter=blob:none --sparse https://github.com/Flamingo-OS/frameworks_base -b A12.1
           cd frameworks_base
-          git sparse-checkout set packages/SystemUI/shared
+          git sparse-checkout set packages/SystemUI/game
           cd -
-          mv frameworks_base/packages/SystemUI/shared/ SystemUIShared
+          mv frameworks_base/packages/SystemUI/game/ SystemUIGameLib
 
       - name: Set up Java 11
         uses: actions/setup-java@v3

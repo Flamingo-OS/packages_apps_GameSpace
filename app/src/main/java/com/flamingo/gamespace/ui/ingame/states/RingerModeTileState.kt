@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
-import com.android.systemui.statusbar.phone.CONFIG_RINGER_MODE
+import com.android.systemui.game.CONFIG_RINGER_MODE
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 class RingerModeTileState(
