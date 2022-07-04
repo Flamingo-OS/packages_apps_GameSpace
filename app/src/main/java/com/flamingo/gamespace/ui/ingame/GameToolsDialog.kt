@@ -21,6 +21,7 @@ import android.os.Bundle
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -287,12 +288,20 @@ fun Tile(
                 var shouldScrollText by remember { mutableStateOf(false) }
                 val scrollState = rememberScrollState()
                 LaunchedEffect(shouldScrollText) {
-                    while (shouldScrollText) {
+                    if (shouldScrollText) {
                         scrollState.animateScrollTo(
                             scrollState.maxValue,
                             animationSpec = tween(1500)
                         )
-                        scrollState.scrollTo(0)
+                        scrollState.animateScrollTo(
+                            0,
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        )
+                    } else {
+                        scrollState.animateScrollTo(
+                            0,
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        )
                     }
                 }
                 Text(
