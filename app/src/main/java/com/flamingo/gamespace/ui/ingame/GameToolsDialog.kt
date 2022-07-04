@@ -61,6 +61,8 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.ExperimentalUnitApi
@@ -285,45 +287,62 @@ fun Tile(
             ) {
                 icon()
                 Spacer(modifier = Modifier.height(16.dp))
-                var shouldScrollText by remember { mutableStateOf(false) }
-                val scrollState = rememberScrollState()
-                LaunchedEffect(shouldScrollText) {
-                    if (shouldScrollText) {
-                        scrollState.animateScrollTo(
-                            scrollState.maxValue,
-                            animationSpec = tween(1500)
-                        )
-                        scrollState.animateScrollTo(
-                            0,
-                            animationSpec = tween(300, easing = FastOutSlowInEasing)
-                        )
-                    } else {
-                        scrollState.animateScrollTo(
-                            0,
-                            animationSpec = tween(300, easing = FastOutSlowInEasing)
-                        )
-                    }
-                }
-                Text(
-                    modifier = Modifier.then(
-                        if (shouldScrollText)
-                            Modifier.horizontalScroll(scrollState, enabled = false)
-                        else
-                            Modifier
-                    ),
+                MarqueeText(
                     text = title,
                     style = MaterialTheme.typography.bodyMedium,
                     fontSize = TextUnit(14f, TextUnitType.Sp),
                     maxLines = 1,
-                    onTextLayout = {
-                        if (it.hasVisualOverflow) {
-                            shouldScrollText = true
-                        }
-                    }
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
     }
+}
+
+@Composable
+fun MarqueeText(
+    text: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.labelMedium,
+    fontSize: TextUnit = TextUnit.Unspecified,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+) {
+    var shouldScrollText by remember { mutableStateOf(false) }
+    var scrolledOnce by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    LaunchedEffect(shouldScrollText, scrolledOnce) {
+        if (shouldScrollText && !scrolledOnce) {
+            scrollState.animateScrollTo(
+                scrollState.maxValue,
+                animationSpec = tween(1500)
+            )
+            scrollState.animateScrollTo(
+                0,
+                animationSpec = tween(300, easing = FastOutSlowInEasing)
+            )
+            scrolledOnce = true
+            shouldScrollText = false
+        }
+    }
+    Text(
+        modifier = modifier.then(
+            if (shouldScrollText && !scrolledOnce)
+                Modifier.horizontalScroll(scrollState, enabled = false)
+            else
+                Modifier
+        ),
+        text = text,
+        style = style,
+        fontSize = fontSize,
+        maxLines = maxLines,
+        overflow = overflow,
+        onTextLayout = {
+            if (it.hasVisualOverflow) {
+                shouldScrollText = true
+            }
+        }
+    )
 }
 
 @Composable
