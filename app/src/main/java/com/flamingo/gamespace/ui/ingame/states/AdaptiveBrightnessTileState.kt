@@ -18,6 +18,7 @@ package com.flamingo.gamespace.ui.ingame.states
 
 import android.content.ContentResolver
 import android.database.ContentObserver
+import android.os.UserHandle
 import android.provider.Settings
 
 import androidx.compose.runtime.Composable
@@ -58,10 +59,11 @@ class AdaptiveBrightnessTileState(
     private fun updateSettings() {
         coroutineScope.launch {
             isEnabled = withContext(Dispatchers.IO) {
-                Settings.System.getInt(
+                Settings.System.getIntForUser(
                     contentResolver,
                     Settings.System.SCREEN_BRIGHTNESS_MODE,
-                    Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL
+                    Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL,
+                    UserHandle.USER_CURRENT
                 ) == Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
             }
         }

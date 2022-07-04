@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.database.ContentObserver
+import android.os.UserHandle
 import android.provider.Settings
 
 import androidx.annotation.GuardedBy
@@ -92,9 +93,10 @@ class AppSelectScreenState(
 
     private suspend fun getSelectedList() =
         withContext(Dispatchers.IO) {
-            Settings.System.getString(
+            Settings.System.getStringForUser(
                 context.contentResolver,
-                Settings.System.GAMESPACE_PACKAGE_LIST
+                Settings.System.GAMESPACE_PACKAGE_LIST,
+                UserHandle.USER_CURRENT
             )?.split(DELIMITER)?.sorted() ?: emptyList()
         }
 
@@ -125,18 +127,20 @@ class AppSelectScreenState(
                 if (selected && !selectedList.contains(appInfo.packageName)) {
                     val newList = selectedList.toMutableList()
                     newList.add(appInfo.packageName)
-                    Settings.System.putString(
+                    Settings.System.putStringForUser(
                         context.contentResolver,
                         Settings.System.GAMESPACE_PACKAGE_LIST,
-                        newList.joinToString(DELIMITER)
+                        newList.joinToString(DELIMITER),
+                        UserHandle.USER_CURRENT
                     )
                 } else if (!selected && selectedList.contains(appInfo.packageName)) {
                     val newList = selectedList.toMutableList()
                     newList.remove(appInfo.packageName)
-                    Settings.System.putString(
+                    Settings.System.putStringForUser(
                         context.contentResolver,
                         Settings.System.GAMESPACE_PACKAGE_LIST,
-                        newList.joinToString(DELIMITER)
+                        newList.joinToString(DELIMITER),
+                        UserHandle.USER_CURRENT
                     )
                 }
             }
@@ -147,7 +151,8 @@ class AppSelectScreenState(
         context.contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.GAMESPACE_PACKAGE_LIST),
             false,
-            settingsObserver
+            settingsObserver,
+            UserHandle.USER_CURRENT
         )
     }
 

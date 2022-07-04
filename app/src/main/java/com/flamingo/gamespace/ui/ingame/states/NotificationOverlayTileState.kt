@@ -18,6 +18,7 @@ package com.flamingo.gamespace.ui.ingame.states
 
 import android.content.ContentResolver
 import android.database.ContentObserver
+import android.os.UserHandle
 import android.provider.Settings
 
 import androidx.compose.runtime.Composable
@@ -68,10 +69,11 @@ class NotificationOverlayTileState(
     }
 
     private suspend fun isHeadsUpDisabled() = withContext(Dispatchers.IO) {
-        Settings.System.getInt(
+        Settings.System.getIntForUser(
             contentResolver,
             Settings.System.GAMESPACE_DISABLE_HEADSUP,
-            if (DEFAULT_GAMESPACE_DISABLE_HEADSUP) 1 else 0
+            if (DEFAULT_GAMESPACE_DISABLE_HEADSUP) 1 else 0,
+            UserHandle.USER_CURRENT
         ) == 1
     }
 
@@ -85,7 +87,8 @@ class NotificationOverlayTileState(
         contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.GAMESPACE_DISABLE_HEADSUP),
             false,
-            settingsObserver
+            settingsObserver,
+            UserHandle.USER_CURRENT
         )
     }
 

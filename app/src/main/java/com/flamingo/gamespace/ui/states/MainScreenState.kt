@@ -19,6 +19,7 @@ package com.flamingo.gamespace.ui.states
 import android.content.ContentResolver
 import android.database.ContentObserver
 import android.net.Uri
+import android.os.UserHandle
 import android.provider.Settings
 
 import androidx.compose.runtime.Composable
@@ -140,14 +141,20 @@ class MainScreenState(
             contentResolver.registerContentObserver(
                 Settings.System.getUriFor(it),
                 false,
-                settingsObserver
+                settingsObserver,
+                UserHandle.USER_CURRENT
             )
         }
     }
 
     private suspend fun getBoolSetting(key: String, def: Boolean) =
         withContext(Dispatchers.IO) {
-            Settings.System.getInt(contentResolver, key, if (def) 1 else 0) == 1
+            Settings.System.getIntForUser(
+                contentResolver,
+                key,
+                if (def) 1 else 0,
+                UserHandle.USER_CURRENT
+            ) == 1
         }
 
     fun setGameSpaceEnabledSetting(enabled: Boolean) {
@@ -187,7 +194,7 @@ class MainScreenState(
 
     private fun updateSetting(key: String, value: Int) {
         coroutineScope.launch(Dispatchers.IO) {
-            Settings.System.putInt(contentResolver, key, value)
+            Settings.System.putIntForUser(contentResolver, key, value, UserHandle.USER_CURRENT)
         }
     }
 
