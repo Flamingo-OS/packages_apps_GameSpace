@@ -77,7 +77,11 @@ fun GameToolsHandle(
         var handleBounds by remember { mutableStateOf(Rect.Zero) }
         val handleTouchableRegion by remember {
             derivedStateOf {
-                Region(handleBounds.toAndroidRect())
+                if (handleBounds.isInfinite) {
+                    Region()
+                } else {
+                    Region(handleBounds.toAndroidRect())
+                }
             }
         }
         var showToolsDialog by remember { mutableStateOf(false) }
