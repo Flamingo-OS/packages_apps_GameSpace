@@ -37,10 +37,21 @@ message Settings {
   bool disable_adaptive_brightness = 9;
 
   bool show_game_tools_handle = 10;
+
+  repeated Tile tiles = 11;
 }
 
 enum RingerMode {
   NORMAL = 0;
   VIBRATE = 1;
   SILENT = 2;
+}
+
+enum Tile {
+  SCREENSHOT = 0;
+  LOCK_GESTURE = 1;
+  NOTIFICATION_OVERLAY = 2;
+  RINGER_MODE = 3;
+  ADAPTIVE_BRIGHTNESS = 4;
+  SCREEN_RECORD = 5;
 }

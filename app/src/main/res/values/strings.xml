@@ -43,6 +43,11 @@
     <string name="blacklisted_apps">Blacklisted apps</string>
     <string name="blacklisted_apps_summary">List of applications whose notifications should not be shown as an overlay on screen</string>
 
+    <!-- Tiles -->
+    <string name="game_tools_dialog_tiles">Game tools dialog tiles</string>
+    <string name="game_tools_dialog_tiles_summary">Configure tiles shown in game tools dialog</string>
+    <string name="tiles">Tiles</string>
+
     <!-- Preferred ringer mode -->
     <string name="preferred_ringer_mode">Preferred ringer mode</string>
 
@@ -78,6 +83,7 @@
     <string name="notification_overlay_content_desc">Notification overlay tile</string>
 
     <!-- Ringer mode tile -->
+    <string name="ringer_mode">Ringer mode</string>
     <string name="ring">Ring</string>
     <string name="ringer_mode_tile_normal_content_desc">Ringer mode tile in normal mode</string>
     <string name="vibrate">Vibrate</string>

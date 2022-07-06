@@ -50,10 +50,12 @@ import com.flamingo.gamespace.ui.screens.AppSelectScreen
 import com.flamingo.gamespace.ui.screens.MainScreen
 import com.flamingo.gamespace.ui.screens.NotificationOverlayBlackListScreen
 import com.flamingo.gamespace.ui.screens.NotificationOverlayScreen
+import com.flamingo.gamespace.ui.screens.TilesScreen
 import com.flamingo.gamespace.ui.states.NotificationOverlayScreenState
 import com.flamingo.gamespace.ui.states.rememberMainScreenState
 import com.flamingo.gamespace.ui.states.rememberNotificationOverlayBlackListScreenState
 import com.flamingo.gamespace.ui.states.rememberNotificationOverlayScreenState
+import com.flamingo.gamespace.ui.states.rememberTileScreenState
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -179,6 +181,7 @@ fun NavGraphBuilder.mainGraph(
         exitTransition = {
             when (targetState.destination.route) {
                 Route.Main.SELECT_APPS_SCREEN,
+                Route.Main.TILES_SCREEN,
                 Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN -> slideOutOfContainer(
                     AnimatedContentScope.SlideDirection.Start,
                     tween(TransitionAnimationDuration)
@@ -189,6 +192,7 @@ fun NavGraphBuilder.mainGraph(
         popEnterTransition = {
             when (initialState.destination.route) {
                 Route.Main.SELECT_APPS_SCREEN,
+                Route.Main.TILES_SCREEN,
                 Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN -> slideIntoContainer(
                     AnimatedContentScope.SlideDirection.End,
                     tween(TransitionAnimationDuration)
@@ -215,6 +219,17 @@ fun NavGraphBuilder.mainGraph(
                 navHostController.popBackStack()
             },
             isEnterAnimationRunning = transition.currentState == EnterExitState.PreEnter
+        )
+    }
+    childComposable(
+        Route.Main.TILES_SCREEN,
+        Route.Main.MAIN_SCREEN
+    ) {
+        TilesScreen(
+            onBackPressed = {
+                navHostController.popBackStack()
+            },
+            state = rememberTileScreenState(settingsRepository = settingsRepository)
         )
     }
 }
@@ -292,6 +307,7 @@ sealed class Route(val name: String) {
     object Main : Route("main") {
         const val MAIN_SCREEN = "main_screen"
         const val SELECT_APPS_SCREEN = "select_apps_screen"
+        const val TILES_SCREEN = "tiles_screen"
     }
 
     object NotificationOverlay : Route("notification_overlay") {

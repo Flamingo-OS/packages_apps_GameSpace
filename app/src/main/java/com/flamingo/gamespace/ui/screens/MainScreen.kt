@@ -52,6 +52,7 @@ fun MainScreen(
     state: MainScreenState,
     modifier: Modifier = Modifier
 ) {
+    val showGameToolsHandle by state.showGameToolsHandle.collectAsState(initial = DEFAULT_SHOW_GAME_TOOLS_HANDLE)
     CollapsingToolbarLayout(
         modifier = modifier,
         title = stringResource(id = R.string.app_name),
@@ -158,15 +159,25 @@ fun MainScreen(
                 )
             }
             item {
-                val show by state.showGameToolsHandle.collectAsState(initial = DEFAULT_SHOW_GAME_TOOLS_HANDLE)
                 SwitchPreference(
                     title = stringResource(id = R.string.show_game_tools_handle),
                     summary = stringResource(id = R.string.show_game_tools_handle_summary),
-                    checked = show,
+                    checked = showGameToolsHandle,
                     onCheckedChange = {
                         state.setShowGameToolsHandle(it)
                     }
                 )
+            }
+            if (showGameToolsHandle) {
+                item {
+                    Preference(
+                        title = stringResource(id = R.string.game_tools_dialog_tiles),
+                        summary = stringResource(id = R.string.game_tools_dialog_tiles_summary),
+                        onClick = {
+                            navHostController.navigate(Route.Main.TILES_SCREEN)
+                        }
+                    )
+                }
             }
             item {
                 SwitchPreference(

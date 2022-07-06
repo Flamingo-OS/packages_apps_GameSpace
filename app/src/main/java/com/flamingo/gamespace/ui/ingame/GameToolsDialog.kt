@@ -72,6 +72,8 @@ import androidx.compose.ui.unit.dp
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
+import com.flamingo.gamespace.data.settings.DEFAULT_TILES_LIST
+import com.flamingo.gamespace.data.settings.Tile
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.AdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.GameToolsDialogState
@@ -130,46 +132,66 @@ fun GameToolsDialog(
                 rowPadding = 8.dp,
                 modifier = Modifier.padding(vertical = 8.dp)
             ) {
-                ScreenshotTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    onDismissDialogRequest = onDismissRequest
-                )
-                LockGestureTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    state = rememberLockGestureTileState(
-                        config = config,
-                        serviceCallback = serviceCallback,
-                    )
-                )
-                NotificationOverlayTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
-                )
-                RingerModeTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    state = rememberRingerModeTileState(
-                        config = config,
-                        serviceCallback = serviceCallback,
-                    )
-                )
-                AdaptiveBrightnessTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    state = rememberAdaptiveBrightnessTileState(
-                        serviceCallback = serviceCallback,
-                    )
-                )
-                ScreenRecordTile(
-                    modifier = Modifier.width(IntrinsicSize.Min),
-                    state = rememberScreenRecordTileState(
-                        config = config,
-                        serviceCallback = serviceCallback
-                    ),
-                    onDismissDialogRequest = onDismissRequest
-                )
+                val tiles by state.tiles.collectAsState(initial = DEFAULT_TILES_LIST)
+                tiles.forEach {
+                    when (it) {
+                        Tile.LOCK_GESTURE -> {
+                            LockGestureTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                state = rememberLockGestureTileState(
+                                    config = config,
+                                    serviceCallback = serviceCallback,
+                                )
+                            )
+                        }
+                        Tile.NOTIFICATION_OVERLAY -> {
+                            NotificationOverlayTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                            )
+                        }
+                        Tile.SCREENSHOT -> {
+                            ScreenshotTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                onDismissDialogRequest = onDismissRequest
+                            )
+                        }
+                        Tile.RINGER_MODE -> {
+                            RingerModeTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                state = rememberRingerModeTileState(
+                                    config = config,
+                                    serviceCallback = serviceCallback,
+                                )
+                            )
+                        }
+                        Tile.ADAPTIVE_BRIGHTNESS -> {
+                            AdaptiveBrightnessTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                state = rememberAdaptiveBrightnessTileState(
+                                    serviceCallback = serviceCallback,
+                                )
+                            )
+                        }
+                        Tile.SCREEN_RECORD -> {
+                            ScreenRecordTile(
+                                modifier = Modifier.width(IntrinsicSize.Min),
+                                state = rememberScreenRecordTileState(
+                                    config = config,
+                                    serviceCallback = serviceCallback
+                                ),
+                                onDismissDialogRequest = onDismissRequest
+                            )
+                        }
+                        Tile.UNRECOGNIZED -> {}
+                    }
+                }
             }
             state.memoryInfo?.let {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Icon(
@@ -235,7 +257,7 @@ fun HorizontalGrid(
             ): Int {
                 return measurables.chunked(columns)
                     .map { row -> row.sumOf { cell -> cell.minIntrinsicWidth(height) } }
-                    .maxOf { it }
+                    .maxOfOrNull { it } ?: 0
             }
 
             override fun IntrinsicMeasureScope.minIntrinsicHeight(
@@ -244,16 +266,17 @@ fun HorizontalGrid(
             ): Int {
                 return measurables.chunked(columns)
                     .map { row -> row.maxOf { cell -> cell.minIntrinsicHeight(width) } }
-                    .minOf { it }
+                    .minOfOrNull { it } ?: 0
             }
 
             override fun IntrinsicMeasureScope.maxIntrinsicHeight(
                 measurables: List<IntrinsicMeasurable>,
                 width: Int
             ): Int {
+                android.util.Log.d("GAY", "chunks = ${measurables.chunked(columns).size}")
                 return measurables.chunked(columns)
                     .map { row -> row.maxOf { cell -> cell.maxIntrinsicHeight(width) } }
-                    .maxOf { it }
+                    .maxOfOrNull { it } ?: 0
             }
         }
     }

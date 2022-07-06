@@ -28,6 +28,19 @@ import com.google.protobuf.InvalidProtocolBufferException
 import java.io.InputStream
 import java.io.OutputStream
 
+const val DEFAULT_NOTIFICATION_OVERLAY_ENABLED = true
+const val DEFAULT_NOTIFICATION_OVERLAY_DURATION = 2000L
+const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT = 60
+const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE = 90
+val DEFAULT_RINGER_MODE = RingerMode.SILENT
+const val DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS = true
+const val DEFAULT_SHOW_GAME_TOOLS_HANDLE = true
+val DEFAULT_TILES_LIST = listOf(
+    Tile.LOCK_GESTURE,
+    Tile.NOTIFICATION_OVERLAY,
+    Tile.SCREEN_RECORD
+)
+
 object SettingsSerializer : Serializer<Settings> {
 
     override val defaultValue: Settings = Settings.newBuilder()
@@ -38,6 +51,7 @@ object SettingsSerializer : Serializer<Settings> {
         .setRingerMode(DEFAULT_RINGER_MODE)
         .setDisableAdaptiveBrightness(DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS)
         .setShowGameToolsHandle(DEFAULT_SHOW_GAME_TOOLS_HANDLE)
+        .addAllTiles(DEFAULT_TILES_LIST)
         .build()
 
     override suspend fun readFrom(input: InputStream): Settings {
@@ -53,14 +67,6 @@ object SettingsSerializer : Serializer<Settings> {
         output: OutputStream
     ) = t.writeTo(output)
 }
-
-const val DEFAULT_NOTIFICATION_OVERLAY_ENABLED = true
-const val DEFAULT_NOTIFICATION_OVERLAY_DURATION = 2000L
-const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT = 60
-const val DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE = 90
-val DEFAULT_RINGER_MODE = RingerMode.SILENT
-const val DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS = true
-const val DEFAULT_SHOW_GAME_TOOLS_HANDLE = true
 
 val Context.settingsDataStore: DataStore<Settings> by dataStore(
     fileName = "gamespace_settings",

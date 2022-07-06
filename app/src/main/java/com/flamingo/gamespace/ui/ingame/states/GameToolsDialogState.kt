@@ -38,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.SettingsRepository
+import com.flamingo.gamespace.data.settings.Tile
 
 import java.text.DateFormat
 import java.util.Locale
@@ -47,6 +48,7 @@ import kotlin.coroutines.coroutineContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -89,6 +91,9 @@ class GameToolsDialogState(
 
     var isLowMemory by mutableStateOf(false)
         private set
+
+    val tiles: Flow<List<Tile>>
+        get() = settingsRepository.tiles
 
     init {
         coroutineScope.launch(Dispatchers.Default) {

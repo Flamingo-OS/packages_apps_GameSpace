@@ -24,6 +24,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 @Singleton
@@ -56,6 +57,9 @@ class SettingsRepository @Inject constructor(
 
     val showGameToolsHandle: Flow<Boolean>
         get() = settingsDataStore.data.map { it.showGameToolsHandle }
+
+    val tiles: Flow<List<Tile>>
+        get() = settingsDataStore.data.map { it.tilesList }
 
     fun getGameToolsHandlePortraitOffset(packageName: String): Flow<Settings.Offset?> =
         settingsDataStore.data.map { it.gameToolsHandlePortraitOffsetMap[packageName] }
@@ -139,6 +143,25 @@ class SettingsRepository @Inject constructor(
         settingsDataStore.updateData {
             it.toBuilder()
                 .setShowGameToolsHandle(show)
+                .build()
+        }
+    }
+
+    suspend fun addTile(tile: Tile) {
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .addTiles(tile)
+                .build()
+        }
+    }
+
+    suspend fun removeTile(tile: Tile) {
+        val currentTiles = settingsDataStore.data.map { it.tilesList }.first().toMutableList()
+        currentTiles.remove(tile)
+        settingsDataStore.updateData {
+            it.toBuilder()
+                .clearTiles()
+                .addAllTiles(currentTiles.toList())
                 .build()
         }
     }
