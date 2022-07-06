@@ -18,7 +18,6 @@ package com.flamingo.gamespace.ui.ingame.states
 
 import android.app.ActivityManager
 import android.app.ActivityManager.MemoryInfo
-import android.app.IActivityManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -35,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.getSystemService
 
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.SettingsRepository
@@ -84,7 +84,7 @@ class GameToolsDialogState(
     var date by mutableStateOf(getFormattedDate())
         private set
 
-    private val iActivityManager: IActivityManager = ActivityManager.getService()
+    private val activityManager = context.getSystemService<ActivityManager>()!!
 
     var memoryInfo by mutableStateOf<String?>(null)
         private set
@@ -131,7 +131,7 @@ class GameToolsDialogState(
         do {
             try {
                 val memInfo = MemoryInfo()
-                iActivityManager.getMemoryInfo(memInfo)
+                activityManager.getMemoryInfo(memInfo)
                 withContext(Dispatchers.Main) {
                     val used = String.format("%.1f", (memInfo.totalMem - memInfo.availMem).toFloat() / GiB)
                     val total = String.format("%.1f", memInfo.totalMem.toFloat() / GiB)
