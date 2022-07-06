@@ -35,20 +35,16 @@ import com.flamingo.gamespace.ui.states.AppInfo
 import com.flamingo.gamespace.ui.states.NotificationOverlayBlackListScreenState
 import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 import com.flamingo.support.compose.ui.preferences.Preference
-import com.google.accompanist.systemuicontroller.SystemUiController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun NotificationOverlayBlackListScreen(
     onBackButtonPressed: () -> Unit,
     isEnterAnimationRunning: Boolean,
-    state: NotificationOverlayBlackListScreenState,
-    systemUiController: SystemUiController = rememberSystemUiController()
+    state: NotificationOverlayBlackListScreenState
 ) {
     CollapsingToolbarLayout(
         title = stringResource(id = R.string.blacklisted_apps),
         onBackButtonPressed = onBackButtonPressed,
-        systemUiController = systemUiController,
     ) {
         if (isEnterAnimationRunning) {
             item {

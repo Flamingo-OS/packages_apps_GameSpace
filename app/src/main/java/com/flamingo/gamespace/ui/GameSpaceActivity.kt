@@ -16,6 +16,7 @@
 
 package com.flamingo.gamespace.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 
 import androidx.activity.ComponentActivity
@@ -26,14 +27,17 @@ import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -54,7 +58,6 @@ import com.flamingo.gamespace.ui.theme.GameSpaceTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import dagger.hilt.android.AndroidEntryPoint
@@ -76,11 +79,10 @@ class GameSpaceActivity : ComponentActivity() {
         setContent {
             GameSpaceTheme {
                 val systemUiController = rememberSystemUiController()
-                val surfaceColor = MaterialTheme.colorScheme.surface
-                LaunchedEffect(surfaceColor) {
-                    systemUiController.setNavigationBarColor(
+                LaunchedEffect(Unit) {
+                    systemUiController.setSystemBarsColor(
                         Color.Transparent,
-                        navigationBarContrastEnforced = false
+                        isNavigationBarContrastEnforced = false
                     )
                 }
                 val navHostController = rememberAnimatedNavController()
@@ -89,31 +91,45 @@ class GameSpaceActivity : ComponentActivity() {
                 val notificationOverlayEnabled by notificationOverlayScreenState.notificationOverlayEnabled.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_ENABLED
                 )
-                val latestNotificationOverlayEnabled by rememberUpdatedState(notificationOverlayEnabled)
+                val latestNotificationOverlayEnabled by rememberUpdatedState(
+                    notificationOverlayEnabled
+                )
                 val notificationOverlayStateChangeCallback by rememberUpdatedState(newValue = { enabled: Boolean ->
                     notificationOverlayScreenState.setNotificationOverlayEnabled(enabled)
                 })
-                AnimatedNavHost(
-                    navController = navHostController,
-                    startDestination = Route.Main.MAIN_SCREEN,
-                    route = Route.Main.name
-                ) {
-                    mainGraph(
-                        navHostController = navHostController,
-                        systemUiController = systemUiController,
-                        settingsRepository = settingsRepository,
-                        notificationOverlayEnabled = latestNotificationOverlayEnabled,
-                        onNotificationOverlayStateChanged = notificationOverlayStateChangeCallback,
-                        onFinishActivityRequest = {
-                            finish()
-                        }
-                    )
-                    notificationOverlayGraph(
-                        notificationOverlayScreenState = notificationOverlayScreenState,
-                        navHostController = navHostController,
-                        systemUiController = systemUiController,
-                        settingsRepository = settingsRepository
-                    )
+                val orientation = LocalConfiguration.current.orientation
+                val isPortrait =
+                    remember(orientation) { orientation == Configuration.ORIENTATION_PORTRAIT }
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    AnimatedNavHost(
+                        modifier = Modifier
+                            .then(
+                                if (isPortrait) {
+                                    Modifier
+                                } else {
+                                    Modifier.navigationBarsPadding()
+                                }
+                            )
+                            .fillMaxSize(),
+                        navController = navHostController,
+                        startDestination = Route.Main.MAIN_SCREEN,
+                        route = Route.Main.name
+                    ) {
+                        mainGraph(
+                            navHostController = navHostController,
+                            settingsRepository = settingsRepository,
+                            notificationOverlayEnabled = latestNotificationOverlayEnabled,
+                            onNotificationOverlayStateChanged = notificationOverlayStateChangeCallback,
+                            onFinishActivityRequest = {
+                                finish()
+                            }
+                        )
+                        notificationOverlayGraph(
+                            notificationOverlayScreenState = notificationOverlayScreenState,
+                            navHostController = navHostController,
+                            settingsRepository = settingsRepository
+                        )
+                    }
                 }
             }
         }
@@ -153,7 +169,6 @@ fun NavGraphBuilder.childComposable(
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.mainGraph(
     navHostController: NavHostController,
-    systemUiController: SystemUiController,
     settingsRepository: SettingsRepository,
     notificationOverlayEnabled: Boolean,
     onNotificationOverlayStateChanged: (Boolean) -> Unit,
@@ -186,7 +201,6 @@ fun NavGraphBuilder.mainGraph(
             modifier = Modifier.fillMaxSize(),
             onBackPressed = onFinishActivityRequest,
             navHostController = navHostController,
-            systemUiController = systemUiController,
             state = rememberMainScreenState(settingsRepository = settingsRepository),
             notificationOverlayEnabled = notificationOverlayEnabled,
             onNotificationOverlayStateChanged = onNotificationOverlayStateChanged
@@ -200,7 +214,6 @@ fun NavGraphBuilder.mainGraph(
             onBackPressed = {
                 navHostController.popBackStack()
             },
-            systemUiController = systemUiController,
             isEnterAnimationRunning = transition.currentState == EnterExitState.PreEnter
         )
     }
@@ -210,7 +223,6 @@ fun NavGraphBuilder.mainGraph(
 fun NavGraphBuilder.notificationOverlayGraph(
     notificationOverlayScreenState: NotificationOverlayScreenState,
     navHostController: NavHostController,
-    systemUiController: SystemUiController,
     settingsRepository: SettingsRepository
 ) {
     navigation(
@@ -258,8 +270,7 @@ fun NavGraphBuilder.notificationOverlayGraph(
         ) {
             NotificationOverlayScreen(
                 state = notificationOverlayScreenState,
-                navHostController = navHostController,
-                systemUiController = systemUiController
+                navHostController = navHostController
             )
         }
         childComposable(
@@ -270,7 +281,6 @@ fun NavGraphBuilder.notificationOverlayGraph(
                 onBackButtonPressed = {
                     navHostController.popBackStack()
                 },
-                systemUiController = systemUiController,
                 isEnterAnimationRunning = transition.currentState == EnterExitState.PreEnter,
                 state = rememberNotificationOverlayBlackListScreenState(settingsRepository = settingsRepository)
             )

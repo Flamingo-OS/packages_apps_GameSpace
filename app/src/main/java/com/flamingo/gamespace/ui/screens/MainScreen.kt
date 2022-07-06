@@ -42,8 +42,6 @@ import com.flamingo.support.compose.ui.preferences.ListPreference
 import com.flamingo.support.compose.ui.preferences.Preference
 import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
 import com.flamingo.support.compose.ui.preferences.SwitchPreference
-import com.google.accompanist.systemuicontroller.SystemUiController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun MainScreen(
@@ -52,14 +50,12 @@ fun MainScreen(
     notificationOverlayEnabled: Boolean,
     onNotificationOverlayStateChanged: (Boolean) -> Unit,
     state: MainScreenState,
-    modifier: Modifier = Modifier,
-    systemUiController: SystemUiController = rememberSystemUiController()
+    modifier: Modifier = Modifier
 ) {
     CollapsingToolbarLayout(
         modifier = modifier,
         title = stringResource(id = R.string.app_name),
-        onBackButtonPressed = onBackPressed,
-        systemUiController = systemUiController,
+        onBackButtonPressed = onBackPressed
     ) {
         item {
             Text(

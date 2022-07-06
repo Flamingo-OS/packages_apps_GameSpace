@@ -42,15 +42,12 @@ import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 import com.flamingo.support.compose.ui.preferences.DiscreteSeekBarPreference
 import com.flamingo.support.compose.ui.preferences.Preference
 import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
-import com.google.accompanist.systemuicontroller.SystemUiController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 @Composable
 fun NotificationOverlayScreen(
     state: NotificationOverlayScreenState,
     navHostController: NavHostController,
-    modifier: Modifier = Modifier,
-    systemUiController: SystemUiController = rememberSystemUiController(),
+    modifier: Modifier = Modifier
 ) {
     val enabled by state.notificationOverlayEnabled.collectAsState(
         DEFAULT_NOTIFICATION_OVERLAY_ENABLED
@@ -60,8 +57,7 @@ fun NotificationOverlayScreen(
         title = stringResource(id = R.string.notification_overlay),
         onBackButtonPressed = {
             navHostController.popBackStack()
-        },
-        systemUiController = systemUiController,
+        }
     ) {
         item {
             Text(
