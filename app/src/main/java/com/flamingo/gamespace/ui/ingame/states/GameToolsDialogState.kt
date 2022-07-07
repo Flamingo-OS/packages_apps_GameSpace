@@ -23,7 +23,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.IThermalService
 import android.os.RemoteException
+import android.os.Temperature
 import android.util.Log
 
 import androidx.compose.runtime.Composable
@@ -55,8 +57,9 @@ import kotlinx.coroutines.withContext
 
 class GameToolsDialogState(
     private val context: Context,
+    private val thermalService: IThermalService,
     val settingsRepository: SettingsRepository,
-    coroutineScope: CoroutineScope
+    coroutineScope: CoroutineScope,
 ) {
 
     private val locale: Locale
@@ -95,9 +98,18 @@ class GameToolsDialogState(
     val tiles: Flow<List<Tile>>
         get() = settingsRepository.tiles
 
+    var deviceTemperature by mutableStateOf<TempInfo>(TempInfo.Unknown)
+        private set
+
+    var batteryTemperature by mutableStateOf<TempInfo>(TempInfo.Unknown)
+        private set
+
     init {
         coroutineScope.launch(Dispatchers.Default) {
             updateMemoryInfo()
+        }
+        coroutineScope.launch(Dispatchers.Default) {
+            updateThermalInfo()
         }
     }
 
@@ -133,7 +145,8 @@ class GameToolsDialogState(
                 val memInfo = MemoryInfo()
                 activityManager.getMemoryInfo(memInfo)
                 withContext(Dispatchers.Main) {
-                    val used = String.format("%.1f", (memInfo.totalMem - memInfo.availMem).toFloat() / GiB)
+                    val used =
+                        String.format("%.1f", (memInfo.totalMem - memInfo.availMem).toFloat() / GiB)
                     val total = String.format("%.1f", memInfo.totalMem.toFloat() / GiB)
                     memoryInfo = context.getString(R.string.memory_info, used, total)
                     isLowMemory = memInfo.availMem <= memInfo.threshold
@@ -142,6 +155,43 @@ class GameToolsDialogState(
                 Log.e(TAG, "Failed to get memory info", e)
             }
             delay(5000)
+        } while (coroutineContext.isActive)
+    }
+
+    private suspend fun updateThermalInfo() {
+        do {
+            try {
+                val currentDeviceTemps =
+                    thermalService.getCurrentTemperaturesWithType(Temperature.TYPE_SKIN)
+                if (currentDeviceTemps.isNotEmpty()) {
+                    val averageDeviceTemp =
+                        currentDeviceTemps.sumOf { it.value.toDouble() } / currentDeviceTemps.size
+                    val isThrottling = currentDeviceTemps.any { it.status == Temperature.THROTTLING_SEVERE }
+                    withContext(Dispatchers.Main) {
+                        deviceTemperature = TempInfoImpl(
+                            String.format("%.1f", averageDeviceTemp.toFloat()),
+                            isThrottling
+                        )
+                    }
+                }
+
+                val currentBatteryTemps =
+                    thermalService.getCurrentTemperaturesWithType(Temperature.TYPE_BATTERY)
+                if (currentBatteryTemps.isNotEmpty()) {
+                    val averageBatteryTemp =
+                        currentBatteryTemps.sumOf { it.value.toDouble() } / currentBatteryTemps.size
+                    val isThrottling = currentBatteryTemps.any { it.status == Temperature.THROTTLING_SEVERE }
+                    withContext(Dispatchers.Main) {
+                        batteryTemperature = TempInfoImpl(
+                            String.format("%.1f", averageBatteryTemp.toFloat()),
+                            isThrottling
+                        )
+                    }
+                }
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Failed to get current temperatures", e)
+            }
+            delay(3000)
         } while (coroutineContext.isActive)
     }
 
@@ -169,17 +219,28 @@ class GameToolsDialogState(
     }
 }
 
+sealed interface TempInfo {
+    object Unknown : TempInfo
+}
+
+data class TempInfoImpl(
+    val temperature: String,
+    val isThrottling: Boolean
+): TempInfo
+
 @Composable
 fun rememberGameToolsDialogState(
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    settingsRepository: SettingsRepository
+    settingsRepository: SettingsRepository,
+    thermalService: IThermalService
 ): GameToolsDialogState {
-    val state = remember(context, settingsRepository, coroutineScope) {
+    val state = remember(context, settingsRepository, coroutineScope, thermalService) {
         GameToolsDialogState(
             context = context,
             settingsRepository = settingsRepository,
-            coroutineScope = coroutineScope
+            coroutineScope = coroutineScope,
+            thermalService = thermalService
         )
     }
     DisposableEffect(context) {

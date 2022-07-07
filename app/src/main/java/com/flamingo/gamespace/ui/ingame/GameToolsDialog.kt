@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,6 +84,8 @@ import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.RingerModeTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenRecordTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
+import com.flamingo.gamespace.ui.ingame.states.TempInfo
+import com.flamingo.gamespace.ui.ingame.states.TempInfoImpl
 import com.flamingo.gamespace.ui.ingame.states.rememberAdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayTileState
@@ -123,7 +127,29 @@ fun GameToolsDialog(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    modifier = Modifier.height(IntrinsicSize.Min)
+                ) {
+                    Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
+                    val batteryTemp = state.batteryTemperature
+                    if (batteryTemp is TempInfoImpl) {
+                        Divider(
+                            Modifier
+                                .padding(horizontal = 8.dp)
+                                .width(1.dp)
+                                .fillMaxHeight()
+                        )
+                        Text(
+                            text = stringResource(
+                                id = R.string.temperature_format,
+                                batteryTemp.temperature
+                            ),
+                            color = if (batteryTemp.isThrottling) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
                 Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
             }
             HorizontalGrid(
@@ -187,20 +213,39 @@ fun GameToolsDialog(
                     }
                 }
             }
-            state.memoryInfo?.let {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 4.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_memory_24),
-                        contentDescription = stringResource(id = R.string.memory_info_content_desc),
-                        tint = if (state.isLowMemory) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = it)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                val deviceTemp = state.deviceTemperature
+                if (deviceTemp is TempInfoImpl) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_thermostat_24),
+                            contentDescription = stringResource(id = R.string.device_temperature_content_desc),
+                            tint = if (deviceTemp.isThrottling) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = stringResource(
+                                id = R.string.temperature_format,
+                                deviceTemp.temperature
+                            )
+                        )
+                    }
+                }
+                state.memoryInfo?.let {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_memory_24),
+                            contentDescription = stringResource(id = R.string.memory_info_content_desc),
+                            tint = if (state.isLowMemory) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = it)
+                    }
                 }
             }
         }
@@ -273,7 +318,6 @@ fun HorizontalGrid(
                 measurables: List<IntrinsicMeasurable>,
                 width: Int
             ): Int {
-                android.util.Log.d("GAY", "chunks = ${measurables.chunked(columns).size}")
                 return measurables.chunked(columns)
                     .map { row -> row.maxOf { cell -> cell.maxIntrinsicHeight(width) } }
                     .maxOfOrNull { it } ?: 0

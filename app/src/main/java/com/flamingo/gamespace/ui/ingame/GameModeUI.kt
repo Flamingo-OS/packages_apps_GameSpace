@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.os.Bundle
+import android.os.IThermalService
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -43,7 +44,8 @@ fun GameModeUI(
     settingsRepository: SettingsRepository,
     packageName: String,
     config: Bundle,
-    serviceCallback: GameSpaceServiceCallback?
+    serviceCallback: GameSpaceServiceCallback?,
+    thermalService: IThermalService
 ) {
     GameSpaceTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -73,7 +75,8 @@ fun GameModeUI(
                     modifier = Modifier.fillMaxSize(),
                     config = config,
                     serviceCallback = serviceCallback,
-                    settingsRepository = settingsRepository
+                    settingsRepository = settingsRepository,
+                    thermalService = thermalService
                 )
             }
         }

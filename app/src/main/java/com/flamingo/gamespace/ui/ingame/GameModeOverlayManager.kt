@@ -20,6 +20,7 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Binder
 import android.os.Bundle
+import android.os.IThermalService
 import android.view.WindowManager
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +45,8 @@ class GameModeOverlayManager(
     lifecycleOwner: LifecycleOwner,
     savedStateRegistryOwner: SavedStateRegistryOwner,
     private val settingsRepository: SettingsRepository,
-    private val notificationListener: NotificationListener
+    private val notificationListener: NotificationListener,
+    private val thermalService: IThermalService
 ) {
 
     private val wm = context.getSystemService<WindowManager>()!!
@@ -103,6 +105,7 @@ class GameModeOverlayManager(
                         settingsRepository = settingsRepository,
                         config = serviceConfig,
                         serviceCallback = serviceCallback,
+                        thermalService = thermalService
                     )
                 }
                 val state = rememberNotificationOverlayState(

@@ -70,6 +70,10 @@
     <string name="battery_text">Battery: <xliff:g example="100" id="percent">%1$d</xliff:g>%%</string>
     <string name="charging_battery_text">Battery: <xliff:g example="100" id="percent">%1$d</xliff:g>%% \u26A1\uFE0E</string>
     <string name="battery_unknown">Battery: unknown</string>
+    <string name="memory_info" translatable="false"><xliff:g example="3.1/8.0" id="memory">%1$s/%2$s</xliff:g></string>
+    <string name="memory_info_content_desc">Memory info</string>
+    <string name="device_temperature_content_desc">Device temperature icon</string>
+    <string name="temperature_format" translatable="false"><xliff:g example="37.1" id="temperature">%1$s</xliff:g>\u00B0C</string>
 
     <!-- Screenshot tile -->
     <string name="screenshot">Screenshot</string>
@@ -98,9 +102,5 @@
     <!-- Screen record tile -->
     <string name="screen_record">Screen record</string>
     <string name="screen_record_content_desc">Screen record tile</string>
-
-    <!-- Memory info -->
-    <string name="memory_info" translatable="false"><xliff:g example="3.1/8.0" id="memory">%1$s/%2$s GiB</xliff:g></string>
-    <string name="memory_info_content_desc">Memory info</string>
 
 </resources>

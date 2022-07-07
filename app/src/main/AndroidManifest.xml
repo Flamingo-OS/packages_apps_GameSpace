@@ -33,6 +33,9 @@
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
 
+    <uses-permission android:name="android.permission.DEVICE_POWER"
+        tools:ignore="ProtectedPermissions" />
+
     <application
         android:name=".GameSpaceApplication"
         android:defaultToDeviceProtectedStorage="true"
