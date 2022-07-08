@@ -123,7 +123,7 @@ fun GameToolsDialog(
                 Text(text = state.time, style = MaterialTheme.typography.headlineSmall)
             }
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -156,7 +156,7 @@ fun GameToolsDialog(
                 columns = 3,
                 columnPadding = 8.dp,
                 rowPadding = 8.dp,
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier.padding(top = 16.dp)
             ) {
                 val tiles by state.tiles.collectAsState(initial = DEFAULT_TILES_LIST)
                 tiles.forEach {
@@ -218,7 +218,7 @@ fun GameToolsDialog(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp)
+                    .padding(top = 16.dp)
             ) {
                 val deviceTemp = state.deviceTemperature
                 if (deviceTemp is TempInfoImpl) {
