@@ -23,6 +23,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,7 +40,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
@@ -84,7 +85,6 @@ import com.flamingo.gamespace.ui.ingame.states.NotificationOverlayTileState
 import com.flamingo.gamespace.ui.ingame.states.RingerModeTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenRecordTileState
 import com.flamingo.gamespace.ui.ingame.states.ScreenshotTileState
-import com.flamingo.gamespace.ui.ingame.states.TempInfo
 import com.flamingo.gamespace.ui.ingame.states.TempInfoImpl
 import com.flamingo.gamespace.ui.ingame.states.rememberAdaptiveBrightnessTileState
 import com.flamingo.gamespace.ui.ingame.states.rememberLockGestureTileState
@@ -123,7 +123,9 @@ fun GameToolsDialog(
                 Text(text = state.time, style = MaterialTheme.typography.headlineSmall)
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(top = 4.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -331,21 +333,32 @@ fun HorizontalGrid(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalUnitApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalUnitApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun Tile(
     icon: @Composable () -> Unit,
     title: String,
     enabled: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLongPress: () -> Unit = {}
 ) {
     AnimatedContent(targetState = enabled) { highlightTile ->
         Surface(
-            modifier = modifier.aspectRatio(1f),
+            modifier = modifier
+                .aspectRatio(1f)
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = {
+                            onLongPress()
+                        },
+                        onTap = {
+                            onClick()
+                        }
+                    )
+                },
             shape = RoundedCornerShape(CornerSize),
-            color = if (highlightTile) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer,
-            onClick = onClick
+            color = if (highlightTile) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondaryContainer
         ) {
             Column(
                 modifier = Modifier.padding(12.dp),
@@ -432,6 +445,9 @@ fun ScreenshotTile(
         onClick = {
             onDismissDialogRequest()
             state.takeScreenshot(AnimationDuration.toLong())
+        },
+        onLongPress = {
+            state.takeScreenshot(0)
         }
     )
 }
