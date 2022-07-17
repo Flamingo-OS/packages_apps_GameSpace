@@ -16,7 +16,6 @@
 
 package com.flamingo.gamespace.ui
 
-import android.content.res.Configuration
 import android.os.Bundle
 
 import androidx.activity.ComponentActivity
@@ -26,19 +25,13 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterExitState
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
@@ -61,7 +54,6 @@ import com.flamingo.gamespace.ui.theme.GameSpaceTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -81,15 +73,6 @@ class GameSpaceActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         setContent {
             GameSpaceTheme {
-                val systemUiController = rememberSystemUiController()
-                val isDarkTheme = isSystemInDarkTheme()
-                LaunchedEffect(isDarkTheme) {
-                    systemUiController.setSystemBarsColor(
-                        Color.Transparent,
-                        isNavigationBarContrastEnforced = false,
-                        darkIcons = !isDarkTheme
-                    )
-                }
                 val navHostController = rememberAnimatedNavController()
                 val notificationOverlayScreenState =
                     rememberNotificationOverlayScreenState(settingsRepository)
@@ -102,20 +85,9 @@ class GameSpaceActivity : ComponentActivity() {
                 val notificationOverlayStateChangeCallback by rememberUpdatedState(newValue = { enabled: Boolean ->
                     notificationOverlayScreenState.setNotificationOverlayEnabled(enabled)
                 })
-                val orientation = LocalConfiguration.current.orientation
-                val isPortrait =
-                    remember(orientation) { orientation == Configuration.ORIENTATION_PORTRAIT }
                 Surface(modifier = Modifier.fillMaxSize()) {
                     AnimatedNavHost(
-                        modifier = Modifier
-                            .then(
-                                if (isPortrait) {
-                                    Modifier
-                                } else {
-                                    Modifier.navigationBarsPadding()
-                                }
-                            )
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         navController = navHostController,
                         startDestination = Route.Main.MAIN_SCREEN,
                         route = Route.Main.name
