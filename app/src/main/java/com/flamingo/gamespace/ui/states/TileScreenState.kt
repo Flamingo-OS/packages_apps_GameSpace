@@ -5,6 +5,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.UserHandle
 import android.provider.Settings
+
 import androidx.annotation.GuardedBy
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -12,8 +13,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 
+import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.data.settings.Tile
 
@@ -24,6 +25,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+
+import org.koin.androidx.compose.get
 
 class TileScreenState(
     private val context: Context,
@@ -178,7 +181,7 @@ data class TileInfo(
 fun rememberTileScreenState(
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
 ): TileScreenState {
     val state = remember(context, settingsRepository, coroutineScope) {
         TileScreenState(

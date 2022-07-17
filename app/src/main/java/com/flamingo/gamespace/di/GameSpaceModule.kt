@@ -20,16 +20,16 @@ import android.content.Context
 import android.os.IThermalService
 import android.os.ServiceManager
 
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ServiceComponent
+import com.flamingo.gamespace.data.settings.SettingsRepository
 
-@InstallIn(ServiceComponent::class)
-@Module
-object GameSpaceModule {
+import org.koin.android.ext.koin.androidContext
+import org.koin.dsl.module
 
-    @Provides
-    fun provideThermalService(): IThermalService =
+val GameSpaceModule = module {
+    single {
         IThermalService.Stub.asInterface(ServiceManager.getServiceOrThrow(Context.THERMAL_SERVICE))
+    }
+    single {
+        SettingsRepository(context = androidContext())
+    }
 }

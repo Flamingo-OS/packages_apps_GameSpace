@@ -26,6 +26,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.get
+
 class NotificationOverlayScreenState(
     private val settingsRepository: SettingsRepository,
     private val coroutineScope: CoroutineScope
@@ -70,7 +72,7 @@ class NotificationOverlayScreenState(
 
 @Composable
 fun rememberNotificationOverlayScreenState(
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) = remember(settingsRepository, coroutineScope) {
     NotificationOverlayScreenState(

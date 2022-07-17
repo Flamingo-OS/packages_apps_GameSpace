@@ -47,15 +47,12 @@ import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.ui.GameSpaceActivity
 import com.flamingo.gamespace.ui.ingame.GameModeOverlayManager
 
-import dagger.hilt.android.AndroidEntryPoint
-
-import javax.inject.Inject
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-@AndroidEntryPoint
+import org.koin.android.ext.android.inject
+
 class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
     private lateinit var savedStateRegistryController: SavedStateRegistryController
@@ -98,11 +95,8 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
 
     private lateinit var oldConfig: Configuration
 
-    @Inject
-    lateinit var settingsRepository: SettingsRepository
-
-    @Inject
-    lateinit var thermalService: IThermalService
+    private val settingsRepository: SettingsRepository by inject()
+    private val thermalService: IThermalService by inject()
 
     private val notificationListener = NotificationListener()
     private var registeredNotificationListener = false
@@ -121,9 +115,7 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
             this,
             this,
             this,
-            settingsRepository,
             notificationListener,
-            thermalService
         )
 
         activityIntent = PendingIntent.getActivity(

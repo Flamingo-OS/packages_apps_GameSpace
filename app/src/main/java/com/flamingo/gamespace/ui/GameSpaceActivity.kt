@@ -39,7 +39,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.navigation
 
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_ENABLED
-import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.ui.screens.AppSelectScreen
 import com.flamingo.gamespace.ui.screens.MainScreen
 import com.flamingo.gamespace.ui.screens.NotificationOverlayBlackListScreen
@@ -55,17 +54,9 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 
-import dagger.hilt.android.AndroidEntryPoint
-
-import javax.inject.Inject
-
 private const val TransitionAnimationDuration = 500
 
-@AndroidEntryPoint
 class GameSpaceActivity : ComponentActivity() {
-
-    @Inject
-    lateinit var settingsRepository: SettingsRepository
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,8 +65,7 @@ class GameSpaceActivity : ComponentActivity() {
         setContent {
             GameSpaceTheme {
                 val navHostController = rememberAnimatedNavController()
-                val notificationOverlayScreenState =
-                    rememberNotificationOverlayScreenState(settingsRepository)
+                val notificationOverlayScreenState = rememberNotificationOverlayScreenState()
                 val notificationOverlayEnabled by notificationOverlayScreenState.notificationOverlayEnabled.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_ENABLED
                 )
@@ -94,7 +84,6 @@ class GameSpaceActivity : ComponentActivity() {
                     ) {
                         mainGraph(
                             navHostController = navHostController,
-                            settingsRepository = settingsRepository,
                             notificationOverlayEnabled = latestNotificationOverlayEnabled,
                             onNotificationOverlayStateChanged = notificationOverlayStateChangeCallback,
                             onFinishActivityRequest = {
@@ -103,8 +92,7 @@ class GameSpaceActivity : ComponentActivity() {
                         )
                         notificationOverlayGraph(
                             notificationOverlayScreenState = notificationOverlayScreenState,
-                            navHostController = navHostController,
-                            settingsRepository = settingsRepository
+                            navHostController = navHostController
                         )
                     }
                 }
@@ -146,7 +134,6 @@ fun NavGraphBuilder.childComposable(
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.mainGraph(
     navHostController: NavHostController,
-    settingsRepository: SettingsRepository,
     notificationOverlayEnabled: Boolean,
     onNotificationOverlayStateChanged: (Boolean) -> Unit,
     onFinishActivityRequest: () -> Unit,
@@ -180,7 +167,7 @@ fun NavGraphBuilder.mainGraph(
             modifier = Modifier.fillMaxSize(),
             onBackPressed = onFinishActivityRequest,
             navHostController = navHostController,
-            state = rememberMainScreenState(settingsRepository = settingsRepository),
+            state = rememberMainScreenState(),
             notificationOverlayEnabled = notificationOverlayEnabled,
             onNotificationOverlayStateChanged = onNotificationOverlayStateChanged
         )
@@ -204,7 +191,7 @@ fun NavGraphBuilder.mainGraph(
             onBackPressed = {
                 navHostController.popBackStack()
             },
-            state = rememberTileScreenState(settingsRepository = settingsRepository)
+            state = rememberTileScreenState()
         )
     }
 }
@@ -212,8 +199,7 @@ fun NavGraphBuilder.mainGraph(
 @OptIn(ExperimentalAnimationApi::class)
 fun NavGraphBuilder.notificationOverlayGraph(
     notificationOverlayScreenState: NotificationOverlayScreenState,
-    navHostController: NavHostController,
-    settingsRepository: SettingsRepository
+    navHostController: NavHostController
 ) {
     navigation(
         startDestination = Route.Main.MAIN_SCREEN,
@@ -272,7 +258,7 @@ fun NavGraphBuilder.notificationOverlayGraph(
                     navHostController.popBackStack()
                 },
                 isEnterAnimationRunning = transition.currentState == EnterExitState.PreEnter,
-                state = rememberNotificationOverlayBlackListScreenState(settingsRepository = settingsRepository)
+                state = rememberNotificationOverlayBlackListScreenState()
             )
         }
     }

@@ -45,6 +45,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import org.koin.androidx.compose.get
+
 class MainScreenState(
     private val contentResolver: ContentResolver,
     private val coroutineScope: CoroutineScope,
@@ -225,7 +227,7 @@ class MainScreenState(
 fun rememberMainScreenState(
     contentResolver: ContentResolver = LocalContext.current.contentResolver,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    settingsRepository: SettingsRepository
+    settingsRepository: SettingsRepository = get()
 ): MainScreenState {
     val state = remember(contentResolver, coroutineScope, settingsRepository) {
         MainScreenState(

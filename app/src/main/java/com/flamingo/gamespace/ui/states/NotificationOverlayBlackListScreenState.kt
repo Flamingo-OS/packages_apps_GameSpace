@@ -36,6 +36,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import org.koin.androidx.compose.get
+
 class NotificationOverlayBlackListScreenState(
     private val settingsRepository: SettingsRepository,
     private val coroutineScope: CoroutineScope,
@@ -118,7 +120,7 @@ class NotificationOverlayBlackListScreenState(
 @Composable
 fun rememberNotificationOverlayBlackListScreenState(
     context: Context = LocalContext.current,
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) = remember(context, settingsRepository, coroutineScope) {
     NotificationOverlayBlackListScreenState(

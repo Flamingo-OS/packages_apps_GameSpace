@@ -17,7 +17,7 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.os.Bundle
-import android.os.IThermalService
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -30,9 +30,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 
-import com.flamingo.gamespace.data.settings.SettingsRepository
+import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsHandleState
 import com.flamingo.gamespace.ui.theme.GameSpaceTheme
@@ -41,16 +40,13 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun GameModeUI(
-    settingsRepository: SettingsRepository,
     packageName: String,
     config: Bundle,
-    serviceCallback: GameSpaceServiceCallback?,
-    thermalService: IThermalService
+    serviceCallback: GameSpaceServiceCallback?
 ) {
     GameSpaceTheme {
         Box(modifier = Modifier.fillMaxSize()) {
-            val gameToolsHandleState =
-                rememberGameToolsHandleState(settingsRepository = settingsRepository)
+            val gameToolsHandleState = rememberGameToolsHandleState()
             val shouldShowHandle by gameToolsHandleState.showGameToolsHandle.collectAsState(initial = DEFAULT_SHOW_GAME_TOOLS_HANDLE)
             if (shouldShowHandle) {
                 var handlePosition by remember { mutableStateOf(Offset.Zero) }
@@ -74,9 +70,7 @@ fun GameModeUI(
                     state = gameToolsHandleState,
                     modifier = Modifier.fillMaxSize(),
                     config = config,
-                    serviceCallback = serviceCallback,
-                    settingsRepository = settingsRepository,
-                    thermalService = thermalService
+                    serviceCallback = serviceCallback
                 )
             }
         }

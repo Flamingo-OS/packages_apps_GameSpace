@@ -55,10 +55,12 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import org.koin.androidx.compose.get
+
 class GameToolsDialogState(
     private val context: Context,
     private val thermalService: IThermalService,
-    val settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
     coroutineScope: CoroutineScope,
 ) {
 
@@ -232,8 +234,8 @@ data class TempInfoImpl(
 fun rememberGameToolsDialogState(
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    settingsRepository: SettingsRepository,
-    thermalService: IThermalService
+    settingsRepository: SettingsRepository = get(),
+    thermalService: IThermalService = get()
 ): GameToolsDialogState {
     val state = remember(context, settingsRepository, coroutineScope, thermalService) {
         GameToolsDialogState(

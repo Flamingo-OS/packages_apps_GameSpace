@@ -20,7 +20,6 @@ import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Binder
 import android.os.Bundle
-import android.os.IThermalService
 import android.view.WindowManager
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +34,6 @@ import androidx.lifecycle.ViewTreeLifecycleOwner
 import androidx.savedstate.SavedStateRegistryOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 
-import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.services.NotificationListener
 import com.flamingo.gamespace.ui.ingame.states.rememberNotificationOverlayState
@@ -44,9 +42,7 @@ class GameModeOverlayManager(
     context: Context,
     lifecycleOwner: LifecycleOwner,
     savedStateRegistryOwner: SavedStateRegistryOwner,
-    private val settingsRepository: SettingsRepository,
-    private val notificationListener: NotificationListener,
-    private val thermalService: IThermalService
+    private val notificationListener: NotificationListener
 ) {
 
     private val wm = context.getSystemService<WindowManager>()!!
@@ -102,16 +98,11 @@ class GameModeOverlayManager(
                 gamePackageName?.let {
                     GameModeUI(
                         packageName = it,
-                        settingsRepository = settingsRepository,
                         config = serviceConfig,
-                        serviceCallback = serviceCallback,
-                        thermalService = thermalService
+                        serviceCallback = serviceCallback
                     )
                 }
-                val state = rememberNotificationOverlayState(
-                    notificationListener = notificationListener,
-                    settingsRepository = settingsRepository
-                )
+                val state = rememberNotificationOverlayState(notificationListener = notificationListener)
                 NotificationOverlay(state = state, modifier = Modifier.fillMaxSize())
             }
             wm.addView(rootComposeView, rootViewLP)

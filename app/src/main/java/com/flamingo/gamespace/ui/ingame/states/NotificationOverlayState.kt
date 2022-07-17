@@ -38,6 +38,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.get
+
 class NotificationOverlayState(
     private val notificationListener: NotificationListener,
     private val settingsRepository: SettingsRepository,
@@ -103,7 +105,7 @@ class NotificationOverlayState(
 @Composable
 fun rememberNotificationOverlayState(
     notificationListener: NotificationListener,
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
     configuration: Configuration = LocalConfiguration.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ): NotificationOverlayState {

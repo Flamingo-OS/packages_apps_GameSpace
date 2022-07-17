@@ -39,6 +39,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+import org.koin.androidx.compose.get
+
 class GameToolsHandleState(
     context: Context,
     val orientation: Int,
@@ -104,7 +106,7 @@ class GameToolsHandleState(
 fun rememberGameToolsHandleState(
     context: Context = LocalContext.current,
     orientation: Int = LocalConfiguration.current.orientation,
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
     coroutineScope: CoroutineScope = rememberCoroutineScope()
 ) = remember(context, orientation, settingsRepository) {
     GameToolsHandleState(

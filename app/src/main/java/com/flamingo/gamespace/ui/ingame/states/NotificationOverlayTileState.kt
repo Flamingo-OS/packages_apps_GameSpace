@@ -39,6 +39,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import org.koin.androidx.compose.get
+
 class NotificationOverlayTileState(
     private val settingsRepository: SettingsRepository,
     private val coroutineScope: CoroutineScope,
@@ -99,7 +101,7 @@ class NotificationOverlayTileState(
 
 @Composable
 fun rememberNotificationOverlayTileState(
-    settingsRepository: SettingsRepository,
+    settingsRepository: SettingsRepository = get(),
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     contentResolver: ContentResolver = LocalContext.current.contentResolver
 ): NotificationOverlayTileState {

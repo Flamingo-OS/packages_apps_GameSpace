@@ -18,7 +18,6 @@ package com.flamingo.gamespace.ui.ingame
 
 import android.graphics.Region
 import android.os.Bundle
-import android.os.IThermalService
 import android.view.ViewTreeObserver.InternalInsetsInfo
 import android.view.ViewTreeObserver.OnComputeInternalInsetsListener
 
@@ -58,7 +57,6 @@ import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 
 import com.flamingo.gamespace.R
-import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 import com.flamingo.gamespace.ui.ingame.states.GameToolsHandleState
 import com.flamingo.gamespace.ui.ingame.states.rememberGameToolsDialogState
@@ -71,8 +69,6 @@ fun GameToolsHandle(
     onDragStop: () -> Unit,
     config: Bundle,
     serviceCallback: GameSpaceServiceCallback?,
-    settingsRepository: SettingsRepository,
-    thermalService: IThermalService,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
@@ -124,10 +120,7 @@ fun GameToolsHandle(
                 .fillMaxSize()
                 .zIndex(1f),
         ) {
-            val dialogState = rememberGameToolsDialogState(
-                settingsRepository = settingsRepository,
-                thermalService = thermalService
-            )
+            val dialogState = rememberGameToolsDialogState()
             GameToolsDialog(
                 modifier = Modifier.defaultMinSize(
                     minWidth = if (maxWidth < maxHeight) {

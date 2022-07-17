@@ -18,19 +18,11 @@ package com.flamingo.gamespace.data.settings
 
 import android.content.Context
 
-import dagger.hilt.android.qualifiers.ApplicationContext
-
-import javax.inject.Inject
-import javax.inject.Singleton
-
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-@Singleton
-class SettingsRepository @Inject constructor(
-    @ApplicationContext context: Context
-) {
+class SettingsRepository(context: Context) {
 
     private val settingsDataStore = context.settingsDataStore
 

@@ -175,7 +175,7 @@ fun GameToolsDialog(
                         Tile.NOTIFICATION_OVERLAY -> {
                             NotificationOverlayTile(
                                 modifier = Modifier.width(IntrinsicSize.Min),
-                                state = rememberNotificationOverlayTileState(settingsRepository = state.settingsRepository)
+                                state = rememberNotificationOverlayTileState()
                             )
                         }
                         Tile.SCREENSHOT -> {
