@@ -43,6 +43,11 @@
     <string name="blacklisted_apps">黑名单应用</string>
     <string name="blacklisted_apps_summary">在游戏时禁止选定的应用显示透明叠加层</string>
 
+    <!-- Tiles -->
+    <string name="game_tools_dialog_tiles">控制台功能</string>
+    <string name="game_tools_dialog_tiles_summary">配置控制台功能磁贴</string>
+    <string name="tiles">磁贴</string>
+
     <!-- Preferred ringer mode -->
     <string name="preferred_ringer_mode">响铃模式</string>
 
@@ -65,6 +70,8 @@
     <string name="battery_text">电量: <xliff:g id="percent" example="100">%1$d</xliff:g>%%</string>
     <string name="charging_battery_text">电量: <xliff:g id="percent" example="100">%1$d</xliff:g>%% \u26A1\uFE0E</string>
     <string name="battery_unknown">电量: 未知</string>
+    <string name="memory_info_content_desc">内存信息</string>
+    <string name="device_temperature_content_desc">设备温度图标</string>
 
     <!-- Screenshot tile -->
     <string name="screenshot">屏幕截图</string>
@@ -78,6 +85,7 @@
     <string name="notification_overlay_content_desc">透明通知磁贴</string>
 
     <!-- Ringer mode tile -->
+    <string name="ringer_mode">响铃模式</string>
     <string name="ring">响铃</string>
     <string name="ringer_mode_tile_normal_content_desc">响铃模式磁贴</string>
     <string name="vibrate">震动</string>
@@ -88,8 +96,4 @@
     <!-- Adaptive brightness tile -->
     <string name="adaptive_brightness">自动亮度</string>
     <string name="adaptive_brightness_content_desc">自动亮度磁贴</string>
-
-    <!-- Memory info -->
-    <string name="memory_info_content_desc">内存信息</string>
-
 </resources>
