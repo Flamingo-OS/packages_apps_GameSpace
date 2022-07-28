@@ -96,4 +96,8 @@
     <!-- Adaptive brightness tile -->
     <string name="adaptive_brightness">自動亮度</string>
     <string name="adaptive_brightness_content_desc">自動亮度磁貼</string>
+
+    <!-- Screen record tile -->
+    <string name="screen_record">螢幕錄製</string>
+    <string name="screen_record_content_desc">螢幕錄製磁貼</string>
 </resources>
