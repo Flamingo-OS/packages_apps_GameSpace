@@ -16,16 +16,11 @@
 
 package com.flamingo.gamespace.ui.screens
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 import com.flamingo.gamespace.R
@@ -42,6 +37,7 @@ import com.flamingo.support.compose.ui.preferences.ListPreference
 import com.flamingo.support.compose.ui.preferences.Preference
 import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
 import com.flamingo.support.compose.ui.preferences.SwitchPreference
+import com.flamingo.support.compose.ui.preferences.TopIntroPreference
 
 @Composable
 fun MainScreen(
@@ -59,21 +55,10 @@ fun MainScreen(
         onBackButtonPressed = onBackPressed
     ) {
         item {
-            Text(
-                text = stringResource(id = R.string.main_screen_intro_text),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
+            TopIntroPreference(text = stringResource(id = R.string.main_screen_intro_text))
         }
         item {
             PrimarySwitchPreference(
-                modifier = Modifier.padding(
-                    top = 24.dp,
-                    bottom = 12.dp,
-                    start = 24.dp,
-                    end = 24.dp
-                ),
                 title = stringResource(id = R.string.enable_gamespace),
                 checked = state.gameSpaceEnabled,
                 onCheckedChange = {
