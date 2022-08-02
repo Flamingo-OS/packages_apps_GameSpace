@@ -17,6 +17,7 @@
 package com.flamingo.gamespace.ui.screens
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,6 +50,7 @@ import com.flamingo.gamespace.ui.states.AppSelectScreenState
 import com.flamingo.gamespace.ui.states.rememberAppSelectScreenState
 import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AppSelectScreen(
     onBackPressed: () -> Unit,
@@ -60,14 +62,20 @@ fun AppSelectScreen(
         onBackButtonPressed = onBackPressed,
     ) {
         if (isEnterAnimationRunning) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            item(key = "Loading progress") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItemPlacement(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator(modifier = Modifier.size(48.dp))
                 }
             }
         } else {
-            items(state.appList) { appInfo ->
+            items(state.appList, key = { it.packageName }) { appInfo ->
                 SelectableAppItem(
+                    modifier = Modifier.animateItemPlacement(),
                     appInfo = appInfo,
                     onCheckedChange = {
                         state.setAppSelected(appInfo, it)

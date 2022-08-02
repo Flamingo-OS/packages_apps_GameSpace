@@ -16,9 +16,7 @@
 
 package com.flamingo.gamespace.ui.screens
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,8 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 
 import com.flamingo.gamespace.R
@@ -42,7 +38,9 @@ import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 import com.flamingo.support.compose.ui.preferences.DiscreteSeekBarPreference
 import com.flamingo.support.compose.ui.preferences.Preference
 import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
+import com.flamingo.support.compose.ui.preferences.TopIntroPreference
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotificationOverlayScreen(
     state: NotificationOverlayScreenState,
@@ -59,22 +57,15 @@ fun NotificationOverlayScreen(
             navHostController.popBackStack()
         }
     ) {
-        item {
-            Text(
-                text = stringResource(id = R.string.notification_overlay_intro_text),
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier.padding(horizontal = 24.dp)
+        item(key = R.string.notification_overlay_intro_text) {
+            TopIntroPreference(
+                modifier = Modifier.animateItemPlacement(),
+                text = stringResource(id = R.string.notification_overlay_intro_text)
             )
         }
-        item {
+        item(key = R.string.enable_notification_overlay) {
             PrimarySwitchPreference(
-                modifier = Modifier.padding(
-                    top = 24.dp,
-                    bottom = 12.dp,
-                    start = 24.dp,
-                    end = 24.dp
-                ),
+                modifier = Modifier.animateItemPlacement(),
                 title = stringResource(id = R.string.enable_notification_overlay),
                 checked = enabled,
                 onCheckedChange = {
@@ -83,12 +74,13 @@ fun NotificationOverlayScreen(
             )
         }
         if (enabled) {
-            item {
+            item(key = R.string.size_in_portrait) {
                 val savedPortraitSize by state.notificationOverlaySizePortrait.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
                 )
                 var portraitSize by remember(savedPortraitSize) { mutableStateOf(savedPortraitSize) }
                 DiscreteSeekBarPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.size_in_portrait),
                     min = 30,
                     max = 90,
@@ -102,12 +94,17 @@ fun NotificationOverlayScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.size_in_landscape) {
                 val savedLandscapeSize by state.notificationOverlaySizeLandscape.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE
                 )
-                var landscapeSize by remember(savedLandscapeSize) { mutableStateOf(savedLandscapeSize) }
+                var landscapeSize by remember(savedLandscapeSize) {
+                    mutableStateOf(
+                        savedLandscapeSize
+                    )
+                }
                 DiscreteSeekBarPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.size_in_landscape),
                     min = 60,
                     max = 120,
@@ -121,12 +118,13 @@ fun NotificationOverlayScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.visible_duration) {
                 val savedDuration by state.notificationOverlayDuration.collectAsState(
                     DEFAULT_NOTIFICATION_OVERLAY_DURATION
                 )
                 var duration by remember(savedDuration) { mutableStateOf(savedDuration.toInt() / 1000) }
                 DiscreteSeekBarPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.visible_duration),
                     summary = stringResource(id = R.string.visible_duration_summary),
                     min = 1,
@@ -141,8 +139,9 @@ fun NotificationOverlayScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.blacklisted_apps) {
                 Preference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.blacklisted_apps),
                     summary = stringResource(id = R.string.blacklisted_apps_summary),
                     onClick = {

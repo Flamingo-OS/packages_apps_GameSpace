@@ -16,6 +16,7 @@
 
 package com.flamingo.gamespace.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +36,7 @@ import com.flamingo.gamespace.ui.states.NotificationOverlayBlackListScreenState
 import com.flamingo.support.compose.ui.layout.CollapsingToolbarLayout
 import com.flamingo.support.compose.ui.preferences.Preference
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NotificationOverlayBlackListScreen(
     onBackButtonPressed: () -> Unit,
@@ -47,14 +48,20 @@ fun NotificationOverlayBlackListScreen(
         onBackButtonPressed = onBackButtonPressed,
     ) {
         if (isEnterAnimationRunning) {
-            item {
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            item(key = "Loading progress") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateItemPlacement(),
+                    contentAlignment = Alignment.Center
+                ) {
                     CircularProgressIndicator(modifier = Modifier.size(48.dp))
                 }
             }
         } else {
-            items(state.appList) { appInfo ->
+            items(state.appList, key = { it.packageName }) { appInfo ->
                 AppItemPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     appInfo = appInfo,
                     onCheckedChange = {
                         state.setAppSelected(appInfo, it)
@@ -65,10 +72,14 @@ fun NotificationOverlayBlackListScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppItemPreference(appInfo: AppInfo, onCheckedChange: (Boolean) -> Unit) {
+fun AppItemPreference(
+    appInfo: AppInfo,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Preference(
+        modifier = modifier,
         title = appInfo.label,
         summary = appInfo.packageName,
         startWidget = {

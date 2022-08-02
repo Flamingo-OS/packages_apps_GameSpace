@@ -16,6 +16,7 @@
 
 package com.flamingo.gamespace.ui.screens
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,6 +40,7 @@ import com.flamingo.support.compose.ui.preferences.PrimarySwitchPreference
 import com.flamingo.support.compose.ui.preferences.SwitchPreference
 import com.flamingo.support.compose.ui.preferences.TopIntroPreference
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MainScreen(
     onBackPressed: () -> Unit,
@@ -54,11 +56,15 @@ fun MainScreen(
         title = stringResource(id = R.string.app_name),
         onBackButtonPressed = onBackPressed
     ) {
-        item {
-            TopIntroPreference(text = stringResource(id = R.string.main_screen_intro_text))
+        item(key = R.string.main_screen_intro_text) {
+            TopIntroPreference(
+                text = stringResource(id = R.string.main_screen_intro_text),
+                modifier = Modifier.animateItemPlacement()
+            )
         }
-        item {
+        item(key = R.string.enable_gamespace) {
             PrimarySwitchPreference(
+                modifier = Modifier.animateItemPlacement(),
                 title = stringResource(id = R.string.enable_gamespace),
                 checked = state.gameSpaceEnabled,
                 onCheckedChange = {
@@ -67,8 +73,9 @@ fun MainScreen(
             )
         }
         if (state.gameSpaceEnabled) {
-            item {
+            item(key = R.string.select_apps) {
                 Preference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.select_apps),
                     summary = stringResource(id = R.string.select_apps_summary),
                     onClick = {
@@ -76,8 +83,9 @@ fun MainScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.dynamic_mode) {
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.dynamic_mode),
                     summary = stringResource(id = R.string.dynamic_mode_summary),
                     checked = state.dynamicMode,
@@ -86,8 +94,9 @@ fun MainScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.disable_headsup) {
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.disable_headsup),
                     summary = stringResource(id = R.string.disable_headsup_summary),
                     checked = state.disableHeadsUp,
@@ -96,8 +105,9 @@ fun MainScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.disable_fullscreen_intent) {
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.disable_fullscreen_intent),
                     summary = stringResource(id = R.string.disable_fullscreen_intent_summary),
                     checked = state.disableFullscreenIntent,
@@ -107,8 +117,9 @@ fun MainScreen(
                 )
             }
             if (state.disableHeadsUp) {
-                item {
+                item(key = R.string.notification_overlay) {
                     DividerSwitchPreference(
+                        modifier = Modifier.animateItemPlacement(),
                         title = stringResource(id = R.string.notification_overlay),
                         onClick = {
                             navHostController.navigate(Route.NotificationOverlay.NOTIFICATION_OVERLAY_SCREEN)
@@ -118,9 +129,10 @@ fun MainScreen(
                     )
                 }
             }
-            item {
+            item(key = R.string.preferred_ringer_mode) {
                 val ringerMode by state.ringerMode.collectAsState(initial = DEFAULT_RINGER_MODE)
                 ListPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.preferred_ringer_mode),
                     entries = listOf(
                         Entry(stringResource(id = R.string.ring), RingerMode.NORMAL),
@@ -133,9 +145,10 @@ fun MainScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.disable_adaptive_brightness) {
                 val disable by state.disableAdaptiveBrightness.collectAsState(initial = DEFAULT_DISABLE_ADAPTIVE_BRIGHTNESS)
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.disable_adaptive_brightness),
                     checked = disable,
                     onCheckedChange = {
@@ -143,8 +156,9 @@ fun MainScreen(
                     }
                 )
             }
-            item {
+            item(key = R.string.show_game_tools_handle) {
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.show_game_tools_handle),
                     summary = stringResource(id = R.string.show_game_tools_handle_summary),
                     checked = showGameToolsHandle,
@@ -154,8 +168,9 @@ fun MainScreen(
                 )
             }
             if (showGameToolsHandle) {
-                item {
+                item(key = R.string.game_tools_dialog_tiles) {
                     Preference(
+                        modifier = Modifier.animateItemPlacement(),
                         title = stringResource(id = R.string.game_tools_dialog_tiles),
                         summary = stringResource(id = R.string.game_tools_dialog_tiles_summary),
                         onClick = {
@@ -164,8 +179,9 @@ fun MainScreen(
                     )
                 }
             }
-            item {
+            item(key = R.string.disable_call_ringing) {
                 SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
                     title = stringResource(id = R.string.disable_call_ringing),
                     checked = state.disableCallRinging,
                     onCheckedChange = {
