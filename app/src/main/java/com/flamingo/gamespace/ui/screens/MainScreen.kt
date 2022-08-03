@@ -189,6 +189,17 @@ fun MainScreen(
                     }
                 )
             }
+            item(key = R.string.hide_privacy_indicator) {
+                SwitchPreference(
+                    modifier = Modifier.animateItemPlacement(),
+                    title = stringResource(id = R.string.hide_privacy_indicator),
+                    summary = stringResource(id = R.string.hide_privacy_indicator_summary),
+                    checked = state.hidePrivacyIndicator,
+                    onCheckedChange = {
+                        state.setPrivacyIndicatorHidden(it)
+                    }
+                )
+            }
         }
     }
 }

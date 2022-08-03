@@ -61,6 +61,10 @@
     <!-- Disable call ringing -->
     <string name="disable_call_ringing">Disable call ringing</string>
 
+    <!-- Hide privacy indicator -->
+    <string name="hide_privacy_indicator">Hide privacy indicator</string>
+    <string name="hide_privacy_indicator_summary">Enable to hide persistent privacy indicator dot overlay, such as microphone or camera indicators.</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">GameSpace Notification Channel</string>
     <string name="gaming_mode_active">Gaming mode is active</string>

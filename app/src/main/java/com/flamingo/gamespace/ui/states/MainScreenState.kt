@@ -36,6 +36,7 @@ import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
 import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.android.systemui.game.DEFAULT_GAMESPACE_DYNAMIC_MODE
 import com.android.systemui.game.DEFAULT_GAMESPACE_ENABLED
+import com.android.systemui.game.DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.data.settings.SettingsRepository
 
@@ -74,6 +75,10 @@ class MainScreenState(
                         disableCallRinging =
                             getBoolSetting(key, DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
                     }
+                    Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS -> {
+                        hidePrivacyIndicator =
+                            getBoolSetting(key, DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS)
+                    }
                 }
             }
         }
@@ -92,6 +97,9 @@ class MainScreenState(
         private set
 
     var disableCallRinging by mutableStateOf(DEFAULT_GAMESPACE_DISABLE_CALL_RINGING)
+        private set
+
+    var hidePrivacyIndicator by mutableStateOf(DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS)
         private set
 
     val ringerMode: Flow<RingerMode>
@@ -126,6 +134,10 @@ class MainScreenState(
             Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
             DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
         )
+        hidePrivacyIndicator = getBoolSetting(
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
+            DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
+        )
     }
 
     internal fun registerSettingsObservers() {
@@ -134,7 +146,8 @@ class MainScreenState(
             Settings.System.GAMESPACE_DYNAMIC_MODE,
             Settings.System.GAMESPACE_DISABLE_HEADSUP,
             Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
-            Settings.System.GAMESPACE_DISABLE_CALL_RINGING
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS
         )
     }
 
@@ -191,6 +204,13 @@ class MainScreenState(
         updateSetting(
             Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
             if (disabled) 1 else 0
+        )
+    }
+
+    fun setPrivacyIndicatorHidden(hide: Boolean) {
+        updateSetting(
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
+            if (hide) 1 else 0
         )
     }
 
