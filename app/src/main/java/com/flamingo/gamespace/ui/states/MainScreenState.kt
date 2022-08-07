@@ -30,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
 
 import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
 import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
@@ -111,6 +113,8 @@ class MainScreenState(
     val showGameToolsHandle: Flow<Boolean>
         get() = settingsRepository.showGameToolsHandle
 
+    private var registeredSettingsObserver = false
+
     init {
         coroutineScope.launch {
             updateSettings()
@@ -137,17 +141,6 @@ class MainScreenState(
         hidePrivacyIndicator = getBoolSetting(
             Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS,
             DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
-        )
-    }
-
-    internal fun registerSettingsObservers() {
-        registerSettingsObservers(
-            Settings.System.GAMESPACE_ENABLED,
-            Settings.System.GAMESPACE_DYNAMIC_MODE,
-            Settings.System.GAMESPACE_DISABLE_HEADSUP,
-            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
-            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
-            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS
         )
     }
 
@@ -238,8 +231,23 @@ class MainScreenState(
         }
     }
 
+    internal fun registerSettingsObservers() {
+        if (registeredSettingsObserver) return
+        registerSettingsObservers(
+            Settings.System.GAMESPACE_ENABLED,
+            Settings.System.GAMESPACE_DYNAMIC_MODE,
+            Settings.System.GAMESPACE_DISABLE_HEADSUP,
+            Settings.System.GAMESPACE_DISABLE_FULLSCREEN_INTENT,
+            Settings.System.GAMESPACE_DISABLE_CALL_RINGING,
+            Settings.System.GAMESPACE_HIDE_PRIVACY_INDICATORS
+        )
+        registeredSettingsObserver = true
+    }
+
     internal fun unregisterSettingsObservers() {
+        if (!registeredSettingsObserver) return
         contentResolver.unregisterContentObserver(settingsObserver)
+        registeredSettingsObserver = false
     }
 }
 
@@ -247,7 +255,8 @@ class MainScreenState(
 fun rememberMainScreenState(
     contentResolver: ContentResolver = LocalContext.current.contentResolver,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    settingsRepository: SettingsRepository = get()
+    settingsRepository: SettingsRepository = get(),
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): MainScreenState {
     val state = remember(contentResolver, coroutineScope, settingsRepository) {
         MainScreenState(
@@ -257,7 +266,9 @@ fun rememberMainScreenState(
         )
     }
     DisposableEffect(state) {
-        state.registerSettingsObservers()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerSettingsObservers()
+        }
         onDispose {
             state.unregisterSettingsObservers()
         }

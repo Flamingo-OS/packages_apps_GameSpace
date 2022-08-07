@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2022 FlamingoOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License")
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.flamingo.gamespace.ui.states
 
 import android.content.Context
@@ -13,6 +29,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 
 import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.flamingo.gamespace.data.settings.SettingsRepository
@@ -31,7 +50,8 @@ import org.koin.androidx.compose.get
 class TileScreenState(
     private val context: Context,
     private val settingsRepository: SettingsRepository,
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val lifecycle: Lifecycle
 ) {
 
     private val isRingerModeTileAvailable =
@@ -42,8 +62,11 @@ class TileScreenState(
             coroutineScope.launch {
                 tilesMutex.withLock {
                     when (uri?.lastPathSegment) {
-                        Settings.Secure.NAVIGATION_MODE -> updateLockGestureTile()
-                        Settings.System.GAMESPACE_DISABLE_HEADSUP -> updateNotificationOverlayTile()
+                        Settings.Secure.NAVIGATION_MODE,
+                        Settings.System.GAMESPACE_DISABLE_HEADSUP -> {
+                            val enabledTiles = settingsRepository.tiles.first()
+                            updateEnabledTilesListLocked(enabledTiles)
+                        }
                     }
                 }
             }
@@ -51,26 +74,25 @@ class TileScreenState(
     }
 
     private val tilesMutex = Mutex()
-
     @GuardedBy("tilesMutex")
     val tiles = mutableStateListOf<TileInfo>()
 
+    private var registeredSettingsObserver = false
+
     init {
         coroutineScope.launch {
-            tilesMutex.withLock {
-                val enabledTiles = settingsRepository.tiles.first()
-                updateEnabledTilesList(enabledTiles)
-            }
-            settingsRepository.tiles.collect {
-                tilesMutex.withLock {
-                    tiles.clear()
-                    updateEnabledTilesList(it)
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                settingsRepository.tiles.collect {
+                    tilesMutex.withLock {
+                        updateEnabledTilesListLocked(it)
+                    }
                 }
             }
         }
     }
 
-    private suspend fun updateEnabledTilesList(enabledTiles: List<Tile>) {
+    private suspend fun updateEnabledTilesListLocked(enabledTiles: List<Tile>) {
+        tiles.clear()
         Tile.values().forEach {
             when (it) {
                 Tile.UNRECOGNIZED -> {}
@@ -114,32 +136,6 @@ class TileScreenState(
             ) == 1
         }
 
-    private suspend fun updateLockGestureTile() {
-        val enabledTiles = settingsRepository.tiles.first()
-        if (isGestureNavigationEnabled()) {
-            val isTileEnabled = enabledTiles.contains(Tile.LOCK_GESTURE)
-            val tileInfo = tiles.find { it.tile == Tile.LOCK_GESTURE }
-            if (tileInfo == null) {
-                tiles.add(TileInfo(tile = Tile.LOCK_GESTURE, enabled = isTileEnabled))
-            }
-        } else {
-            tiles.removeIf { it.tile == Tile.LOCK_GESTURE }
-        }
-    }
-
-    private suspend fun updateNotificationOverlayTile() {
-        val enabledTiles = settingsRepository.tiles.first()
-        if (isHeadsUpDisabled()) {
-            val isTileEnabled = enabledTiles.contains(Tile.NOTIFICATION_OVERLAY)
-            val tileInfo = tiles.find { it.tile == Tile.NOTIFICATION_OVERLAY }
-            if (tileInfo == null) {
-                tiles.add(TileInfo(tile = Tile.NOTIFICATION_OVERLAY, enabled = isTileEnabled))
-            }
-        } else {
-            tiles.removeIf { it.tile == Tile.NOTIFICATION_OVERLAY }
-        }
-    }
-
     fun enableTile(tile: Tile) {
         coroutineScope.launch {
             settingsRepository.addTile(tile)
@@ -153,6 +149,7 @@ class TileScreenState(
     }
 
     internal fun registerSettingsObservers() {
+        if (registeredSettingsObserver) return
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.NAVIGATION_MODE),
             false,
@@ -165,10 +162,13 @@ class TileScreenState(
             settingsObserver,
             UserHandle.USER_CURRENT
         )
+        registeredSettingsObserver = true
     }
 
     internal fun unregisterSettingsObservers() {
+        if (!registeredSettingsObserver) return
         context.contentResolver.unregisterContentObserver(settingsObserver)
+        registeredSettingsObserver = false
     }
 }
 
@@ -182,16 +182,20 @@ fun rememberTileScreenState(
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
     settingsRepository: SettingsRepository = get(),
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): TileScreenState {
-    val state = remember(context, settingsRepository, coroutineScope) {
+    val state = remember(context, settingsRepository, coroutineScope, lifecycle) {
         TileScreenState(
             context = context,
             coroutineScope = coroutineScope,
-            settingsRepository = settingsRepository
+            settingsRepository = settingsRepository,
+            lifecycle = lifecycle
         )
     }
-    DisposableEffect(state) {
-        state.registerSettingsObservers()
+    DisposableEffect(state, lifecycle) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerSettingsObservers()
+        }
         onDispose {
             state.unregisterSettingsObservers()
         }

@@ -27,6 +27,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE
 import com.flamingo.gamespace.data.settings.DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
@@ -43,8 +46,9 @@ import org.koin.androidx.compose.get
 class NotificationOverlayState(
     private val notificationListener: NotificationListener,
     private val settingsRepository: SettingsRepository,
-    val isPortrait: Boolean,
-    coroutineScope: CoroutineScope
+    private val lifecycle: Lifecycle,
+    coroutineScope: CoroutineScope,
+    val isPortrait: Boolean
 ) {
 
     private var currentNotification by mutableStateOf<Pair<Int, String>?>(null)
@@ -69,18 +73,23 @@ class NotificationOverlayState(
             DEFAULT_NOTIFICATION_OVERLAY_SIZE_PORTRAIT
         else
             DEFAULT_NOTIFICATION_OVERLAY_SIZE_LANDSCAPE).toFloat()
+    
+    private var registeredCallback = false
 
     init {
         coroutineScope.launch {
-            settingsRepository.enableNotificationOverlay.collect {
-                if (!it) {
-                    currentNotification = null
+            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                settingsRepository.enableNotificationOverlay.collect {
+                    if (!it) {
+                        currentNotification = null
+                    }
                 }
             }
         }
     }
 
     internal fun registerCallbacks() {
+        if (registeredCallback) return
         notificationListener.registerCallbacks(
             onNotificationPosted = { id, notification ->
                 currentNotification = Pair(id, notification)
@@ -91,10 +100,13 @@ class NotificationOverlayState(
                 }
             },
         )
+        registeredCallback = true
     }
 
     internal fun unregisterCallbacks() {
+        if (!registeredCallback) return
         notificationListener.unregisterCallbacks()
+        registeredCallback = false
     }
 
     fun removeNotification() {
@@ -107,23 +119,28 @@ fun rememberNotificationOverlayState(
     notificationListener: NotificationListener,
     settingsRepository: SettingsRepository = get(),
     configuration: Configuration = LocalConfiguration.current,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): NotificationOverlayState {
     val state = remember(
         notificationListener,
         settingsRepository,
         configuration.orientation,
-        coroutineScope
+        coroutineScope,
+        lifecycle
     ) {
         NotificationOverlayState(
             notificationListener = notificationListener,
             settingsRepository = settingsRepository,
             coroutineScope = coroutineScope,
-            isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+            isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT,
+            lifecycle = lifecycle
         )
     }
-    DisposableEffect(state) {
-        state.registerCallbacks()
+    DisposableEffect(state, lifecycle) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerCallbacks()
+        }
         onDispose {
             state.unregisterCallbacks()
         }

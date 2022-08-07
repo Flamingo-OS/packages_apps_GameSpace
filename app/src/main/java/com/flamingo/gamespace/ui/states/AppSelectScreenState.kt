@@ -31,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Lifecycle
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +61,8 @@ class AppSelectScreenState(
 
     @GuardedBy("listMutex")
     val appList = mutableStateListOf<AppInfo>()
+
+    private var registeredSettingsObserver = false
 
     init {
         coroutineScope.launch {
@@ -148,16 +152,20 @@ class AppSelectScreenState(
     }
 
     internal fun registerSettingsObserver() {
+        if (registeredSettingsObserver) return
         context.contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.GAMESPACE_PACKAGE_LIST),
             false,
             settingsObserver,
             UserHandle.USER_CURRENT
         )
+        registeredSettingsObserver = true
     }
 
     internal fun unregisterSettingsObserver() {
+        if (!registeredSettingsObserver) return
         context.contentResolver.unregisterContentObserver(settingsObserver)
+        registeredSettingsObserver = false
     }
 
     companion object {
@@ -168,13 +176,16 @@ class AppSelectScreenState(
 @Composable
 fun rememberAppSelectScreenState(
     context: Context = LocalContext.current,
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): AppSelectScreenState {
     val state = remember(context, coroutineScope) {
         AppSelectScreenState(context = context, coroutineScope = coroutineScope)
     }
     DisposableEffect(state) {
-        state.registerSettingsObserver()
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerSettingsObserver()
+        }
         onDispose {
             state.unregisterSettingsObserver()
         }

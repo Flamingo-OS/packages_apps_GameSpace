@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
 
 import com.android.internal.R
 import com.android.systemui.game.CONFIG_BACK_GESTURE_LOCKED
@@ -55,6 +57,8 @@ class LockGestureTileState(
         }
     }
 
+    private var registeredSettingsObserver = false
+
     init {
         updateShowTileState()
     }
@@ -77,15 +81,19 @@ class LockGestureTileState(
     }
 
     internal fun registerSettingsObserver() {
+        if (registeredSettingsObserver) return
         context.contentResolver.registerContentObserver(
             Settings.Secure.getUriFor(Settings.Secure.NAVIGATION_MODE),
             false,
             settingsObserver
         )
+        registeredSettingsObserver = true
     }
 
     internal fun unregisterSettingsObserver() {
+        if (!registeredSettingsObserver) return
         context.contentResolver.unregisterContentObserver(settingsObserver)
+        registeredSettingsObserver = false
     }
 
     companion object {
@@ -98,7 +106,8 @@ fun rememberLockGestureTileState(
     config: Bundle,
     context: Context = LocalContext.current,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    serviceCallback: GameSpaceServiceCallback?
+    serviceCallback: GameSpaceServiceCallback?,
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): LockGestureTileState {
     val isLocked = remember(config) { config.getBoolean(CONFIG_BACK_GESTURE_LOCKED) }
     val state = remember(isLocked, context, coroutineScope, serviceCallback) {
@@ -111,8 +120,10 @@ fun rememberLockGestureTileState(
             },
         )
     }
-    DisposableEffect(state) {
-        state.registerSettingsObserver()
+    DisposableEffect(state, lifecycle) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerSettingsObserver()
+        }
         onDispose {
             state.unregisterSettingsObserver()
         }

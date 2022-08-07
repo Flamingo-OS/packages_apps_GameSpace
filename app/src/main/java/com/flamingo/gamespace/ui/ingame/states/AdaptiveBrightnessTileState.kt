@@ -29,6 +29,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
 
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
@@ -52,6 +54,8 @@ class AdaptiveBrightnessTileState(
     var isEnabled by mutableStateOf(false)
         private set
 
+    private var registeredSettingsObserver = false
+
     init {
         updateSettings()
     }
@@ -74,15 +78,19 @@ class AdaptiveBrightnessTileState(
     }
 
     internal fun registerSettingsObserver() {
+        if (registeredSettingsObserver) return
         contentResolver.registerContentObserver(
             Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS_MODE),
             false,
             settingsObserver
         )
+        registeredSettingsObserver = true
     }
 
     internal fun unregisterSettingsObserver() {
+        if (!registeredSettingsObserver) return
         contentResolver.unregisterContentObserver(settingsObserver)
+        registeredSettingsObserver = false
     }
 }
 
@@ -90,7 +98,8 @@ class AdaptiveBrightnessTileState(
 fun rememberAdaptiveBrightnessTileState(
     contentResolver: ContentResolver = LocalContext.current.contentResolver,
     coroutineScope: CoroutineScope = rememberCoroutineScope(),
-    serviceCallback: GameSpaceServiceCallback?
+    serviceCallback: GameSpaceServiceCallback?,
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
 ): AdaptiveBrightnessTileState {
     val state = remember(contentResolver, coroutineScope) {
         AdaptiveBrightnessTileState(
@@ -101,8 +110,10 @@ fun rememberAdaptiveBrightnessTileState(
             }
         )
     }
-    DisposableEffect(state) {
-        state.registerSettingsObserver()
+    DisposableEffect(state, lifecycle) {
+        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+            state.registerSettingsObserver()
+        }
         onDispose {
             state.unregisterSettingsObserver()
         }

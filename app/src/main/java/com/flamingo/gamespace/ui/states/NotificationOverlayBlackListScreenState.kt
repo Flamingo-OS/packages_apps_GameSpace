@@ -26,7 +26,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.graphics.drawable.toBitmap
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.repeatOnLifecycle
 
 import com.flamingo.gamespace.data.settings.SettingsRepository
 
@@ -41,6 +44,7 @@ import org.koin.androidx.compose.get
 class NotificationOverlayBlackListScreenState(
     private val settingsRepository: SettingsRepository,
     private val coroutineScope: CoroutineScope,
+    private val lifecycle: Lifecycle,
     context: Context
 ) {
 
@@ -51,8 +55,10 @@ class NotificationOverlayBlackListScreenState(
     init {
         coroutineScope.launch {
             loadAllAppsList()
-            settingsRepository.notificationOverlayBlackList.collect {
-                updateList(it)
+            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+                settingsRepository.notificationOverlayBlackList.collect {
+                    updateList(it)
+                }
             }
         }
     }
@@ -121,11 +127,13 @@ class NotificationOverlayBlackListScreenState(
 fun rememberNotificationOverlayBlackListScreenState(
     context: Context = LocalContext.current,
     settingsRepository: SettingsRepository = get(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope()
-) = remember(context, settingsRepository, coroutineScope) {
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    lifecycle: Lifecycle = LocalLifecycleOwner.current.lifecycle
+) = remember(context, settingsRepository, coroutineScope, lifecycle) {
     NotificationOverlayBlackListScreenState(
         context = context,
         settingsRepository = settingsRepository,
-        coroutineScope = coroutineScope
+        coroutineScope = coroutineScope,
+        lifecycle = lifecycle
     )
 }
