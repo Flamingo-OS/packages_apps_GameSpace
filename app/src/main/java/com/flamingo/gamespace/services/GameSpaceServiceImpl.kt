@@ -26,7 +26,6 @@ import android.content.res.Configuration
 import android.media.AudioManager
 import android.os.Bundle
 import android.os.IBinder
-import android.os.IThermalService
 import android.os.RemoteException
 import android.os.UserHandle
 import android.util.Log
@@ -96,7 +95,6 @@ class GameSpaceServiceImpl : LifecycleService(), SavedStateRegistryOwner {
     private lateinit var oldConfig: Configuration
 
     private val settingsRepository: SettingsRepository by inject()
-    private val thermalService: IThermalService by inject()
 
     private val notificationListener = NotificationListener()
     private var registeredNotificationListener = false
