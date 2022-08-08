@@ -118,9 +118,14 @@ fun GameToolsDialog(
             ) {
                 Text(
                     text = stringResource(id = R.string.app_name),
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 1
                 )
-                Text(text = state.time, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = state.time,
+                    style = MaterialTheme.typography.headlineSmall,
+                    maxLines = 1
+                )
             }
             Row(
                 modifier = Modifier
@@ -134,7 +139,11 @@ fun GameToolsDialog(
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.height(IntrinsicSize.Min)
                 ) {
-                    Text(text = state.batteryText, style = MaterialTheme.typography.bodyLarge)
+                    Text(
+                        text = state.batteryText,
+                        style = MaterialTheme.typography.bodyLarge,
+                        maxLines = 1
+                    )
                     val batteryTemp = state.batteryTemperature
                     if (batteryTemp is TempInfoImpl) {
                         Divider(
@@ -148,11 +157,12 @@ fun GameToolsDialog(
                                 id = R.string.temperature_format,
                                 batteryTemp.temperature
                             ),
-                            color = if (batteryTemp.isThrottling) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
+                            color = if (batteryTemp.isThrottling) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1
                         )
                     }
                 }
-                Text(text = state.date, style = MaterialTheme.typography.bodyLarge)
+                Text(text = state.date, style = MaterialTheme.typography.bodyLarge, maxLines = 1)
             }
             HorizontalGrid(
                 columns = 3,
@@ -234,7 +244,8 @@ fun GameToolsDialog(
                             text = stringResource(
                                 id = R.string.temperature_format,
                                 deviceTemp.temperature
-                            )
+                            ),
+                            maxLines = 1
                         )
                     }
                 }
@@ -246,7 +257,7 @@ fun GameToolsDialog(
                             tint = if (state.isLowMemory) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text(text = it)
+                        Text(text = it, maxLines = 1)
                     }
                 }
             }

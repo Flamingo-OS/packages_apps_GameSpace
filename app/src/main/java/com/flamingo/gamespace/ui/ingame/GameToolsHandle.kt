@@ -26,10 +26,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -122,12 +122,13 @@ fun GameToolsHandle(
         ) {
             val dialogState = rememberGameToolsDialogState()
             GameToolsDialog(
-                modifier = Modifier.defaultMinSize(
-                    minWidth = if (maxWidth < maxHeight) {
+                modifier = Modifier.widthIn(
+                    min = if (maxWidth < maxHeight) {
                         0.75
                     } else {
                         0.35
-                    } * maxWidth
+                    } * maxWidth,
+                    max = maxWidth
                 ),
                 onDismissRequest = {
                     showToolsDialog = false
