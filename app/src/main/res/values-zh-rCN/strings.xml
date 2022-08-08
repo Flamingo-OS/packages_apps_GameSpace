@@ -61,6 +61,10 @@
     <!-- Disable call ringing -->
     <string name="disable_call_ringing">禁用来电响铃</string>
 
+    <!-- Hide privacy indicator -->
+    <string name="hide_privacy_indicator">隐藏隐私指示</string>
+    <string name="hide_privacy_indicator_summary">启用后将在游戏运行时隐藏麦克风和摄像头等隐私指示器</string>
+
     <!-- Notification -->
     <string name="gamespace_notification_channel_name">游戏空间</string>
     <string name="gaming_mode_active">游戏模式已启用</string>
