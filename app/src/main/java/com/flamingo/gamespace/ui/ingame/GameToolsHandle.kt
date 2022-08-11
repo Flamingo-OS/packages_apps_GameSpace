@@ -83,7 +83,7 @@ fun GameToolsHandle(
             }
         }
         var showToolsDialog by remember { mutableStateOf(false) }
-        val view = LocalView.current
+        val viewTreeObserver = LocalView.current.viewTreeObserver
         val internalInsetsComputer =
             rememberUpdatedState(OnComputeInternalInsetsListener { info: InternalInsetsInfo ->
                 info.contentInsets.setEmpty()
@@ -100,12 +100,13 @@ fun GameToolsHandle(
                     }
                 )
             })
-        DisposableEffect(view) {
-            view.viewTreeObserver.addOnComputeInternalInsetsListener(
+        DisposableEffect(viewTreeObserver, internalInsetsComputer) {
+            viewTreeObserver.addOnComputeInternalInsetsListener(
                 internalInsetsComputer.value
             )
             onDispose {
-                view.viewTreeObserver.removeOnComputeInternalInsetsListener(
+                viewTreeObserver.dispatchOnGlobalLayout()
+                viewTreeObserver.removeOnComputeInternalInsetsListener(
                     internalInsetsComputer.value
                 )
             }

@@ -17,10 +17,13 @@
 package com.flamingo.gamespace.ui.ingame
 
 import android.os.Bundle
+import android.view.ViewTreeObserver.InternalInsetsInfo
+import android.view.ViewTreeObserver.OnComputeInternalInsetsListener
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,6 +33,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalView
 
 import com.flamingo.gamespace.data.settings.DEFAULT_SHOW_GAME_TOOLS_HANDLE
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
@@ -72,6 +76,26 @@ fun GameModeUI(
                     config = config,
                     serviceCallback = serviceCallback
                 )
+            } else {
+                val viewTreeObserver = LocalView.current.viewTreeObserver
+                val internalInsetsComputer = remember {
+                    object : OnComputeInternalInsetsListener {
+                        override fun onComputeInternalInsets(info: InternalInsetsInfo) {
+                            info.apply {
+                                contentInsets.setEmpty()
+                                visibleInsets.setEmpty()
+                                touchableRegion.setEmpty()
+                                setTouchableInsets(InternalInsetsInfo.TOUCHABLE_INSETS_REGION)
+                            }
+                        }
+                    }
+                }
+                DisposableEffect(viewTreeObserver, internalInsetsComputer) {
+                    viewTreeObserver.addOnComputeInternalInsetsListener(internalInsetsComputer)
+                    onDispose {
+                        viewTreeObserver.removeOnComputeInternalInsetsListener(internalInsetsComputer)
+                    }
+                }
             }
         }
     }
