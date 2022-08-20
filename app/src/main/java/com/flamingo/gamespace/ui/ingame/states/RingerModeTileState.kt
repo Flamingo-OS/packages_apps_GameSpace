@@ -16,24 +16,19 @@
 
 package com.flamingo.gamespace.ui.ingame.states
 
-import android.content.res.Resources
 import android.media.AudioManager
 import android.os.Bundle
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 
 import com.android.systemui.game.CONFIG_RINGER_MODE
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 class RingerModeTileState(
-    resources: Resources,
     private val onRingerModeChangeRequest: (Int) -> Unit,
     val ringerMode: Int
 ) {
-    val shouldShowTile = !resources.getBoolean(com.android.internal.R.bool.config_hasAlertSlider)
-
     fun cycleToNextMode() {
         val nextMode = when (ringerMode) {
             AudioManager.RINGER_MODE_NORMAL -> AudioManager.RINGER_MODE_VIBRATE
@@ -46,14 +41,12 @@ class RingerModeTileState(
 
 @Composable
 fun rememberRingerModeTileState(
-    resources: Resources = LocalContext.current.resources,
     config: Bundle,
     serviceCallback: GameSpaceServiceCallback?
 ): RingerModeTileState {
     val ringerMode = remember(config) { config.getInt(CONFIG_RINGER_MODE, AudioManager.RINGER_MODE_NORMAL) }
-    return remember(resources, ringerMode) {
+    return remember(ringerMode) {
         RingerModeTileState(
-            resources = resources,
             ringerMode = ringerMode,
             onRingerModeChangeRequest = {
                 serviceCallback?.setRingerMode(it)

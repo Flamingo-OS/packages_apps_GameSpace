@@ -54,9 +54,6 @@ class TileScreenState(
     private val lifecycle: Lifecycle
 ) {
 
-    private val isRingerModeTileAvailable =
-        !context.resources.getBoolean(com.android.internal.R.bool.config_hasAlertSlider)
-
     private val settingsObserver = object : ContentObserver(null) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {
             coroutineScope.launch {
@@ -98,11 +95,6 @@ class TileScreenState(
                 Tile.UNRECOGNIZED -> {}
                 Tile.LOCK_GESTURE -> {
                     if (isGestureNavigationEnabled()) {
-                        tiles.add(TileInfo(tile = it, enabled = enabledTiles.contains(it)))
-                    }
-                }
-                Tile.RINGER_MODE -> {
-                    if (isRingerModeTileAvailable) {
                         tiles.add(TileInfo(tile = it, enabled = enabledTiles.contains(it)))
                     }
                 }

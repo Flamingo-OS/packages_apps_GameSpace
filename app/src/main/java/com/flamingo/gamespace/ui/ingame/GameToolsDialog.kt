@@ -516,46 +516,44 @@ fun RingerModeTile(
     state: RingerModeTileState,
     modifier: Modifier = Modifier,
 ) {
-    if (state.shouldShowTile) {
-        Tile(
-            modifier = modifier,
-            icon = {
-                when (state.ringerMode) {
-                    AudioManager.RINGER_MODE_NORMAL -> {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_volume_ringer),
-                            contentDescription = stringResource(id = R.string.ringer_mode_tile_normal_content_desc),
-                        )
-                    }
-                    AudioManager.RINGER_MODE_VIBRATE -> {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_volume_ringer_vibrate),
-                            contentDescription = stringResource(id = R.string.ringer_mode_tile_vibrate_content_desc),
-                        )
-                    }
-                    AudioManager.RINGER_MODE_SILENT -> {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_volume_ringer_mute),
-                            contentDescription = stringResource(id = R.string.ringer_mode_tile_silent_content_desc),
-                        )
-                    }
-                    else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
+    Tile(
+        modifier = modifier,
+        icon = {
+            when (state.ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_volume_ringer),
+                        contentDescription = stringResource(id = R.string.ringer_mode_tile_normal_content_desc),
+                    )
                 }
-            },
-            title = stringResource(
-                id = when (state.ringerMode) {
-                    AudioManager.RINGER_MODE_NORMAL -> R.string.ring
-                    AudioManager.RINGER_MODE_VIBRATE -> R.string.vibrate
-                    AudioManager.RINGER_MODE_SILENT -> R.string.silent
-                    else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
+                AudioManager.RINGER_MODE_VIBRATE -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_volume_ringer_vibrate),
+                        contentDescription = stringResource(id = R.string.ringer_mode_tile_vibrate_content_desc),
+                    )
                 }
-            ),
-            enabled = false,
-            onClick = {
-                state.cycleToNextMode()
+                AudioManager.RINGER_MODE_SILENT -> {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_volume_ringer_mute),
+                        contentDescription = stringResource(id = R.string.ringer_mode_tile_silent_content_desc),
+                    )
+                }
+                else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
             }
-        )
-    }
+        },
+        title = stringResource(
+            id = when (state.ringerMode) {
+                AudioManager.RINGER_MODE_NORMAL -> R.string.ring
+                AudioManager.RINGER_MODE_VIBRATE -> R.string.vibrate
+                AudioManager.RINGER_MODE_SILENT -> R.string.silent
+                else -> throw IllegalStateException("Invalid ringer mode ${state.ringerMode}")
+            }
+        ),
+        enabled = false,
+        onClick = {
+            state.cycleToNextMode()
+        }
+    )
 }
 
 @Composable
