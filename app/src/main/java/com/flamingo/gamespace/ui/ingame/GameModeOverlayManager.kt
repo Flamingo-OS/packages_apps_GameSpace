@@ -60,7 +60,9 @@ class GameModeOverlayManager(
                 WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
                 WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON,
         PixelFormat.TRANSLUCENT
-    )
+    ).apply {
+        privateFlags = privateFlags or WindowManager.LayoutParams.SYSTEM_FLAG_SHOW_FOR_ALL_USERS
+    }
 
     private var gamePackageName by mutableStateOf<String?>(null)
     private var serviceCallback by mutableStateOf<GameSpaceServiceCallback?>(null)
