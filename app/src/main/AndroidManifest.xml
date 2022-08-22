@@ -20,6 +20,7 @@
 
     <protected-broadcast android:name="com.flamingo.gamespace.action.STOP_GAME_MODE" />
 
+    <uses-permission android:name="android.permission.SYSTEM_APPLICATION_OVERLAY" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission
         android:name="android.permission.INTERNAL_SYSTEM_WINDOW"

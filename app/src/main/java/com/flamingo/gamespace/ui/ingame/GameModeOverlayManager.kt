@@ -61,7 +61,10 @@ class GameModeOverlayManager(
                 WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON,
         PixelFormat.TRANSLUCENT
     ).apply {
-        privateFlags = privateFlags or WindowManager.LayoutParams.SYSTEM_FLAG_SHOW_FOR_ALL_USERS
+        privateFlags = privateFlags or
+                WindowManager.LayoutParams.SYSTEM_FLAG_SHOW_FOR_ALL_USERS or
+                WindowManager.LayoutParams.PRIVATE_FLAG_TRUSTED_OVERLAY or
+                WindowManager.LayoutParams.PRIVATE_FLAG_SYSTEM_APPLICATION_OVERLAY
     }
 
     private var gamePackageName by mutableStateOf<String?>(null)
@@ -76,7 +79,6 @@ class GameModeOverlayManager(
         )
         rootComposeView = ComposeView(windowContext)
         rootViewLP.token = Binder("GameSpace Overlay Token")
-        rootViewLP.setTrustedOverlay()
         ViewTreeLifecycleOwner.set(rootComposeView, lifecycleOwner)
         rootComposeView.setViewTreeSavedStateRegistryOwner(savedStateRegistryOwner)
         rootComposeView.fitsSystemWindows = true
