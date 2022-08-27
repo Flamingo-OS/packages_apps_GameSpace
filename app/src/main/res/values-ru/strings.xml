@@ -23,7 +23,7 @@
     <string name="dynamic_mode_summary">Следует ли автоматически обнаруживать и добавлять новые игры при запуске</string>
     <string name="disable_headsup">Отключить всплывающие уведомления</string>
     <string name="disable_headsup_summary">Отключать ли всплывающие уведомления и всплывающие подсказки во время игры</string>
-    <string name="disable_fullscreen_intent">Отключить полноэкранные </string>
+    <string name="disable_fullscreen_intent">Отключить полноэкранные наложения</string>
     <string name="disable_fullscreen_intent_summary">Отключить ли запуск полноэкранных наложений (например, экрана вызова) во время игры.</string>
 
     <!-- Select apps -->
