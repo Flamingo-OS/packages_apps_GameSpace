@@ -46,7 +46,7 @@
     <!-- Tiles -->
     <string name="game_tools_dialog_tiles">Плитки диалоговых окон игровых инструментов</string>
     <string name="game_tools_dialog_tiles_summary">Настройка плиток, отображаемых в диалоговом окне игровых инструментов</string>
-    <string name="tiles">Плитки/string>
+    <string name="tiles">Плитки</string>
 
     <!-- Preferred ringer mode -->
     <string name="preferred_ringer_mode">Предпочтительный режим звонка</string>
@@ -73,7 +73,7 @@
     <!-- Game Tools Dialog -->
     <string name="battery_text">Батарея: <xliff:g example="100" id="percent">%1$d</xliff:g>%%</string>
     <string name="charging_battery_text">Батарея: <xliff:g example="100" id="percent">%1$d</xliff:g>%% \u26A1\uFE0E</string>
-    <string name="battery_unknown">Батарея: unknown</string>
+    <string name="battery_unknown">Батарея: неизвестно</string>
     <string name="memory_info" translatable="false"><xliff:g example="3.1/8.0" id="memory">%1$s/%2$s</xliff:g></string>
     <string name="memory_info_content_desc">Информация о памяти</string>
     <string name="device_temperature_content_desc">Иконка температуры устройства</string>
@@ -81,11 +81,11 @@
 
     <!-- Screenshot tile -->
     <string name="screenshot">Снимок экрана</string>
-    <string name="screenshot_tile_content_desc">Плитка снимка экрана</string>
+    <string name="screenshot_tile_content_desc">Скриншот</string>
 
     <!-- Lock gesture tile -->
     <string name="lock_gestures">Жесты блокировки</string>
-    <string name="lock_gestures_content_desc">Плитка жестов блокировки</string>
+    <string name="lock_gestures_content_desc">Жесты блокировки</string>
 
     <!-- Notification overlay tile -->
     <string name="notification_overlay_content_desc">Плитка наложения уведомлений</string>
@@ -93,18 +93,18 @@
     <!-- Ringer mode tile -->
     <string name="ringer_mode">Режим звонка</string>
     <string name="ring">Звонок</string>
-    <string name="ringer_mode_tile_normal_content_desc">Плитка обычного режима звонка</string>
+    <string name="ringer_mode_tile_normal_content_desc">Звонок</string>
     <string name="vibrate">Вибрация</string>
-    <string name="ringer_mode_tile_vibrate_content_desc">Плитка режима звонка в режиме вибрации</string>
+    <string name="ringer_mode_tile_vibrate_content_desc">Вибрация</string>
     <string name="silent">Тишина</string>
-    <string name="ringer_mode_tile_silent_content_desc">Плитка режима звонка в режиме тишины</string>
+    <string name="ringer_mode_tile_silent_content_desc">Тишина</string>
 
     <!-- Adaptive brightness tile -->
     <string name="adaptive_brightness">Адаптивная яркость</string>
-    <string name="adaptive_brightness_content_desc">Плитка адаптивной яркости</string>
+    <string name="adaptive_brightness_content_desc">Адаптивная яркость</string>
 
     <!-- Screen record tile -->
     <string name="screen_record">Запись экрана</string>
-    <string name="screen_record_content_desc">Плитка записи экрана</string>
+    <string name="screen_record_content_desc">Запись экрана</string>
 
 </resources>
