@@ -38,8 +38,8 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
-import com.android.systemui.game.IGameSpaceService
-import com.android.systemui.game.IGameSpaceServiceCallback
+import com.flamingo.systemui.game.IGameSpaceService
+import com.flamingo.systemui.game.IGameSpaceServiceCallback
 import com.flamingo.gamespace.R
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.data.settings.SettingsRepository

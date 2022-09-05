@@ -22,7 +22,7 @@ import android.os.Bundle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 
-import com.android.systemui.game.CONFIG_RINGER_MODE
+import com.flamingo.systemui.game.CONFIG_RINGER_MODE
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 class RingerModeTileState(

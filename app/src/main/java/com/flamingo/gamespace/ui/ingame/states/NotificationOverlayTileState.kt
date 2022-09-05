@@ -30,7 +30,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.flamingo.gamespace.data.settings.SettingsRepository
 
 import kotlinx.coroutines.CoroutineScope

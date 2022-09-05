@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 
 import com.android.internal.R
-import com.android.systemui.game.CONFIG_BACK_GESTURE_LOCKED
+import com.flamingo.systemui.game.CONFIG_BACK_GESTURE_LOCKED
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 import kotlinx.coroutines.CoroutineScope

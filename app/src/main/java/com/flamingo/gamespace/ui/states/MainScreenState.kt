@@ -33,12 +33,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
-import com.android.systemui.game.DEFAULT_GAMESPACE_DYNAMIC_MODE
-import com.android.systemui.game.DEFAULT_GAMESPACE_ENABLED
-import com.android.systemui.game.DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DISABLE_CALL_RINGING
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DISABLE_FULLSCREEN_INTENT
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DYNAMIC_MODE
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_ENABLED
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_HIDE_PRIVACY_INDICATORS
 import com.flamingo.gamespace.data.settings.RingerMode
 import com.flamingo.gamespace.data.settings.SettingsRepository
 

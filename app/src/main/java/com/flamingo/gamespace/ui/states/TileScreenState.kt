@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.repeatOnLifecycle
 
-import com.android.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
+import com.flamingo.systemui.game.DEFAULT_GAMESPACE_DISABLE_HEADSUP
 import com.flamingo.gamespace.data.settings.SettingsRepository
 import com.flamingo.gamespace.data.settings.Tile
 

@@ -23,7 +23,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 
-import com.android.systemui.game.CONFIG_SCREEN_RECORD
+import com.flamingo.systemui.game.CONFIG_SCREEN_RECORD
 import com.flamingo.gamespace.services.GameSpaceServiceImpl.GameSpaceServiceCallback
 
 class ScreenRecordTileState(
